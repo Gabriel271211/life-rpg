@@ -1,0 +1,219 @@
+/* ============================================
+   LIFE RPG — collection.css
+   La galerie des trophées. Quatre raretés,
+   une seule exception dorée : le légendaire.
+   ============================================ */
+
+:root {
+  --or: #c9a86a;
+  --or-lueur: rgba(201, 168, 106, 0.3);
+}
+
+/* ----- En-tête ----- */
+.collection-entete {
+  padding-top: 30px;
+  text-align: center;
+}
+
+.collection-compte {
+  margin-top: 10px;
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.collection-sep {
+  font-weight: 300;
+  color: var(--texte-second);
+}
+
+.collection-unite {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+/* ----- Grille ----- */
+.grille {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* ----- Carte : socle commun ----- */
+.carte {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  padding: 16px 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 18px;
+}
+
+.carte-rarete {
+  font-size: 0.54rem;
+  font-weight: 300;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+.carte-ornement {
+  margin-top: auto;
+}
+
+.carte-ornement svg {
+  width: 26px;
+  height: 26px;
+}
+
+.carte-nom {
+  margin-top: 13px;
+  font-size: 0.94rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.carte-texte {
+  margin: 8px 0 auto;
+  font-size: 0.66rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--texte-second);
+}
+
+/* ============================================
+   Raretés (cartes débloquées)
+   ============================================ */
+
+/* Commune : sobre, presque neutre */
+.carte.commune {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.carte.commune .carte-ornement {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Rare : liseré accent + très léger glow */
+.carte.rare {
+  border-color: rgba(107, 140, 174, 0.38);
+  background: linear-gradient(180deg, rgba(107, 140, 174, 0.05), transparent 55%), var(--surface);
+  box-shadow: 0 0 14px rgba(107, 140, 174, 0.1);
+}
+
+.carte.rare .carte-ornement {
+  color: var(--accent);
+}
+
+.carte.rare .carte-rarete {
+  color: rgba(107, 140, 174, 0.85);
+}
+
+/* Épique : liseré plus présent, glow net, ligne lumineuse en haut */
+.carte.epique {
+  border-color: rgba(107, 140, 174, 0.6);
+  background: linear-gradient(180deg, rgba(107, 140, 174, 0.09), transparent 60%), var(--surface);
+  box-shadow:
+    0 0 22px rgba(107, 140, 174, 0.18),
+    inset 0 0 26px rgba(107, 140, 174, 0.05);
+}
+
+.carte.epique::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 16%;
+  right: 16%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(160, 190, 220, 0.9), transparent);
+}
+
+.carte.epique .carte-ornement {
+  color: var(--accent);
+  filter: drop-shadow(0 0 6px var(--accent-lueur));
+}
+
+.carte.epique .carte-rarete {
+  color: var(--accent);
+}
+
+/* Légendaire : l'unique exception dorée */
+.carte.legendaire {
+  border-color: rgba(201, 168, 106, 0.55);
+  background: linear-gradient(180deg, rgba(201, 168, 106, 0.09), transparent 60%), var(--surface);
+  box-shadow:
+    0 0 24px var(--or-lueur),
+    inset 0 0 30px rgba(201, 168, 106, 0.06);
+}
+
+.carte.legendaire::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14%;
+  right: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(235, 210, 160, 0.95), transparent);
+}
+
+/* Reflet diagonal statique, en CSS pur */
+.carte.legendaire::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 236, 200, 0.08) 50%, transparent 60%);
+  pointer-events: none;
+}
+
+.carte.legendaire .carte-ornement {
+  color: var(--or);
+  filter: drop-shadow(0 0 7px var(--or-lueur));
+}
+
+.carte.legendaire .carte-rarete,
+.carte.legendaire .carte-nom {
+  color: var(--or);
+}
+
+.carte.legendaire .carte-nom {
+  text-shadow: 0 0 16px var(--or-lueur);
+}
+
+/* ============================================
+   Cartes verrouillées
+   ============================================ */
+
+.carte.verrouillee {
+  background: #0c0c12;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.carte.verrouillee .carte-ornement {
+  color: rgba(255, 255, 255, 0.16);
+}
+
+.carte.verrouillee .carte-nom {
+  color: var(--texte-second);
+}
+
+.carte.verrouillee .carte-texte {
+  color: rgba(106, 106, 117, 0.75);
+}
+
+/* Cachée : aucune indication */
+.carte.cachee .carte-nom {
+  letter-spacing: 0.3em;
+  color: rgba(106, 106, 117, 0.8);
+}

@@ -24,11 +24,12 @@ var Juice = (function () {
     if (navigator.vibrate) navigator.vibrate(duree);
   }
 
-  // Bannière en haut de l'écran ("NIVEAU 13", "ÉTAPE ACCOMPLIE Fondations") :
-  // apparaît, reste ~2s, disparaît. Jamais bloquante.
-  function bandeau(etiquette, valeur) {
+  // Bannière en haut de l'écran ("NIVEAU 13", "CARTE DÉBLOQUÉE Semaine de fer") :
+  // apparaît, reste ~2s, disparaît. Jamais bloquante. La classe optionnelle
+  // permet de teinter le bandeau (rareté d'une carte).
+  function bandeau(etiquette, valeur, classe) {
     var el = document.createElement("div");
-    el.className = "bandeau-niveau";
+    el.className = "bandeau-niveau" + (classe ? " " + classe : "");
     el.innerHTML =
       '<span class="bandeau-etiquette"></span>' +
       '<span class="bandeau-valeur"></span>';

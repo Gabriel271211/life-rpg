@@ -44,7 +44,14 @@ var Etat = (function () {
         { nom: "Régularité", objectif: 40, progres: 0, bonusXp: 400 },
         { nom: "Dépassement", objectif: 80, progres: 0, bonusXp: 800 }
       ]
-    }
+    },
+    compteurs: {
+      quetesValidees: 0,   // total historique de quêtes quotidiennes validées
+      critiques: 0,        // total de coups critiques obtenus
+      hebdosAccomplies: 0, // total de quêtes hebdo terminées
+      meilleurStreak: 6    // record de streak atteint (ne redescend jamais)
+    },
+    cartesDebloquees: []
   };
 
   // Ajoute les propriétés manquantes aux états sauvegardés par
@@ -68,6 +75,20 @@ var Etat = (function () {
       etat.quetePrincipale = JSON.parse(JSON.stringify(DEFAUT.quetePrincipale));
       modifie = true;
     }
+    if (!etat.compteurs) {
+      etat.compteurs = {
+        quetesValidees: 0,
+        critiques: 0,
+        hebdosAccomplies: 0,
+        // le record démarre au streak en cours, pour rester honnête
+        meilleurStreak: etat.streak || 0
+      };
+      modifie = true;
+    }
+    if (!Array.isArray(etat.cartesDebloquees)) {
+      etat.cartesDebloquees = [];
+      modifie = true;
+    }
     return modifie;
   }
 
@@ -85,7 +106,10 @@ var Etat = (function () {
     var aujourdhui = Jour.dateDuJour();
     var nouveauJour = Jour.appliquerNouveauJour(etat, aujourdhui);
     var nouvelleSemaine = Jour.appliquerNouvelleSemaine(etat, aujourdhui);
-    if (aMigre || nouveauJour || nouvelleSemaine) {
+    // Cartes dont la condition est déjà vraie au chargement
+    // (migration, progression sur un autre appareil...).
+    var nouvellesCartes = Cartes.verifier(etat);
+    if (aMigre || nouveauJour || nouvelleSemaine || nouvellesCartes.length > 0) {
       sauvegarder(etat);
     }
     return etat;
@@ -128,6 +152,17 @@ var LifeRpgDebug = {
   simulerNouvelleSemaine: function () {
     var etat = Etat.charger();
     etat.lundiSemaine = Jour.decalerDate(etat.lundiSemaine, -7);
+    Etat.sauvegarder(etat);
+    location.reload();
+  },
+  // Débloque toutes les cartes pour vérifier le rendu des raretés.
+  debloquerToutesLesCartes: function () {
+    var etat = Etat.charger();
+    Cartes.liste().forEach(function (carte) {
+      if (etat.cartesDebloquees.indexOf(carte.id) === -1) {
+        etat.cartesDebloquees.push(carte.id);
+      }
+    });
     Etat.sauvegarder(etat);
     location.reload();
   },

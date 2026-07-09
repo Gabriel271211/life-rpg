@@ -97,6 +97,25 @@
   color: var(--accent);
 }
 
+/* Teintes de rareté pour les déblocages de cartes */
+.bandeau-niveau.rarete-rare {
+  border-color: rgba(107, 140, 174, 0.5);
+}
+
+.bandeau-niveau.rarete-epique {
+  border-color: rgba(107, 140, 174, 0.7);
+  box-shadow: 0 0 32px rgba(107, 140, 174, 0.28);
+}
+
+.bandeau-niveau.rarete-legendaire {
+  border-color: rgba(201, 168, 106, 0.6);
+  box-shadow: 0 0 32px rgba(201, 168, 106, 0.28);
+}
+
+.bandeau-niveau.rarete-legendaire .bandeau-valeur {
+  color: #c9a86a;
+}
+
 @keyframes bandeau-niveau {
   0% {
     opacity: 0;

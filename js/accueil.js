@@ -35,14 +35,17 @@
     majPuce(puceNiveau, etat.niveau);
   }
 
-  // Bandeaux à afficher après un gain : étape accomplie et/ou montée
-  // de niveau. Espacés pour ne pas se chevaucher en haut de l'écran.
-  function afficherBandeaux(etapeFinie, niveauAvant) {
+  // Bandeaux à afficher après un gain : étape accomplie, montée de
+  // niveau, cartes débloquées. Espacés pour ne pas se chevaucher.
+  function afficherBandeaux(etapeFinie, niveauAvant, nouvellesCartes) {
     var bandeaux = [];
-    if (etapeFinie) bandeaux.push(["Étape accomplie", etapeFinie.nom]);
-    if (etat.niveau > niveauAvant) bandeaux.push(["Niveau", etat.niveau]);
+    if (etapeFinie) bandeaux.push(["Étape accomplie", etapeFinie.nom, null]);
+    if (etat.niveau > niveauAvant) bandeaux.push(["Niveau", etat.niveau, null]);
+    (nouvellesCartes || []).forEach(function (carte) {
+      bandeaux.push(["Carte débloquée", carte.nom, "rarete-" + carte.rarete]);
+    });
     bandeaux.forEach(function (b, i) {
-      setTimeout(function () { Juice.bandeau(b[0], b[1]); }, i * 2700);
+      setTimeout(function () { Juice.bandeau(b[0], b[1], b[2]); }, i * 2700);
     });
   }
 
@@ -61,6 +64,9 @@
       Regles.gagnerXp(etat, quete.xpDonne, quete.stat);
       var etapeFinie = Regles.progresserQuetePrincipale(etat);
       Jour.majStreak(etat);
+      etat.compteurs.quetesValidees += 1;
+      if (critique) etat.compteurs.critiques += 1;
+      var nouvellesCartes = Cartes.verifier(etat);
       Etat.sauvegarder(etat);
 
       Juice.xpFlottant(
@@ -68,13 +74,20 @@
         (critique ? "CRITIQUE ! +" : "+") + quete.xpDonne + " XP",
         critique
       );
-      Juice.vibrer(30);
-      afficherBandeaux(etapeFinie, niveauAvant);
+      Juice.vibrer(nouvellesCartes.length > 0 ? 70 : 30);
+      afficherBandeaux(etapeFinie, niveauAvant, nouvellesCartes);
     } else {
+      // On décrémente les compteurs pour rester honnête — mais les
+      // cartes déjà débloquées ne se re-verrouillent jamais.
+      var etaitCritique = Boolean(quete.xpDonne && quete.xpDonne > quete.xp);
       Regles.retirerXp(etat, quete.xpDonne || quete.xp, quete.stat);
       delete quete.xpDonne;
       Regles.regresserQuetePrincipale(etat);
       Jour.majStreak(etat);
+      etat.compteurs.quetesValidees = Math.max(0, etat.compteurs.quetesValidees - 1);
+      if (etaitCritique) {
+        etat.compteurs.critiques = Math.max(0, etat.compteurs.critiques - 1);
+      }
       Etat.sauvegarder(etat);
     }
 
@@ -172,6 +185,9 @@
 
       var niveauAvant = etat.niveau;
       Regles.gagnerXp(etat, h.xpDonne, h.stat);
+      etat.compteurs.hebdosAccomplies += 1;
+      if (critique) etat.compteurs.critiques += 1;
+      var nouvellesCartes = Cartes.verifier(etat);
       Etat.sauvegarder(etat);
 
       Juice.xpFlottant(
@@ -179,8 +195,8 @@
         (critique ? "CRITIQUE ! +" : "+") + h.xpDonne + " XP",
         critique
       );
-      Juice.vibrer(40);
-      afficherBandeaux(null, niveauAvant);
+      Juice.vibrer(nouvellesCartes.length > 0 ? 70 : 40);
+      afficherBandeaux(null, niveauAvant, nouvellesCartes);
     } else {
       Etat.sauvegarder(etat);
       Juice.xpFlottant(hebdoBouton, "+1", false);
@@ -196,10 +212,16 @@
     if (h.progres === 0) return;
 
     // Annuler sur une hebdo accomplie : on retire exactement
-    // l'XP donné et on rouvre la quête.
+    // l'XP donné et on rouvre la quête (les compteurs redescendent,
+    // les cartes débloquées restent débloquées).
     if (hebdoEstAccomplie() && h.xpDonne) {
+      var etaitCritique = h.xpDonne > h.xp;
       Regles.retirerXp(etat, h.xpDonne, h.stat);
       delete h.xpDonne;
+      etat.compteurs.hebdosAccomplies = Math.max(0, etat.compteurs.hebdosAccomplies - 1);
+      if (etaitCritique) {
+        etat.compteurs.critiques = Math.max(0, etat.compteurs.critiques - 1);
+      }
     }
     h.progres -= 1;
     Etat.sauvegarder(etat);

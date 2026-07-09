@@ -90,6 +90,10 @@ var Jour = (function () {
     if (!aucuneFaite && !etat.streakValideAujourdhui) {
       etat.streak += 1;
       etat.streakValideAujourdhui = true;
+      // Le record de streak ne redescend jamais.
+      if (etat.compteurs && etat.streak > etat.compteurs.meilleurStreak) {
+        etat.compteurs.meilleurStreak = etat.streak;
+      }
     } else if (aucuneFaite && etat.streakValideAujourdhui) {
       etat.streak = Math.max(0, etat.streak - 1);
       etat.streakValideAujourdhui = false;
