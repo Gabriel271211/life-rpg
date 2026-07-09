@@ -1,0 +1,202 @@
+/* ============================================
+   LIFE RPG — personnage.css
+   Fiche de personnage
+   ============================================ */
+
+/* ----- En-tête : nom + classe ----- */
+.perso-entete {
+  padding-top: 30px;
+  text-align: center;
+}
+
+.perso-nom {
+  margin-top: 10px;
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+}
+
+.perso-classe {
+  margin-top: 4px;
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+/* ----- Rang : l'élément central ----- */
+.rang {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0 26px;
+}
+
+/* Anneau discret derrière la lettre */
+.rang::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 246px;
+  height: 246px;
+  transform: translate(-50%, -46%);
+  border: 1px solid rgba(107, 140, 174, 0.16);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.rang::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -46%);
+  border: 1px solid rgba(107, 140, 174, 0.06);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.rang-etiquette {
+  position: relative;
+  z-index: 1;
+}
+
+.rang-lettre {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(10rem, 54vw, 13rem);
+  font-weight: 900;
+  line-height: 0.95;
+  background: linear-gradient(180deg, #eef2f7 0%, #b9c9da 55%, var(--accent) 135%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter:
+    drop-shadow(0 0 22px rgba(107, 140, 174, 0.35))
+    drop-shadow(0 0 70px rgba(107, 140, 174, 0.18));
+}
+
+/* Progression vers le rang suivant */
+.rang-prochain {
+  position: relative;
+  z-index: 1;
+  margin-top: 22px;
+  width: 168px;
+  text-align: center;
+}
+
+.rang-prochain-barre {
+  height: 3px;
+}
+
+.rang-prochain-texte {
+  margin-top: 9px;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+/* Halo diffus derrière le rang */
+.rang-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 340px;
+  height: 340px;
+  transform: translate(-50%, -46%);
+  background: radial-gradient(circle, rgba(107, 140, 174, 0.16), rgba(107, 140, 174, 0.05) 45%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ----- Niveau + XP ----- */
+.niveau {
+  margin-top: 26px;
+}
+
+.niveau-ligne {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.niveau-num {
+  font-size: 3.4rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.niveau-xp {
+  margin-left: auto;
+  font-size: 0.78rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--texte-second);
+}
+
+.niveau-xp strong {
+  font-weight: 700;
+  color: var(--texte);
+}
+
+.niveau .barre {
+  margin-top: 14px;
+}
+
+/* ----- Stats ----- */
+.stats {
+  margin-top: 42px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.stat-ligne {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.stat-nom {
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+.stat-niveau {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.stat .barre {
+  margin-top: 9px;
+  height: 3px;
+}
+
+/* Détail de progression sous la barre */
+.stat-detail {
+  margin-top: 7px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--texte-second);
+}
+
+/* ----- Streak ----- */
+.streak {
+  margin-top: 44px;
+  display: flex;
+  justify-content: center;
+}

@@ -1,0 +1,177 @@
+/* ============================================
+   LIFE RPG — accueil.css
+   Quêtes du jour
+   ============================================ */
+
+/* ----- En-tête compact : streak + niveau ----- */
+.accueil-entete {
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ----- Titre ----- */
+.accueil-titre {
+  margin-top: 34px;
+}
+
+.accueil-titre h1 {
+  margin-top: 8px;
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+
+/* ----- Liste des quêtes ----- */
+.quetes {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quete {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 16px;
+}
+
+.quete-infos {
+  flex: 1;
+  min-width: 0;
+}
+
+.quete-nom {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.quete-meta {
+  margin-top: 7px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quete-xp {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.quete-tag {
+  padding: 3px 9px;
+  font-size: 0.58rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-doux);
+  border-radius: 999px;
+}
+
+/* Cercle de validation : valide la quête et donne son XP */
+.quete-cercle {
+  flex-shrink: 0;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  color: var(--fond);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.quete-cercle svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.quete-infos {
+  transition: opacity 0.25s ease;
+}
+
+/* Quête validée */
+.quete.faite .quete-cercle {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-lueur);
+}
+
+.quete.faite .quete-cercle svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.quete.faite .quete-infos {
+  opacity: 0.45;
+}
+
+/* ----- Quête hebdomadaire ----- */
+.hebdo {
+  margin-top: 28px;
+}
+
+.quete-hebdo {
+  margin-top: 12px;
+  padding: 18px;
+  background: linear-gradient(180deg, rgba(107, 140, 174, 0.09), rgba(107, 140, 174, 0.03)), var(--surface);
+  border: 1px solid rgba(107, 140, 174, 0.22);
+  border-radius: 16px;
+}
+
+.quete-hebdo .quete-nom {
+  margin-top: 2px;
+  font-size: 1.02rem;
+}
+
+.hebdo-progression {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hebdo-segments {
+  flex: 1;
+  display: flex;
+  gap: 5px;
+}
+
+.hebdo-segment {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.hebdo-segment.rempli {
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-lueur);
+}
+
+.hebdo-compte {
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.hebdo-compte span {
+  font-weight: 300;
+  color: var(--texte-second);
+}

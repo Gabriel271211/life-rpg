@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Personnage — Life RPG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Saira:wght@300;600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/personnage.css">
+  <link rel="stylesheet" href="css/juice.css">
+</head>
+<body data-page="personnage">
+
+  <main class="ecran">
+
+    <header class="perso-entete">
+      <p class="etiquette">Personnage</p>
+      <h1 class="perso-nom" id="perso-nom">Gabriel</h1>
+      <p class="perso-classe" id="perso-classe">Athlète</p>
+    </header>
+
+    <section class="rang" aria-label="Rang">
+      <div class="rang-halo" aria-hidden="true"></div>
+      <p class="etiquette rang-etiquette">Rang</p>
+      <div class="rang-lettre" id="rang-lettre">D</div>
+      <div class="rang-prochain">
+        <div class="barre rang-prochain-barre">
+          <div class="barre-remplie" id="rang-prochain-remplie"></div>
+        </div>
+        <p class="rang-prochain-texte" id="rang-prochain-texte">Rang C au niveau 20</p>
+      </div>
+    </section>
+
+    <section class="niveau" aria-label="Niveau">
+      <div class="niveau-ligne">
+        <span class="niveau-num" id="niveau-num">12</span>
+        <span class="etiquette">Niveau</span>
+        <span class="niveau-xp" id="niveau-xp"><strong>840</strong> / 1200 XP</span>
+      </div>
+      <div class="barre">
+        <div class="barre-remplie" id="xp-remplie"></div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Statistiques">
+      <div class="stat" data-stat="corps">
+        <div class="stat-ligne">
+          <span class="stat-nom">Corps</span>
+          <span class="stat-niveau">8</span>
+        </div>
+        <div class="barre"><div class="barre-remplie"></div></div>
+        <div class="stat-detail">
+          <span class="stat-prochain">Prochain : niv. 9</span>
+          <span class="stat-xp">130 / 240 XP</span>
+        </div>
+      </div>
+      <div class="stat" data-stat="esprit">
+        <div class="stat-ligne">
+          <span class="stat-nom">Esprit</span>
+          <span class="stat-niveau">5</span>
+        </div>
+        <div class="barre"><div class="barre-remplie"></div></div>
+        <div class="stat-detail">
+          <span class="stat-prochain">Prochain : niv. 6</span>
+          <span class="stat-xp">90 / 150 XP</span>
+        </div>
+      </div>
+      <div class="stat" data-stat="discipline">
+        <div class="stat-ligne">
+          <span class="stat-nom">Discipline</span>
+          <span class="stat-niveau">11</span>
+        </div>
+        <div class="barre"><div class="barre-remplie"></div></div>
+        <div class="stat-detail">
+          <span class="stat-prochain">Prochain : niv. 12</span>
+          <span class="stat-xp">210 / 330 XP</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="streak">
+      <div class="puce">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
+          <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/>
+        </svg>
+        <span class="puce-valeur" id="streak-valeur">6</span>
+        <span class="puce-unite">jours de suite</span>
+      </div>
+    </div>
+
+  </main>
+
+  <nav class="nav-bas" aria-label="Navigation principale">
+    <a href="index.html" class="nav-lien" data-nav="accueil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 10.5 12 3.5l9 7"/>
+        <path d="M5.5 9.5V20h13V9.5"/>
+      </svg>
+      <span>Accueil</span>
+    </a>
+    <a href="personnage.html" class="nav-lien" data-nav="personnage">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="7.5" r="3.5"/>
+        <path d="M4.5 20c1.2-3.8 4.2-5.5 7.5-5.5s6.3 1.7 7.5 5.5"/>
+      </svg>
+      <span>Personnage</span>
+    </a>
+    <a href="#" class="nav-lien" data-nav="collection">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="4" y="4" width="7" height="7" rx="1.5"/>
+        <rect x="13" y="4" width="7" height="7" rx="1.5"/>
+        <rect x="4" y="13" width="7" height="7" rx="1.5"/>
+        <rect x="13" y="13" width="7" height="7" rx="1.5"/>
+      </svg>
+      <span>Collection</span>
+    </a>
+    <a href="#" class="nav-lien" data-nav="quete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 21c-4-3.8-6-7-6-9.8a6 6 0 1 1 12 0C18 14 16 17.2 12 21z"/>
+        <circle cx="12" cy="11" r="2.2"/>
+      </svg>
+      <span>Quête</span>
+    </a>
+  </nav>
+
+  <script src="js/regles.js"></script>
+  <script src="js/jour.js"></script>
+  <script src="js/etat.js"></script>
+  <script src="js/juice.js"></script>
+  <script src="js/personnage.js"></script>
+  <script src="js/nav.js"></script>
+</body>
+</html>

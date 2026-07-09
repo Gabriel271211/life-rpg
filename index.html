@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Accueil — Life RPG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Saira:wght@300;600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/accueil.css">
+  <link rel="stylesheet" href="css/juice.css">
+</head>
+<body data-page="accueil">
+
+  <main class="ecran">
+
+    <header class="accueil-entete">
+      <div class="puce">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
+          <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/>
+        </svg>
+        <span class="puce-valeur" id="puce-streak">6</span>
+        <span class="puce-unite">jours</span>
+      </div>
+      <div class="puce">
+        <span class="puce-unite">Niv.</span>
+        <span class="puce-valeur" id="puce-niveau">12</span>
+      </div>
+    </header>
+
+    <div class="accueil-titre">
+      <p class="etiquette">Aujourd'hui</p>
+      <h1>Tes quêtes du jour</h1>
+    </div>
+
+    <section class="quetes" id="quetes" aria-label="Quêtes quotidiennes"></section>
+
+    <section class="hebdo" aria-label="Quête hebdomadaire">
+      <p class="etiquette">Quête hebdomadaire</p>
+      <article class="quete-hebdo">
+        <p class="quete-nom" id="hebdo-nom">3 séances de sport complètes</p>
+        <div class="quete-meta">
+          <span class="quete-xp" id="hebdo-xp">+150 XP</span>
+        </div>
+        <div class="hebdo-progression">
+          <div class="hebdo-segments" id="hebdo-segments" aria-hidden="true">
+            <div class="hebdo-segment rempli"></div>
+            <div class="hebdo-segment"></div>
+            <div class="hebdo-segment"></div>
+          </div>
+          <p class="hebdo-compte" id="hebdo-compte">1 <span>/ 3</span></p>
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <nav class="nav-bas" aria-label="Navigation principale">
+    <a href="index.html" class="nav-lien" data-nav="accueil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 10.5 12 3.5l9 7"/>
+        <path d="M5.5 9.5V20h13V9.5"/>
+      </svg>
+      <span>Accueil</span>
+    </a>
+    <a href="personnage.html" class="nav-lien" data-nav="personnage">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="7.5" r="3.5"/>
+        <path d="M4.5 20c1.2-3.8 4.2-5.5 7.5-5.5s6.3 1.7 7.5 5.5"/>
+      </svg>
+      <span>Personnage</span>
+    </a>
+    <a href="#" class="nav-lien" data-nav="collection">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="4" y="4" width="7" height="7" rx="1.5"/>
+        <rect x="13" y="4" width="7" height="7" rx="1.5"/>
+        <rect x="4" y="13" width="7" height="7" rx="1.5"/>
+        <rect x="13" y="13" width="7" height="7" rx="1.5"/>
+      </svg>
+      <span>Collection</span>
+    </a>
+    <a href="#" class="nav-lien" data-nav="quete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 21c-4-3.8-6-7-6-9.8a6 6 0 1 1 12 0C18 14 16 17.2 12 21z"/>
+        <circle cx="12" cy="11" r="2.2"/>
+      </svg>
+      <span>Quête</span>
+    </a>
+  </nav>
+
+  <script src="js/regles.js"></script>
+  <script src="js/jour.js"></script>
+  <script src="js/etat.js"></script>
+  <script src="js/juice.js"></script>
+  <script src="js/accueil.js"></script>
+  <script src="js/nav.js"></script>
+</body>
+</html>

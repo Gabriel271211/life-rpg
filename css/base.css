@@ -1,0 +1,164 @@
+/* ============================================
+   LIFE RPG — base.css
+   Reset, variables, typographie, nav commune
+   ============================================ */
+
+:root {
+  --fond: #0a0a0f;
+  --surface: #12121a;
+  --bordure: rgba(255, 255, 255, 0.06);
+
+  --accent: #6b8cae;
+  --accent-doux: rgba(107, 140, 174, 0.12);
+  --accent-lueur: rgba(107, 140, 174, 0.35);
+
+  --texte: #e8e8ec;
+  --texte-second: #6a6a75;
+
+  --nav-hauteur: 64px;
+}
+
+/* ----- Reset ----- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse 120% 45% at 50% -8%, rgba(107, 140, 174, 0.07), transparent 65%),
+    var(--fond);
+  color: var(--texte);
+  font-family: "Saira", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img,
+svg {
+  display: block;
+}
+
+/* ----- Conteneur d'écran (mobile-first) ----- */
+.ecran {
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 20px 22px calc(var(--nav-hauteur) + 32px);
+}
+
+/* ----- Étiquette : label discret, très light ----- */
+.etiquette {
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+/* ----- Puce : petit compteur compact (streak, niveau) ----- */
+.puce {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+}
+
+.puce svg {
+  color: var(--accent);
+}
+
+.puce-valeur {
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.puce-unite {
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+/* ----- Barre de progression générique ----- */
+.barre {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.barre-remplie {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-lueur);
+  transition: width 0.5s ease;
+}
+
+/* ----- Navigation basse ----- */
+.nav-bas {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--nav-hauteur) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: rgba(10, 10, 15, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--bordure);
+  display: flex;
+  justify-content: space-around;
+  z-index: 10;
+}
+
+.nav-lien {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--texte-second);
+  transition: color 0.2s ease;
+}
+
+.nav-lien svg {
+  width: 22px;
+  height: 22px;
+}
+
+.nav-lien span {
+  font-size: 0.6rem;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.nav-lien.actif {
+  color: var(--accent);
+}
+
+.nav-lien.actif span {
+  font-weight: 600;
+}

@@ -1,0 +1,134 @@
+/* ============================================
+   LIFE RPG — juice.css
+   Feedback visuel : sobre au quotidien,
+   jamais criard. Animations courtes et nettes.
+   ============================================ */
+
+/* ----- "+XP" flottant ----- */
+.xp-flottant {
+  position: fixed;
+  z-index: 50;
+  transform: translate(-50%, -100%);
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: var(--accent);
+  pointer-events: none;
+  animation: xp-monte 0.8s ease-out forwards;
+}
+
+@keyframes xp-monte {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0.8);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -110%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 40px)) scale(1);
+  }
+}
+
+/* Coup critique : plus grand, glow plus fort */
+.xp-flottant.critique {
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 14px var(--accent-lueur),
+    0 0 34px var(--accent-lueur);
+  animation: xp-monte-critique 0.9s ease-out forwards;
+}
+
+@keyframes xp-monte-critique {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0.6);
+  }
+  14% {
+    opacity: 1;
+    transform: translate(-50%, -112%) scale(1.22);
+  }
+  32% {
+    transform: translate(-50%, -118%) scale(1.04);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 46px)) scale(1);
+  }
+}
+
+/* ----- Bannière de montée de niveau ----- */
+.bandeau-niveau {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 16px);
+  left: 50%;
+  z-index: 60;
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 10px 20px;
+  background: rgba(18, 18, 26, 0.92);
+  border: 1px solid rgba(107, 140, 174, 0.32);
+  border-radius: 999px;
+  box-shadow: 0 0 26px rgba(107, 140, 174, 0.16);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none;
+  animation: bandeau-niveau 2.5s ease forwards;
+}
+
+.bandeau-etiquette {
+  font-size: 0.66rem;
+  font-weight: 300;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+.bandeau-valeur {
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--accent);
+}
+
+@keyframes bandeau-niveau {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -14px);
+  }
+  9% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  86% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+}
+
+/* ----- Pulsation d'une valeur qui change ----- */
+.pulse {
+  animation: puce-pulse 0.35s ease-out;
+}
+
+@keyframes puce-pulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.28);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
