@@ -16,7 +16,8 @@ var Etat = (function () {
     xp: 840,
     streak: 6,
     streakValideAujourdhui: false,
-    dernierJour: null, // rempli à la date du jour par la migration
+    dernierJour: null,   // rempli à la date du jour par la migration
+    lundiSemaine: null,  // rempli au lundi de la semaine par la migration
     stats: {
       corps: { niveau: 8, xp: 130 },
       esprit: { niveau: 5, xp: 90 },
@@ -33,6 +34,16 @@ var Etat = (function () {
       stat: "corps",
       progres: 1,
       objectif: 3
+    },
+    quetePrincipale: {
+      titre: "Transformation physique",
+      description: "Devenir la meilleure version de toi-même, séance après séance.",
+      etapeActive: 0,
+      etapes: [
+        { nom: "Fondations", objectif: 15, progres: 0, bonusXp: 200 },
+        { nom: "Régularité", objectif: 40, progres: 0, bonusXp: 400 },
+        { nom: "Dépassement", objectif: 80, progres: 0, bonusXp: 800 }
+      ]
     }
   };
 
@@ -49,6 +60,14 @@ var Etat = (function () {
       etat.streakValideAujourdhui = false;
       modifie = true;
     }
+    if (typeof etat.lundiSemaine !== "string") {
+      etat.lundiSemaine = Jour.lundiDe(Jour.dateDuJour());
+      modifie = true;
+    }
+    if (!etat.quetePrincipale) {
+      etat.quetePrincipale = JSON.parse(JSON.stringify(DEFAUT.quetePrincipale));
+      modifie = true;
+    }
     return modifie;
   }
 
@@ -63,8 +82,10 @@ var Etat = (function () {
     if (!etat) etat = JSON.parse(JSON.stringify(DEFAUT));
 
     var aMigre = migrer(etat);
-    var nouveauJour = Jour.appliquerNouveauJour(etat, Jour.dateDuJour());
-    if (aMigre || nouveauJour) {
+    var aujourdhui = Jour.dateDuJour();
+    var nouveauJour = Jour.appliquerNouveauJour(etat, aujourdhui);
+    var nouvelleSemaine = Jour.appliquerNouvelleSemaine(etat, aujourdhui);
+    if (aMigre || nouveauJour || nouvelleSemaine) {
       sauvegarder(etat);
     }
     return etat;
@@ -99,6 +120,14 @@ var LifeRpgDebug = {
   simulerNouveauJour: function () {
     var etat = Etat.charger();
     etat.dernierJour = Jour.decalerDate(etat.dernierJour, -1);
+    Etat.sauvegarder(etat);
+    location.reload();
+  },
+  // Recule lundiSemaine d'une semaine : au rechargement,
+  // l'app croit qu'une nouvelle semaine a commencé.
+  simulerNouvelleSemaine: function () {
+    var etat = Etat.charger();
+    etat.lundiSemaine = Jour.decalerDate(etat.lundiSemaine, -7);
     Etat.sauvegarder(etat);
     location.reload();
   },

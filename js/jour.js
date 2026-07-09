@@ -35,6 +35,27 @@ var Jour = (function () {
     return dateDuJour(d);
   }
 
+  // Lundi de la semaine d'une date "YYYY-MM-DD" (fuseau local).
+  function lundiDe(chaine) {
+    var d = versDate(chaine);
+    var decalage = (d.getDay() + 6) % 7; // lundi = 0 ... dimanche = 6
+    d.setDate(d.getDate() - decalage);
+    return dateDuJour(d);
+  }
+
+  // Transition de semaine, appelée au même moment qu'appliquerNouveauJour.
+  // La quête hebdomadaire se réinitialise chaque lundi ; l'XP acquis reste acquis.
+  // Retourne true si l'état a été modifié.
+  function appliquerNouvelleSemaine(etat, aujourdhui) {
+    var lundi = lundiDe(aujourdhui);
+    if (etat.lundiSemaine === lundi) return false;
+
+    etat.hebdo.progres = 0;
+    delete etat.hebdo.xpDonne;
+    etat.lundiSemaine = lundi;
+    return true;
+  }
+
   // Transition de jour. Retourne true si l'état a été modifié.
   // - streak conservé uniquement si UN seul jour s'est écoulé
   //   et que la veille avait été validée ; cassé (0) sinon
@@ -79,7 +100,9 @@ var Jour = (function () {
     dateDuJour: dateDuJour,
     joursEcoules: joursEcoules,
     decalerDate: decalerDate,
+    lundiDe: lundiDe,
     appliquerNouveauJour: appliquerNouveauJour,
+    appliquerNouvelleSemaine: appliquerNouvelleSemaine,
     majStreak: majStreak
   };
 })();

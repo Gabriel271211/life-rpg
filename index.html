@@ -37,21 +37,40 @@
 
     <section class="quetes" id="quetes" aria-label="Quêtes quotidiennes"></section>
 
+    <a class="qp-lien" href="quete.html" aria-label="Voir la quête principale">
+      <svg class="qp-icone" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 21c-4-3.8-6-7-6-9.8a6 6 0 1 1 12 0C18 14 16 17.2 12 21z"/>
+        <circle cx="12" cy="11" r="2.2"/>
+      </svg>
+      <span class="qp-libelle">Quête principale</span>
+      <span class="qp-etape" id="qp-etape">Fondations</span>
+      <span class="qp-progres" id="qp-progres">0/15</span>
+      <svg class="qp-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 5l7 7-7 7"/>
+      </svg>
+    </a>
+
     <section class="hebdo" aria-label="Quête hebdomadaire">
       <p class="etiquette">Quête hebdomadaire</p>
-      <article class="quete-hebdo">
-        <p class="quete-nom" id="hebdo-nom">3 séances de sport complètes</p>
-        <div class="quete-meta">
-          <span class="quete-xp" id="hebdo-xp">+150 XP</span>
+      <article class="quete-hebdo" id="hebdo-carte">
+        <div class="hebdo-haut">
+          <div class="quete-infos">
+            <p class="quete-nom" id="hebdo-nom">3 séances de sport complètes</p>
+            <div class="quete-meta">
+              <span class="quete-xp" id="hebdo-xp">+150 XP</span>
+            </div>
+          </div>
+          <button class="quete-cercle" id="hebdo-bouton" type="button" aria-label="Progresser dans la quête hebdomadaire">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5.5 12.5l4.2 4.2L18.5 8"/>
+            </svg>
+          </button>
         </div>
         <div class="hebdo-progression">
-          <div class="hebdo-segments" id="hebdo-segments" aria-hidden="true">
-            <div class="hebdo-segment rempli"></div>
-            <div class="hebdo-segment"></div>
-            <div class="hebdo-segment"></div>
-          </div>
+          <div class="hebdo-segments" id="hebdo-segments" aria-hidden="true"></div>
           <p class="hebdo-compte" id="hebdo-compte">1 <span>/ 3</span></p>
         </div>
+        <button class="hebdo-annuler" id="hebdo-annuler" type="button" hidden>annuler</button>
       </article>
     </section>
 
@@ -81,7 +100,7 @@
       </svg>
       <span>Collection</span>
     </a>
-    <a href="#" class="nav-lien" data-nav="quete">
+    <a href="quete.html" class="nav-lien" data-nav="quete">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M12 21c-4-3.8-6-7-6-9.8a6 6 0 1 1 12 0C18 14 16 17.2 12 21z"/>
         <circle cx="12" cy="11" r="2.2"/>

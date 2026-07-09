@@ -24,17 +24,22 @@ var Juice = (function () {
     if (navigator.vibrate) navigator.vibrate(duree);
   }
 
-  // Bannière "NIVEAU 13" en haut de l'écran : apparaît,
-  // reste ~2s, disparaît. Jamais bloquante.
-  function bandeauNiveau(niveau) {
+  // Bannière en haut de l'écran ("NIVEAU 13", "ÉTAPE ACCOMPLIE Fondations") :
+  // apparaît, reste ~2s, disparaît. Jamais bloquante.
+  function bandeau(etiquette, valeur) {
     var el = document.createElement("div");
     el.className = "bandeau-niveau";
     el.innerHTML =
-      '<span class="bandeau-etiquette">Niveau</span>' +
+      '<span class="bandeau-etiquette"></span>' +
       '<span class="bandeau-valeur"></span>';
-    el.querySelector(".bandeau-valeur").textContent = niveau;
+    el.querySelector(".bandeau-etiquette").textContent = etiquette;
+    el.querySelector(".bandeau-valeur").textContent = valeur;
     document.body.appendChild(el);
     setTimeout(function () { el.remove(); }, 2600);
+  }
+
+  function bandeauNiveau(niveau) {
+    bandeau("Niveau", niveau);
   }
 
   // Micro-pulsation d'un élément dont la valeur vient de changer.
@@ -48,6 +53,7 @@ var Juice = (function () {
   return {
     xpFlottant: xpFlottant,
     vibrer: vibrer,
+    bandeau: bandeau,
     bandeauNiveau: bandeauNiveau,
     pulser: pulser
   };

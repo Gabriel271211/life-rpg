@@ -123,6 +123,53 @@
   opacity: 0.45;
 }
 
+/* ----- Ligne de rappel : quête principale ----- */
+.qp-lien {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+}
+
+.qp-icone {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.qp-libelle {
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  white-space: nowrap;
+}
+
+.qp-etape {
+  font-size: 0.85rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qp-progres {
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.qp-chevron {
+  flex-shrink: 0;
+  color: var(--texte-second);
+}
+
 /* ----- Quête hebdomadaire ----- */
 .hebdo {
   margin-top: 28px;
@@ -139,6 +186,55 @@
 .quete-hebdo .quete-nom {
   margin-top: 2px;
   font-size: 1.02rem;
+}
+
+.hebdo-haut {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Lien discret pour revenir en arrière d'un progrès */
+.hebdo-annuler {
+  margin-top: 12px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hebdo-annuler[hidden] {
+  display: none;
+}
+
+/* Hebdo accomplie : même langage que les quêtes validées */
+.quete-hebdo.accomplie {
+  border-color: rgba(107, 140, 174, 0.4);
+}
+
+.quete-hebdo.accomplie .quete-cercle {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-lueur);
+  cursor: default;
+}
+
+.quete-hebdo.accomplie .quete-cercle svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.quete-hebdo.accomplie .quete-infos {
+  opacity: 0.55;
 }
 
 .hebdo-progression {

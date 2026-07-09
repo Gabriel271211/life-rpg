@@ -1,0 +1,166 @@
+/* ============================================
+   LIFE RPG — quete.css
+   Écran Quête principale : le chemin de quête
+   ============================================ */
+
+/* ----- En-tête ----- */
+.quete-entete {
+  padding-top: 30px;
+}
+
+.qp-titre {
+  margin-top: 10px;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+}
+
+.qp-description {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--texte-second);
+}
+
+/* ----- Chemin des étapes ----- */
+.etapes {
+  margin-top: 38px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.etape {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* Fil vertical reliant les étapes */
+.etape:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 32px;
+  bottom: -28px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.etape.finie:not(:last-child)::before {
+  background: rgba(107, 140, 174, 0.45);
+}
+
+/* ----- Marqueur ----- */
+.etape-marqueur {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 29px;
+  height: 29px;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background: var(--fond);
+  color: var(--texte-second);
+}
+
+.etape-marqueur svg {
+  width: 13px;
+  height: 13px;
+}
+
+.etape.finie .etape-marqueur {
+  border-color: rgba(107, 140, 174, 0.55);
+  color: var(--accent);
+}
+
+.etape.active .etape-marqueur {
+  border-color: var(--accent);
+  box-shadow: 0 0 14px var(--accent-lueur);
+}
+
+.etape.active .etape-marqueur::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-lueur);
+}
+
+/* ----- Corps de l'étape ----- */
+.etape-corps {
+  flex: 1;
+  min-width: 0;
+}
+
+/* L'étape active est mise en avant */
+.etape.active .etape-corps {
+  padding: 15px 16px;
+  background: var(--surface);
+  border: 1px solid rgba(107, 140, 174, 0.28);
+  border-radius: 14px;
+  box-shadow: 0 0 22px rgba(107, 140, 174, 0.08);
+}
+
+/* Les étapes futures sont estompées */
+.etape.future {
+  opacity: 0.42;
+}
+
+.etape-ligne {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.etape-nom {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.etape-bonus {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.etape .barre {
+  margin-top: 10px;
+  height: 3px;
+}
+
+.etape-detail {
+  margin-top: 7px;
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--texte-second);
+}
+
+/* ----- Quête accomplie ----- */
+.qp-accomplie {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.qp-accomplie[hidden] {
+  display: none;
+}

@@ -1,7 +1,8 @@
 // ============================================
 // LIFE RPG — accueil.js
-// Quêtes du jour : rendu depuis l'état et
-// validation des quêtes (gain d'XP réel).
+// Quêtes du jour : rendu depuis l'état, validation
+// (XP, critique, streak), quête hebdomadaire et
+// progression de la quête principale.
 // ============================================
 
 (function () {
@@ -34,6 +35,19 @@
     majPuce(puceNiveau, etat.niveau);
   }
 
+  // Bandeaux à afficher après un gain : étape accomplie et/ou montée
+  // de niveau. Espacés pour ne pas se chevaucher en haut de l'écran.
+  function afficherBandeaux(etapeFinie, niveauAvant) {
+    var bandeaux = [];
+    if (etapeFinie) bandeaux.push(["Étape accomplie", etapeFinie.nom]);
+    if (etat.niveau > niveauAvant) bandeaux.push(["Niveau", etat.niveau]);
+    bandeaux.forEach(function (b, i) {
+      setTimeout(function () { Juice.bandeau(b[0], b[1]); }, i * 2700);
+    });
+  }
+
+  // --- Quêtes quotidiennes ---
+
   function basculerQuete(quete, carte, bouton) {
     quete.faite = !quete.faite;
 
@@ -45,6 +59,7 @@
 
       var niveauAvant = etat.niveau;
       Regles.gagnerXp(etat, quete.xpDonne, quete.stat);
+      var etapeFinie = Regles.progresserQuetePrincipale(etat);
       Jour.majStreak(etat);
       Etat.sauvegarder(etat);
 
@@ -54,12 +69,11 @@
         critique
       );
       Juice.vibrer(30);
-      if (etat.niveau > niveauAvant) {
-        Juice.bandeauNiveau(etat.niveau);
-      }
+      afficherBandeaux(etapeFinie, niveauAvant);
     } else {
       Regles.retirerXp(etat, quete.xpDonne || quete.xp, quete.stat);
       delete quete.xpDonne;
+      Regles.regresserQuetePrincipale(etat);
       Jour.majStreak(etat);
       Etat.sauvegarder(etat);
     }
@@ -67,6 +81,7 @@
     carte.classList.toggle("faite", quete.faite);
     bouton.setAttribute("aria-pressed", String(quete.faite));
     majPuces();
+    majQuetePrincipale();
   }
 
   function creerCarte(quete) {
@@ -94,25 +109,107 @@
     return carte;
   }
 
-  // --- Quêtes quotidiennes ---
   etat.quetes.forEach(function (quete) {
     listeQuetes.appendChild(creerCarte(quete));
   });
 
-  // --- Quête hebdomadaire ---
-  document.getElementById("hebdo-nom").textContent = etat.hebdo.nom;
-  document.getElementById("hebdo-xp").textContent = "+" + etat.hebdo.xp + " XP";
+  // --- Quête principale : ligne de rappel vers quete.html ---
 
-  var segments = document.getElementById("hebdo-segments");
-  segments.innerHTML = "";
-  for (var i = 0; i < etat.hebdo.objectif; i++) {
-    var segment = document.createElement("div");
-    segment.className = "hebdo-segment" + (i < etat.hebdo.progres ? " rempli" : "");
-    segments.appendChild(segment);
+  var qpEtape = document.getElementById("qp-etape");
+  var qpProgres = document.getElementById("qp-progres");
+
+  function majQuetePrincipale() {
+    var qp = etat.quetePrincipale;
+    if (Regles.quetePrincipaleAccomplie(qp)) {
+      qpEtape.textContent = "Accomplie";
+      qpProgres.textContent = "";
+    } else {
+      var e = Regles.etapeActive(qp);
+      qpEtape.textContent = e.nom;
+      qpProgres.textContent = e.progres + "/" + e.objectif;
+    }
   }
-  document.getElementById("hebdo-compte").innerHTML =
-    etat.hebdo.progres + " <span>/ " + etat.hebdo.objectif + "</span>";
+
+  // --- Quête hebdomadaire ---
+
+  var hebdoCarte = document.getElementById("hebdo-carte");
+  var hebdoBouton = document.getElementById("hebdo-bouton");
+  var hebdoAnnuler = document.getElementById("hebdo-annuler");
+
+  function hebdoEstAccomplie() {
+    return etat.hebdo.progres >= etat.hebdo.objectif;
+  }
+
+  function rendreHebdo() {
+    var h = etat.hebdo;
+    document.getElementById("hebdo-nom").textContent = h.nom;
+    document.getElementById("hebdo-xp").textContent = "+" + h.xp + " XP";
+
+    var segments = document.getElementById("hebdo-segments");
+    segments.innerHTML = "";
+    for (var i = 0; i < h.objectif; i++) {
+      var segment = document.createElement("div");
+      segment.className = "hebdo-segment" + (i < h.progres ? " rempli" : "");
+      segments.appendChild(segment);
+    }
+    document.getElementById("hebdo-compte").innerHTML =
+      h.progres + " <span>/ " + h.objectif + "</span>";
+
+    hebdoCarte.classList.toggle("accomplie", hebdoEstAccomplie());
+    hebdoBouton.disabled = hebdoEstAccomplie();
+    hebdoAnnuler.hidden = h.progres === 0;
+  }
+
+  hebdoBouton.addEventListener("click", function () {
+    var h = etat.hebdo;
+    if (hebdoEstAccomplie()) return;
+    h.progres += 1;
+
+    if (hebdoEstAccomplie()) {
+      // Objectif atteint : gain de l'XP hebdomadaire (critique possible).
+      var critique = Regles.lancerCritique();
+      h.xpDonne = h.xp * (critique ? Regles.MULTIPLICATEUR_CRITIQUE : 1);
+
+      var niveauAvant = etat.niveau;
+      Regles.gagnerXp(etat, h.xpDonne, h.stat);
+      Etat.sauvegarder(etat);
+
+      Juice.xpFlottant(
+        hebdoBouton,
+        (critique ? "CRITIQUE ! +" : "+") + h.xpDonne + " XP",
+        critique
+      );
+      Juice.vibrer(40);
+      afficherBandeaux(null, niveauAvant);
+    } else {
+      Etat.sauvegarder(etat);
+      Juice.xpFlottant(hebdoBouton, "+1", false);
+      Juice.vibrer(30);
+    }
+
+    rendreHebdo();
+    majPuces();
+  });
+
+  hebdoAnnuler.addEventListener("click", function () {
+    var h = etat.hebdo;
+    if (h.progres === 0) return;
+
+    // Annuler sur une hebdo accomplie : on retire exactement
+    // l'XP donné et on rouvre la quête.
+    if (hebdoEstAccomplie() && h.xpDonne) {
+      Regles.retirerXp(etat, h.xpDonne, h.stat);
+      delete h.xpDonne;
+    }
+    h.progres -= 1;
+    Etat.sauvegarder(etat);
+
+    rendreHebdo();
+    majPuces();
+  });
 
   majPuces();
+  majQuetePrincipale();
+  rendreHebdo();
 
 })();

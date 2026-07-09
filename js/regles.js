@@ -96,10 +96,50 @@ var Regles = (function () {
     }
   }
 
+  // ----- Quête principale -----
+  // Chaque quête quotidienne validée fait progresser l'étape active.
+
+  function etapeActive(quetePrincipale) {
+    return quetePrincipale.etapes[quetePrincipale.etapeActive] || null;
+  }
+
+  function quetePrincipaleAccomplie(quetePrincipale) {
+    return quetePrincipale.etapeActive >= quetePrincipale.etapes.length;
+  }
+
+  // +1 au progrès de l'étape active. Si elle est complétée : bonus d'XP
+  // et passage à l'étape suivante. Retourne l'étape accomplie, sinon null.
+  function progresserQuetePrincipale(etat) {
+    var etape = etapeActive(etat.quetePrincipale);
+    if (!etape) return null;
+
+    etape.progres += 1;
+    if (etape.progres >= etape.objectif) {
+      etape.progres = etape.objectif;
+      etat.quetePrincipale.etapeActive += 1;
+      gagnerXp(etat, etape.bonusXp);
+      return etape;
+    }
+    return null;
+  }
+
+  // -1 au progrès de l'étape active (plancher 0). Les étapes déjà
+  // accomplies ne sont pas rouvertes : leur bonus reste acquis.
+  function regresserQuetePrincipale(etat) {
+    var etape = etapeActive(etat.quetePrincipale);
+    if (etape && etape.progres > 0) {
+      etape.progres -= 1;
+    }
+  }
+
   return {
     RANGS: RANGS,
     MULTIPLICATEUR_CRITIQUE: MULTIPLICATEUR_CRITIQUE,
     lancerCritique: lancerCritique,
+    etapeActive: etapeActive,
+    quetePrincipaleAccomplie: quetePrincipaleAccomplie,
+    progresserQuetePrincipale: progresserQuetePrincipale,
+    regresserQuetePrincipale: regresserQuetePrincipale,
     xpRequisNiveau: xpRequisNiveau,
     xpRequisStat: xpRequisStat,
     rang: rang,
