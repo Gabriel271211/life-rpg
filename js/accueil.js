@@ -1,8 +1,10 @@
 // ============================================
 // LIFE RPG — accueil.js
-// Quêtes du jour : rendu depuis l'état, validation
-// (XP, critique, streak), quête hebdomadaire et
-// progression de la quête principale.
+// Quêtes du jour : rendu, validation (XP, critique,
+// streak, quête principale, compteurs, cartes),
+// quête hebdomadaire et ouverture du mode Session.
+// La validation est UNIQUE : le tap direct et la
+// session passent par le même chemin.
 // ============================================
 
 (function () {
@@ -13,13 +15,30 @@
   var puceNiveau = document.getElementById("puce-niveau");
   var listeQuetes = document.getElementById("quetes");
 
+  var elementsQuetes = {}; // id de quête -> { carte, bouton }
+
   var SVG_COCHE =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" ' +
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<path d="M5.5 12.5l4.2 4.2L18.5 8"/></svg>';
 
+  // Indicateurs de quête guidée
+  var SVG_CHRONO =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<circle cx="12" cy="13.5" r="7"/><path d="M12 10v3.5l2.3 2.3"/><path d="M9.5 3h5"/></svg>';
+
+  var SVG_SERIES =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+    'stroke-linecap="round" aria-hidden="true">' +
+    '<path d="M5.5 19v-6"/><path d="M12 19V7"/><path d="M18.5 19v-9"/></svg>';
+
   function etiquetteStat(cle) {
     return cle.charAt(0).toUpperCase() + cle.slice(1);
+  }
+
+  function estGuidee(quete) {
+    return quete.type === "minuterie" || quete.type === "series";
   }
 
   function majPuce(el, valeur) {
@@ -49,63 +68,111 @@
     });
   }
 
-  // --- Quêtes quotidiennes ---
+  // ----- Validation / dévalidation : le SEUL chemin du jeu.
+  // Utilisé par le tap direct ET par la fin d'une session. -----
 
-  function basculerQuete(quete, carte, bouton) {
-    quete.faite = !quete.faite;
+  function validerQuete(quete) {
+    var critique = Regles.lancerCritique();
+    quete.faite = true;
+    // On retient l'XP réellement donné (doublé si critique) pour
+    // pouvoir retirer exactement la même chose au décochage.
+    quete.xpDonne = quete.xp * (critique ? Regles.MULTIPLICATEUR_CRITIQUE : 1);
 
-    if (quete.faite) {
-      var critique = Regles.lancerCritique();
-      // On retient l'XP réellement donné (doublé si critique) pour
-      // pouvoir retirer exactement la même chose au décochage.
-      quete.xpDonne = quete.xp * (critique ? Regles.MULTIPLICATEUR_CRITIQUE : 1);
+    var niveauAvant = etat.niveau;
+    Regles.gagnerXp(etat, quete.xpDonne, quete.stat);
+    var etapeFinie = Regles.progresserQuetePrincipale(etat);
+    Jour.majStreak(etat);
+    etat.compteurs.quetesValidees += 1;
+    if (critique) etat.compteurs.critiques += 1;
+    var nouvellesCartes = Cartes.verifier(etat);
+    Etat.sauvegarder(etat);
 
-      var niveauAvant = etat.niveau;
-      Regles.gagnerXp(etat, quete.xpDonne, quete.stat);
-      var etapeFinie = Regles.progresserQuetePrincipale(etat);
-      Jour.majStreak(etat);
-      etat.compteurs.quetesValidees += 1;
-      if (critique) etat.compteurs.critiques += 1;
-      var nouvellesCartes = Cartes.verifier(etat);
-      Etat.sauvegarder(etat);
+    return {
+      critique: critique,
+      xpDonne: quete.xpDonne,
+      etapeFinie: etapeFinie,
+      niveauAvant: niveauAvant,
+      nouvellesCartes: nouvellesCartes
+    };
+  }
 
-      Juice.xpFlottant(
-        bouton,
-        (critique ? "CRITIQUE ! +" : "+") + quete.xpDonne + " XP",
-        critique
-      );
-      Juice.vibrer(nouvellesCartes.length > 0 ? 70 : 30);
-      afficherBandeaux(etapeFinie, niveauAvant, nouvellesCartes);
-    } else {
-      // On décrémente les compteurs pour rester honnête — mais les
-      // cartes déjà débloquées ne se re-verrouillent jamais.
-      var etaitCritique = Boolean(quete.xpDonne && quete.xpDonne > quete.xp);
-      Regles.retirerXp(etat, quete.xpDonne || quete.xp, quete.stat);
-      delete quete.xpDonne;
-      Regles.regresserQuetePrincipale(etat);
-      Jour.majStreak(etat);
-      etat.compteurs.quetesValidees = Math.max(0, etat.compteurs.quetesValidees - 1);
-      if (etaitCritique) {
-        etat.compteurs.critiques = Math.max(0, etat.compteurs.critiques - 1);
-      }
-      Etat.sauvegarder(etat);
+  function devaliderQuete(quete) {
+    // On décrémente les compteurs pour rester honnête — mais les
+    // cartes déjà débloquées ne se re-verrouillent jamais.
+    var etaitCritique = Boolean(quete.xpDonne && quete.xpDonne > quete.xp);
+    quete.faite = false;
+    Regles.retirerXp(etat, quete.xpDonne || quete.xp, quete.stat);
+    delete quete.xpDonne;
+    Regles.regresserQuetePrincipale(etat);
+    Jour.majStreak(etat);
+    etat.compteurs.quetesValidees = Math.max(0, etat.compteurs.quetesValidees - 1);
+    if (etaitCritique) {
+      etat.compteurs.critiques = Math.max(0, etat.compteurs.critiques - 1);
     }
+    Etat.sauvegarder(etat);
+  }
 
-    carte.classList.toggle("faite", quete.faite);
-    bouton.setAttribute("aria-pressed", String(quete.faite));
+  function majCarte(quete) {
+    var el = elementsQuetes[quete.id];
+    if (!el) return;
+    el.carte.classList.toggle("faite", quete.faite);
+    el.bouton.setAttribute("aria-pressed", String(quete.faite));
+  }
+
+  function majApresChangement() {
     majPuces();
     majQuetePrincipale();
   }
 
+  // Tap direct (quête simple) : juice complet sur place.
+  function validerParTap(quete) {
+    var res = validerQuete(quete);
+    majCarte(quete);
+    majApresChangement();
+
+    Juice.xpFlottant(
+      elementsQuetes[quete.id].bouton,
+      (res.critique ? "CRITIQUE ! +" : "+") + res.xpDonne + " XP",
+      res.critique
+    );
+    Juice.vibrer(res.nouvellesCartes.length > 0 ? 70 : 30);
+    afficherBandeaux(res.etapeFinie, res.niveauAvant, res.nouvellesCartes);
+  }
+
+  function devaliderParTap(quete) {
+    devaliderQuete(quete);
+    majCarte(quete);
+    majApresChangement();
+  }
+
+  // Quête guidée : la session est le SEUL moyen de valider.
+  // À la fin, elle valide par le même chemin que le tap.
+  function ouvrirSession(quete) {
+    Session.ouvrir(quete, function () {
+      var res = validerQuete(quete);
+      majCarte(quete);
+      majApresChangement();
+      afficherBandeaux(res.etapeFinie, res.niveauAvant, res.nouvellesCartes);
+      return res;
+    });
+  }
+
   function creerCarte(quete) {
+    var guidee = estGuidee(quete);
+
     var carte = document.createElement("article");
-    carte.className = "quete" + (quete.faite ? " faite" : "");
+    carte.className = "quete" + (quete.faite ? " faite" : "") + (guidee ? " guidee" : "");
     carte.innerHTML =
       '<div class="quete-infos">' +
         '<p class="quete-nom"></p>' +
         '<div class="quete-meta">' +
           '<span class="quete-xp">+' + quete.xp + " XP</span>" +
           '<span class="quete-tag"></span>' +
+          (guidee
+            ? '<span class="quete-indicateur">' +
+                (quete.type === "minuterie" ? SVG_CHRONO : SVG_SERIES) +
+              "</span>"
+            : "") +
         "</div>" +
       "</div>" +
       '<button class="quete-cercle" type="button" aria-pressed="' + quete.faite + '" ' +
@@ -115,9 +182,24 @@
     carte.querySelector(".quete-tag").textContent = etiquetteStat(quete.stat);
 
     var bouton = carte.querySelector(".quete-cercle");
-    bouton.addEventListener("click", function () {
-      basculerQuete(quete, carte, bouton);
+    elementsQuetes[quete.id] = { carte: carte, bouton: bouton };
+
+    bouton.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (quete.faite) {
+        devaliderParTap(quete);
+      } else if (guidee) {
+        ouvrirSession(quete);
+      } else {
+        validerParTap(quete);
+      }
     });
+
+    if (guidee) {
+      carte.addEventListener("click", function () {
+        if (!quete.faite) ouvrirSession(quete);
+      });
+    }
 
     return carte;
   }

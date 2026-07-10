@@ -24,9 +24,18 @@ var Etat = (function () {
       discipline: { niveau: 11, xp: 210 }
     },
     quetes: [
-      { id: "pompes", nom: "30 pompes", xp: 25, stat: "corps", faite: false },
-      { id: "lecture", nom: "20 min de lecture", xp: 20, stat: "esprit", faite: false },
-      { id: "rangement", nom: "Ranger ton espace de travail", xp: 15, stat: "discipline", faite: false }
+      {
+        id: "pompes", nom: "30 pompes", xp: 25, stat: "corps", faite: false,
+        type: "series", series: 2, parSerie: "15 pompes", repos: 60
+      },
+      {
+        id: "lecture", nom: "20 min de lecture", xp: 20, stat: "esprit", faite: false,
+        type: "minuterie", duree: 1200
+      },
+      {
+        id: "rangement", nom: "Ranger ton espace de travail", xp: 15, stat: "discipline", faite: false,
+        type: "simple"
+      }
     ],
     hebdo: {
       nom: "3 séances de sport complètes",
@@ -89,6 +98,25 @@ var Etat = (function () {
       etat.cartesDebloquees = [];
       modifie = true;
     }
+    // Types de quêtes (mode Session) : on complète depuis les définitions
+    // par défaut via l'id, sans toucher à faite / xpDonne.
+    etat.quetes.forEach(function (quete) {
+      if (quete.type) return;
+      var defaut = null;
+      for (var i = 0; i < DEFAUT.quetes.length; i++) {
+        if (DEFAUT.quetes[i].id === quete.id) defaut = DEFAUT.quetes[i];
+      }
+      if (defaut) {
+        quete.type = defaut.type;
+        if (defaut.duree !== undefined) quete.duree = defaut.duree;
+        if (defaut.series !== undefined) quete.series = defaut.series;
+        if (defaut.parSerie !== undefined) quete.parSerie = defaut.parSerie;
+        if (defaut.repos !== undefined) quete.repos = defaut.repos;
+      } else {
+        quete.type = "simple";
+      }
+      modifie = true;
+    });
     return modifie;
   }
 
@@ -154,6 +182,13 @@ var LifeRpgDebug = {
     etat.lundiSemaine = Jour.decalerDate(etat.lundiSemaine, -7);
     Etat.sauvegarder(etat);
     location.reload();
+  },
+  // Divise les durées de session par 60 (20 min -> 20 s) pour tester
+  // sans attendre. Flag en mémoire seulement, jamais persisté.
+  accelererSessions: function (actif) {
+    if (typeof Session !== "undefined") {
+      Session.reglerAcceleration(actif !== false);
+    }
   },
   // Débloque toutes les cartes pour vérifier le rendu des raretés.
   debloquerToutesLesCartes: function () {

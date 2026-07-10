@@ -1,0 +1,263 @@
+/* ============================================
+   LIFE RPG — session.css
+   Mode Session : overlay plein écran, anneau
+   de progression, phases d'effort et de repos.
+   ============================================ */
+
+.session {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 22px calc(env(safe-area-inset-bottom) + 22px);
+  background:
+    radial-gradient(ellipse 120% 45% at 50% -8%, rgba(107, 140, 174, 0.07), transparent 65%),
+    rgba(10, 10, 15, 0.98);
+  animation: session-entree 0.25s ease;
+}
+
+@keyframes session-entree {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ----- En-tête ----- */
+.session-entete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.session-nom {
+  margin-top: 6px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.session-fermer {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--bordure);
+  border-radius: 50%;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.session-fermer svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ----- Confirmation d'abandon (inline, jamais de popup) ----- */
+.session-confirmation {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 13px;
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: var(--texte-second);
+}
+
+.session-confirmation[hidden] {
+  display: none;
+}
+
+.session-confirmation-boutons {
+  display: flex;
+  gap: 18px;
+}
+
+.session-lien {
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.session-lien.accent {
+  color: var(--accent);
+}
+
+/* ----- Corps : centre de l'écran ----- */
+.session-corps {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 34px;
+  text-align: center;
+}
+
+.session-corps.fondu {
+  animation: session-fondu 0.25s ease;
+}
+
+@keyframes session-fondu {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ----- Anneau de progression ----- */
+.anneau {
+  position: relative;
+  width: min(72vw, 300px);
+  aspect-ratio: 1;
+}
+
+.anneau svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.anneau-piste {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 3.5;
+}
+
+.anneau-progression {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px var(--accent-lueur));
+  transition: stroke-dashoffset 0.25s linear;
+}
+
+/* Fin du temps : l'anneau se remplit d'un coup */
+.anneau.plein .anneau-progression {
+  stroke-dashoffset: 0 !important;
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+.anneau-centre {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.anneau-temps {
+  font-size: 3.6rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----- Boutons ----- */
+.session-bouton {
+  padding: 15px 42px;
+  background: var(--surface);
+  border: 1px solid rgba(107, 140, 174, 0.4);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--texte);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Passer (») : discret, en bas à droite */
+.session-passer {
+  position: absolute;
+  right: 22px;
+  bottom: calc(env(safe-area-inset-bottom) + 22px);
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--bordure);
+  border-radius: 50%;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.session-passer svg {
+  width: 17px;
+  height: 17px;
+}
+
+.session-passer[hidden],
+.session-fermer[hidden] {
+  display: none;
+}
+
+/* ----- Phase effort (séries) ----- */
+.session-effort-texte {
+  font-size: 2.7rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+/* ----- Écran de fin ----- */
+.session-fin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  animation: session-fin-entree 0.35s ease;
+}
+
+@keyframes session-fin-entree {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.session-fin-nom {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.session-fin-xp {
+  font-size: 3.2rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.session-fin-xp.critique {
+  text-shadow:
+    0 0 18px var(--accent-lueur),
+    0 0 40px var(--accent-lueur);
+}
+
+.session-fin-critique {
+  color: var(--accent);
+}
+
+.session-fin .session-bouton {
+  margin-top: 22px;
+}
