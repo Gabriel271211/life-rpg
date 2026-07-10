@@ -54,18 +54,18 @@
     majPuce(puceNiveau, etat.niveau);
   }
 
-  // Bandeaux à afficher après un gain : étape accomplie, montée de
-  // niveau, cartes débloquées. Espacés pour ne pas se chevaucher.
+  // Feedback après un gain : bandeaux pour l'étape accomplie et la
+  // montée de niveau, révélation plein écran pour les cartes.
   function afficherBandeaux(etapeFinie, niveauAvant, nouvellesCartes) {
     var bandeaux = [];
-    if (etapeFinie) bandeaux.push(["Étape accomplie", etapeFinie.nom, null]);
-    if (etat.niveau > niveauAvant) bandeaux.push(["Niveau", etat.niveau, null]);
-    (nouvellesCartes || []).forEach(function (carte) {
-      bandeaux.push(["Carte débloquée", carte.nom, "rarete-" + carte.rarete]);
-    });
+    if (etapeFinie) bandeaux.push(["Étape accomplie", etapeFinie.nom]);
+    if (etat.niveau > niveauAvant) bandeaux.push(["Niveau", etat.niveau]);
     bandeaux.forEach(function (b, i) {
-      setTimeout(function () { Juice.bandeau(b[0], b[1], b[2]); }, i * 2700);
+      setTimeout(function () { Juice.bandeau(b[0], b[1]); }, i * 2700);
     });
+    if (nouvellesCartes && nouvellesCartes.length > 0) {
+      Revelation.montrer(nouvellesCartes);
+    }
   }
 
   // ----- Validation / dévalidation : le SEUL chemin du jeu.
@@ -130,6 +130,15 @@
     majApresChangement();
   }
 
+  // Bref éclat de la carte au retour d'une session accomplie,
+  // pour relier visuellement la session à la liste.
+  function eclatCarte(quete) {
+    var el = elementsQuetes[quete.id];
+    if (!el) return;
+    el.carte.classList.add("eclat");
+    setTimeout(function () { el.carte.classList.remove("eclat"); }, 700);
+  }
+
   // La session est le SEUL moyen de valider une quête, quel que soit
   // son type. À la fin, elle valide par le chemin classique.
   function ouvrirSession(quete) {
@@ -139,6 +148,8 @@
       majApresChangement();
       afficherBandeaux(res.etapeFinie, res.niveauAvant, res.nouvellesCartes);
       return res;
+    }, function () {
+      if (quete.faite) eclatCarte(quete);
     });
   }
 
@@ -185,8 +196,12 @@
     return carte;
   }
 
-  etat.quetes.forEach(function (quete) {
-    listeQuetes.appendChild(creerCarte(quete));
+  etat.quetes.forEach(function (quete, i) {
+    var carte = creerCarte(quete);
+    // apparition en cascade
+    carte.classList.add("entree");
+    carte.style.animationDelay = (i * 60) + "ms";
+    listeQuetes.appendChild(carte);
   });
 
   // --- Quête principale : ligne de rappel vers quete.html ---

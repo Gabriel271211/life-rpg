@@ -287,19 +287,22 @@ var Session = (function () {
 
   function fermer() {
     if (!ctx) return;
+    var surFermer = ctx.surFermer;
     arreterChrono();
     relacherWakeLock();
     ctx.overlay.remove();
     ctx = null;
+    if (surFermer) surFermer();
   }
 
   // ----- Ouverture -----
 
-  function ouvrir(quete, surValider) {
+  function ouvrir(quete, surValider, surFermer) {
     if (ctx) return;
     ctx = {
       quete: quete,
       surValider: surValider,
+      surFermer: surFermer || null,
       overlay: null,
       phase: null,
       serie: 0,

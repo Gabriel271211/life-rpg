@@ -59,6 +59,24 @@ svg {
   max-width: 430px;
   margin: 0 auto;
   padding: 20px 22px calc(var(--nav-hauteur) + 32px);
+  animation: ecran-entree 0.25s ease;
+}
+
+@keyframes ecran-entree {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Apparition en cascade d'un élément (délai posé en JS) */
+.entree {
+  animation: entree-elt 0.35s ease backwards;
+}
+
+@keyframes entree-elt {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 
 /* ----- Étiquette : label discret, très light ----- */
@@ -107,12 +125,15 @@ svg {
   overflow: hidden;
 }
 
+/* Les barres partent de zéro et se remplissent quand le JS
+   pose leur largeur : chaque visite d'écran anime la progression. */
 .barre-remplie {
+  width: 0;
   height: 100%;
   border-radius: 999px;
   background: var(--accent);
   box-shadow: 0 0 10px var(--accent-lueur);
-  transition: width 0.5s ease;
+  transition: width 0.6s ease;
 }
 
 /* ----- Navigation basse ----- */
@@ -161,4 +182,15 @@ svg {
 
 .nav-lien.actif span {
   font-weight: 600;
+}
+
+/* ----- Accessibilité : réglage système "réduire les animations" ----- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

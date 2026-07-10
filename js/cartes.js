@@ -7,9 +7,29 @@
 
 var Cartes = (function () {
 
+  var NOMS_RARETES = {
+    commune: "Commune",
+    rare: "Rare",
+    epique: "Épique",
+    legendaire: "Légendaire"
+  };
+
+  // Emblème par défaut (losange) pour les cartes sans emblème dédié.
+  var EMBLEME_DEFAUT =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" ' +
+    'stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M12 2.5l7 9.5-7 9.5L5 12z"/>' +
+    '<path d="M12 7l3.7 5-3.7 5-3.7-5z"/></svg>';
+
+  function embleme(dessins) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + dessins + "</svg>";
+  }
+
   var TOUTES = [
     {
       id: "premier-pas",
+      embleme: embleme('<path d="M12 3v11"/><path d="M8.5 14h7"/><path d="M12 14v5"/><path d="M10 21h4"/>'),
       nom: "Premier pas",
       rarete: "commune",
       cachee: false,
@@ -19,6 +39,7 @@ var Cartes = (function () {
     },
     {
       id: "lame-affutee",
+      embleme: embleme('<path d="M5 4l13.5 13.5"/><path d="M19 4L5.5 17.5"/><path d="M16.5 19.5l3.5-3.5"/><path d="M7.5 19.5L4 16"/>'),
       nom: "Lame affûtée",
       rarete: "commune",
       cachee: false,
@@ -28,6 +49,7 @@ var Cartes = (function () {
     },
     {
       id: "semaine-de-fer",
+      embleme: embleme('<path d="M12 3l7 2.8v5.4c0 4.6-3 7.6-7 9.8-4-2.2-7-5.2-7-9.8V5.8z"/>'),
       nom: "Semaine de fer",
       rarete: "rare",
       cachee: false,
@@ -37,6 +59,7 @@ var Cartes = (function () {
     },
     {
       id: "marathonien",
+      embleme: embleme('<path d="M12 3.5c.5 2.5-.6 4-2 5.6-1.1 1.3-1.9 2.6-1.9 4.4a5.9 5.9 0 0 0 11.8 0c0-2-.9-3.9-2.3-5.5-.2 1-.7 1.9-1.5 2.5.1-2.6-1.5-5-4.1-7z"/>'),
       nom: "Marathonien",
       rarete: "epique",
       cachee: false,
@@ -46,6 +69,7 @@ var Cartes = (function () {
     },
     {
       id: "main-du-destin",
+      embleme: embleme('<path d="M13 3L6 13.5h5L10 21l8-11.5h-5.5z"/>'),
       nom: "Main du destin",
       rarete: "rare",
       cachee: false,
@@ -55,6 +79,7 @@ var Cartes = (function () {
     },
     {
       id: "conquerant",
+      embleme: embleme('<path d="M6.5 21V4"/><path d="M6.5 5h10.5l-2.2 3.2L17 11.5H6.5z"/>'),
       nom: "Conquérant",
       rarete: "rare",
       cachee: false,
@@ -64,6 +89,7 @@ var Cartes = (function () {
     },
     {
       id: "eveil",
+      embleme: embleme('<path d="M3 12s3.5-5.5 9-5.5S21 12 21 12s-3.5 5.5-9 5.5S3 12 3 12z"/><circle cx="12" cy="12" r="2.3"/>'),
       nom: "Éveil",
       rarete: "epique",
       cachee: true,
@@ -73,6 +99,7 @@ var Cartes = (function () {
     },
     {
       id: "transcendance",
+      embleme: embleme('<path d="M5 17.5h14"/><path d="M5 17.5L3.8 8.5l4.7 3.6L12 5.5l3.5 6.6 4.7-3.6-1.2 9z"/>'),
       nom: "Transcendance",
       rarete: "legendaire",
       cachee: true,
@@ -109,6 +136,8 @@ var Cartes = (function () {
   }
 
   return {
+    NOMS_RARETES: NOMS_RARETES,
+    EMBLEME_DEFAUT: EMBLEME_DEFAUT,
     liste: liste,
     parId: parId,
     verifier: verifier

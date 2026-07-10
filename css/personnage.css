@@ -194,9 +194,33 @@
   color: var(--texte-second);
 }
 
+/* ----- Bilan de l'aventure ----- */
+.bilan {
+  margin-top: 44px;
+  display: flex;
+  justify-content: space-around;
+  padding: 18px 8px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 16px;
+}
+
+.bilan-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.bilan-valeur {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
 /* ----- Streak ----- */
 .streak {
-  margin-top: 44px;
+  margin-top: 22px;
   display: flex;
   justify-content: center;
 }

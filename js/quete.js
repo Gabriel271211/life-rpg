@@ -45,8 +45,13 @@
 
     li.querySelector(".etape-nom").textContent = etape.nom;
     li.querySelector(".etape-compte").textContent = etape.progres + " / " + etape.objectif;
-    li.querySelector(".barre-remplie").style.width =
-      Math.min(100, Math.round((etape.progres / etape.objectif) * 100)) + "%";
+
+    // apparition en cascade + barre qui se remplit après le premier rendu
+    li.classList.add("entree");
+    li.style.animationDelay = (i * 70) + "ms";
+    var barre = li.querySelector(".barre-remplie");
+    var largeur = Math.min(100, Math.round((etape.progres / etape.objectif) * 100));
+    setTimeout(function () { barre.style.width = largeur + "%"; }, 120 + i * 70);
 
     conteneur.appendChild(li);
   });

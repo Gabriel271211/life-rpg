@@ -9,20 +9,6 @@
   var etat = Etat.charger();
   var debloquees = etat.cartesDebloquees;
 
-  var NOMS_RARETES = {
-    commune: "Commune",
-    rare: "Rare",
-    epique: "Épique",
-    legendaire: "Légendaire"
-  };
-
-  // Losange : l'emblème d'une carte débloquée
-  var SVG_LOSANGE =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" ' +
-    'stroke-linejoin="round" aria-hidden="true">' +
-    '<path d="M12 2.5l7 9.5-7 9.5L5 12z"/>' +
-    '<path d="M12 7l3.7 5-3.7 5-3.7-5z"/></svg>';
-
   var SVG_CADENAS =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" ' +
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -39,8 +25,8 @@
       el.className = "carte debloquee " + carte.rarete;
       nom = carte.nom;
       texte = carte.description;
-      rarete = NOMS_RARETES[carte.rarete];
-      ornement = SVG_LOSANGE;
+      rarete = Cartes.NOMS_RARETES[carte.rarete];
+      ornement = carte.embleme || Cartes.EMBLEME_DEFAUT;
     } else if (carte.cachee) {
       el.className = "carte verrouillee cachee";
       nom = "???";
@@ -69,8 +55,12 @@
   }
 
   var grille = document.getElementById("grille");
-  Cartes.liste().forEach(function (carte) {
-    grille.appendChild(creerCarte(carte));
+  Cartes.liste().forEach(function (carte, i) {
+    var el = creerCarte(carte);
+    // apparition en cascade
+    el.classList.add("entree");
+    el.style.animationDelay = (i * 50) + "ms";
+    grille.appendChild(el);
   });
 
   document.getElementById("compte-debloquees").textContent = debloquees.length;
