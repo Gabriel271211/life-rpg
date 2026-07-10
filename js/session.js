@@ -151,6 +151,32 @@ var Session = (function () {
     corps.innerHTML = html;
   }
 
+  // Quête simple : activité libre — cercle qui tourne, phrase
+  // "… en cours", et on termine soi-même (Terminé ou »).
+  function phaseActivite() {
+    ctx.phase = "activite";
+    var arc = Math.round(CIRCONFERENCE * 0.25);
+    montrerPhase(
+      '<div class="anneau rotatif">' +
+        '<svg viewBox="0 0 200 200" aria-hidden="true">' +
+          '<circle class="anneau-piste" cx="100" cy="100" r="' + RAYON + '"/>' +
+          '<circle class="anneau-progression" cx="100" cy="100" r="' + RAYON + '" ' +
+            'stroke-dasharray="' + arc + " " + CIRCONFERENCE + '" stroke-dashoffset="0"/>' +
+        "</svg>" +
+      "</div>" +
+      '<p class="session-encours-texte"></p>' +
+      '<button class="session-bouton" type="button" data-action="termine">Terminé</button>'
+    );
+    ctx.overlay.querySelector(".session-encours-texte").textContent =
+      ctx.quete.enCours || "En cours";
+  }
+
+  function finActivite() {
+    ctx.phase = "transition";
+    Juice.vibrer([80, 60, 80]);
+    accomplir();
+  }
+
   function phaseMinuterie() {
     ctx.phase = "minuterie";
     var duree = ctx.quete.duree / acceleration;
@@ -215,6 +241,8 @@ var Session = (function () {
     } else if (ctx.phase === "repos") {
       arreterChrono();
       finRepos();
+    } else if (ctx.phase === "activite") {
+      finActivite();
     }
   }
 
@@ -313,6 +341,7 @@ var Session = (function () {
       else if (action === "abandonner") fermer();
       else if (action === "pause") basculerPause();
       else if (action === "serie-terminee") serieTerminee();
+      else if (action === "termine") finActivite();
       else if (action === "passer") passer();
       else if (action === "continuer") fermer();
     });
@@ -323,8 +352,10 @@ var Session = (function () {
 
     if (quete.type === "series") {
       phaseEffort(1);
-    } else {
+    } else if (quete.type === "minuterie") {
       phaseMinuterie();
+    } else {
+      phaseActivite();
     }
   }
 

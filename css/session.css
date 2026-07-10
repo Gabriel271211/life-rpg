@@ -154,6 +154,23 @@
   transition: stroke-dashoffset 0.4s ease;
 }
 
+/* Activité libre : arc qui tourne en continu (cercle de chargement) */
+.anneau.rotatif svg {
+  animation: anneau-rotation 1.8s linear infinite;
+}
+
+@keyframes anneau-rotation {
+  from { transform: rotate(-90deg); }
+  to { transform: rotate(270deg); }
+}
+
+.session-encours-texte {
+  font-size: 1.15rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--texte);
+}
+
 .anneau-centre {
   position: absolute;
   inset: 0;

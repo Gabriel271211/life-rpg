@@ -124,29 +124,14 @@
     majQuetePrincipale();
   }
 
-  // Tap direct (quête simple) : juice complet sur place.
-  function validerParTap(quete) {
-    var res = validerQuete(quete);
-    majCarte(quete);
-    majApresChangement();
-
-    Juice.xpFlottant(
-      elementsQuetes[quete.id].bouton,
-      (res.critique ? "CRITIQUE ! +" : "+") + res.xpDonne + " XP",
-      res.critique
-    );
-    Juice.vibrer(res.nouvellesCartes.length > 0 ? 70 : 30);
-    afficherBandeaux(res.etapeFinie, res.niveauAvant, res.nouvellesCartes);
-  }
-
   function devaliderParTap(quete) {
     devaliderQuete(quete);
     majCarte(quete);
     majApresChangement();
   }
 
-  // Quête guidée : la session est le SEUL moyen de valider.
-  // À la fin, elle valide par le même chemin que le tap.
+  // La session est le SEUL moyen de valider une quête, quel que soit
+  // son type. À la fin, elle valide par le chemin classique.
   function ouvrirSession(quete) {
     Session.ouvrir(quete, function () {
       var res = validerQuete(quete);
@@ -161,7 +146,7 @@
     var guidee = estGuidee(quete);
 
     var carte = document.createElement("article");
-    carte.className = "quete" + (quete.faite ? " faite" : "") + (guidee ? " guidee" : "");
+    carte.className = "quete guidee" + (quete.faite ? " faite" : "");
     carte.innerHTML =
       '<div class="quete-infos">' +
         '<p class="quete-nom"></p>' +
@@ -188,18 +173,14 @@
       e.stopPropagation();
       if (quete.faite) {
         devaliderParTap(quete);
-      } else if (guidee) {
-        ouvrirSession(quete);
       } else {
-        validerParTap(quete);
+        ouvrirSession(quete);
       }
     });
 
-    if (guidee) {
-      carte.addEventListener("click", function () {
-        if (!quete.faite) ouvrirSession(quete);
-      });
-    }
+    carte.addEventListener("click", function () {
+      if (!quete.faite) ouvrirSession(quete);
+    });
 
     return carte;
   }

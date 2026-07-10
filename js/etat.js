@@ -34,7 +34,7 @@ var Etat = (function () {
       },
       {
         id: "rangement", nom: "Ranger ton espace de travail", xp: 15, stat: "discipline", faite: false,
-        type: "simple"
+        type: "simple", enCours: "Rangement en cours"
       }
     ],
     hebdo: {
@@ -101,21 +101,27 @@ var Etat = (function () {
     // Types de quêtes (mode Session) : on complète depuis les définitions
     // par défaut via l'id, sans toucher à faite / xpDonne.
     etat.quetes.forEach(function (quete) {
-      if (quete.type) return;
       var defaut = null;
       for (var i = 0; i < DEFAUT.quetes.length; i++) {
         if (DEFAUT.quetes[i].id === quete.id) defaut = DEFAUT.quetes[i];
       }
-      if (defaut) {
-        quete.type = defaut.type;
-        if (defaut.duree !== undefined) quete.duree = defaut.duree;
-        if (defaut.series !== undefined) quete.series = defaut.series;
-        if (defaut.parSerie !== undefined) quete.parSerie = defaut.parSerie;
-        if (defaut.repos !== undefined) quete.repos = defaut.repos;
-      } else {
-        quete.type = "simple";
+      if (!quete.type) {
+        if (defaut) {
+          quete.type = defaut.type;
+          if (defaut.duree !== undefined) quete.duree = defaut.duree;
+          if (defaut.series !== undefined) quete.series = defaut.series;
+          if (defaut.parSerie !== undefined) quete.parSerie = defaut.parSerie;
+          if (defaut.repos !== undefined) quete.repos = defaut.repos;
+        } else {
+          quete.type = "simple";
+        }
+        modifie = true;
       }
-      modifie = true;
+      // Phrase d'activité des quêtes simples ("Rangement en cours").
+      if (quete.type === "simple" && !quete.enCours && defaut && defaut.enCours) {
+        quete.enCours = defaut.enCours;
+        modifie = true;
+      }
     });
     return modifie;
   }
