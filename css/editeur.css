@@ -1,0 +1,261 @@
+/* ============================================
+   LIFE RPG — editeur.css
+   Éditeur de quêtes : overlay plein écran,
+   liste, formulaire, puces de sélection.
+   ============================================ */
+
+/* ----- Bouton d'ouverture (accueil, à côté du titre) ----- */
+.accueil-titre-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.editeur-ouvrir {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--bordure);
+  border-radius: 50%;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editeur-ouvrir svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ----- Overlay ----- */
+.editeur {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 22px calc(env(safe-area-inset-bottom) + 22px);
+  background:
+    radial-gradient(ellipse 120% 45% at 50% -8%, var(--accent-doux), transparent 65%),
+    rgba(10, 10, 15, 0.98);
+  animation: session-entree 0.25s ease;
+}
+
+.editeur-entete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.editeur-titre {
+  margin-top: 6px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.editeur-corps {
+  flex: 1;
+  margin-top: 26px;
+  overflow-y: auto;
+  padding-bottom: 12px;
+}
+
+.editeur-corps.fondu {
+  animation: session-fondu 0.25s ease;
+}
+
+/* ----- Liste des quêtes ----- */
+.editeur-liste {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.editeur-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 13px;
+}
+
+.editeur-ligne-infos {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editeur-ligne-nom {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editeur-ligne-meta {
+  margin-top: 3px;
+  font-size: 0.66rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+.editeur-supprimer {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editeur-supprimer svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Confirmation de suppression inline */
+.editeur-ligne-question {
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: var(--texte-second);
+}
+
+.editeur-ligne-boutons {
+  display: flex;
+  gap: 18px;
+}
+
+/* ----- Nouvelle quête + sections ----- */
+.editeur-nouvelle {
+  margin-top: 18px;
+  width: 100%;
+}
+
+.editeur-section {
+  margin-top: 30px;
+}
+
+.editeur-message {
+  margin-top: 12px;
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--texte-second);
+}
+
+/* ----- Formulaire ----- */
+.editeur-formulaire {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.editeur-champ {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editeur-entree {
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--texte);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.editeur-entree:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-doux);
+}
+
+/* Pas de flèches natives sur les champs nombre */
+.editeur-entree::-webkit-outer-spin-button,
+.editeur-entree::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.editeur-entree[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ----- Puces sélectionnables (stat, type) ----- */
+.editeur-puces {
+  display: flex;
+  gap: 8px;
+}
+
+.editeur-puce {
+  flex: 1;
+  padding: 10px 6px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.editeur-puce.actif {
+  background: var(--accent-doux);
+  border-color: var(--accent);
+  color: var(--texte);
+  font-weight: 600;
+}
+
+/* ----- Erreur + boutons du formulaire ----- */
+.editeur-erreur {
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--texte-second);
+}
+
+.editeur-formulaire-boutons {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}

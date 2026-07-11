@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="css/session.css">
   <link rel="stylesheet" href="css/cartes.css">
   <link rel="stylesheet" href="css/revelation.css">
+  <link rel="stylesheet" href="css/editeur.css">
 </head>
 <body data-page="accueil">
 
@@ -42,7 +43,15 @@
 
     <div class="accueil-titre">
       <p class="etiquette">Aujourd'hui</p>
-      <h1>Tes quêtes du jour</h1>
+      <div class="accueil-titre-ligne">
+        <h1>Tes quêtes du jour</h1>
+        <button class="editeur-ouvrir" id="editeur-ouvrir" type="button" aria-label="Modifier tes quêtes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 20l1.2-4.2L16.7 4.3a2 2 0 0 1 2.9 2.9L8.2 18.8 4 20z"/>
+            <path d="M14.5 6.5l3 3"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <section class="quetes" id="quetes" aria-label="Quêtes quotidiennes"></section>
@@ -126,6 +135,7 @@
   <script src="js/juice.js"></script>
   <script src="js/revelation.js"></script>
   <script src="js/session.js"></script>
+  <script src="js/editeur.js"></script>
   <script src="js/accueil.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/pwa.js"></script>

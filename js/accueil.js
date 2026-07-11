@@ -196,12 +196,28 @@
     return carte;
   }
 
-  etat.quetes.forEach(function (quete, i) {
-    var carte = creerCarte(quete);
-    // apparition en cascade
-    carte.classList.add("entree");
-    carte.style.animationDelay = (i * 60) + "ms";
-    listeQuetes.appendChild(carte);
+  function rendreQuetes() {
+    listeQuetes.innerHTML = "";
+    elementsQuetes = {};
+    etat.quetes.forEach(function (quete, i) {
+      var carte = creerCarte(quete);
+      // apparition en cascade
+      carte.classList.add("entree");
+      carte.style.animationDelay = (i * 60) + "ms";
+      listeQuetes.appendChild(carte);
+    });
+  }
+  rendreQuetes();
+
+  // --- Éditeur de quêtes : re-rendu complet au retour ---
+
+  document.getElementById("editeur-ouvrir").addEventListener("click", function () {
+    Editeur.ouvrir(etat, function () {
+      rendreQuetes();
+      rendreHebdo();
+      majPuces();
+      majQuetePrincipale();
+    });
   });
 
   // --- Quête principale : ligne de rappel vers quete.html ---
