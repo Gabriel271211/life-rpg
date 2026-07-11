@@ -219,9 +219,41 @@ var Session = (function () {
     "</div>";
   }
 
+  // Entrée d'un bloc : les exercices passent d'abord par un écran
+  // de préparation (temps de pause libre), les repos s'enchaînent.
   function phaseSeance(index) {
-    var bloc = ctx.quete.blocs[index];
     ctx.bloc = index;
+    if (ctx.quete.blocs[index].repos) {
+      executerBloc(index);
+    } else {
+      preparerBloc(index);
+    }
+  }
+
+  // Préparation : le nom, la consigne et l'explication de l'exercice.
+  // Rien ne démarre tant que le joueur n'a pas appuyé sur Commencer.
+  function preparerBloc(index) {
+    var bloc = ctx.quete.blocs[index];
+    ctx.phase = "seance-prepa";
+    montrerPhase(
+      indicateurBlocs(index) +
+      '<div class="seance-infos">' +
+        '<p class="etiquette">Prépare-toi</p>' +
+        '<p class="session-effort-texte seance-nom"></p>' +
+        (bloc.detail ? '<p class="seance-detail"></p>' : "") +
+        (bloc.explication ? '<p class="seance-explication"></p>' : "") +
+      "</div>" +
+      '<button class="session-bouton" type="button" data-action="bloc-commencer">Commencer</button>'
+    );
+    ctx.overlay.querySelector(".seance-nom").textContent = bloc.nom;
+    var detail = ctx.overlay.querySelector(".seance-detail");
+    if (detail) detail.textContent = bloc.detail;
+    var explication = ctx.overlay.querySelector(".seance-explication");
+    if (explication) explication.textContent = bloc.explication;
+  }
+
+  function executerBloc(index) {
+    var bloc = ctx.quete.blocs[index];
 
     if (bloc.duree) {
       ctx.phase = bloc.repos ? "seance-repos" : "seance-chrono";
@@ -363,6 +395,9 @@ var Session = (function () {
       finRepos();
     } else if (ctx.phase === "activite") {
       finActivite();
+    } else if (ctx.phase === "seance-prepa") {
+      // Comme pour le 3-2-1 : » saute l'attente et lance l'exercice.
+      executerBloc(ctx.bloc);
     } else if (ctx.phase === "seance-chrono" || ctx.phase === "seance-repos" ||
                ctx.phase === "seance-valider") {
       finBloc();
@@ -472,6 +507,7 @@ var Session = (function () {
       else if (action === "serie-terminee") serieTerminee();
       else if (action === "termine") finActivite();
       else if (action === "bloc-termine") finBloc();
+      else if (action === "bloc-commencer") executerBloc(ctx.bloc);
       else if (action === "passer") passer();
       else if (action === "continuer") fermer();
     });

@@ -317,6 +317,17 @@
   color: var(--texte-second);
 }
 
+/* Texte explicatif de l'exercice, sur l'écran de préparation */
+.seance-explication {
+  margin-top: 8px;
+  max-width: 300px;
+  font-size: 0.88rem;
+  font-weight: 300;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  color: var(--texte-second);
+}
+
 /* ----- Écran de fin ----- */
 .session-fin {
   display: flex;

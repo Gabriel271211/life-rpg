@@ -40,15 +40,21 @@ var Etat = (function () {
         id: "seance-corps", nom: "Séance complète du jour", xp: 40, stat: "corps", faite: false,
         type: "seance",
         blocs: [
-          { nom: "Échauffement", detail: "Mobilité articulaire", duree: 120 },
-          { nom: "Pompes", detail: "15 répétitions" },
+          { nom: "Échauffement", detail: "Mobilité articulaire", duree: 120,
+            explication: "Cercles de bras, rotations du bassin, montées de genoux : réveille chaque articulation en douceur." },
+          { nom: "Pompes", detail: "15 répétitions",
+            explication: "Mains sous les épaules, corps bien gainé : descends la poitrine près du sol, remonte sans cambrer." },
           { nom: "Repos", duree: 60, repos: true },
-          { nom: "Squats", detail: "20 répétitions" },
+          { nom: "Squats", detail: "20 répétitions",
+            explication: "Pieds largeur d'épaules, dos droit : descends comme pour t'asseoir, talons au sol." },
           { nom: "Repos", duree: 60, repos: true },
-          { nom: "Gainage", detail: "Tiens la position", duree: 45 },
+          { nom: "Gainage", detail: "Tiens la position", duree: 45,
+            explication: "En appui sur les avant-bras, corps aligné des épaules aux talons : ne laisse pas le bassin tomber." },
           { nom: "Repos", duree: 60, repos: true },
-          { nom: "Pompes", detail: "12 répétitions" },
-          { nom: "Étirements", detail: "Retour au calme", duree: 90 }
+          { nom: "Pompes", detail: "12 répétitions",
+            explication: "Même consigne que la première série : amplitude complète, rythme régulier." },
+          { nom: "Étirements", detail: "Retour au calme", duree: 90,
+            explication: "Respire profondément et étire chaque groupe musculaire travaillé, sans à-coups." }
         ]
       }
     ],
@@ -128,6 +134,22 @@ var Etat = (function () {
       etat.seanceParDefautAjoutee = true;
       modifie = true;
     }
+    // Textes explicatifs des blocs de séance, ajoutés après coup :
+    // on complète les états qui ont la séance sans les explications.
+    var seanceDefaut = null;
+    for (var k = 0; k < DEFAUT.quetes.length; k++) {
+      if (DEFAUT.quetes[k].id === "seance-corps") seanceDefaut = DEFAUT.quetes[k];
+    }
+    etat.quetes.forEach(function (quete) {
+      if (quete.id !== "seance-corps" || !Array.isArray(quete.blocs) || !seanceDefaut) return;
+      quete.blocs.forEach(function (bloc, i) {
+        var defautBloc = seanceDefaut.blocs[i];
+        if (!bloc.explication && defautBloc && defautBloc.nom === bloc.nom && defautBloc.explication) {
+          bloc.explication = defautBloc.explication;
+          modifie = true;
+        }
+      });
+    });
     // Types de quêtes (mode Session) : on complète depuis les définitions
     // par défaut via l'id, sans toucher à faite / xpDonne.
     etat.quetes.forEach(function (quete) {

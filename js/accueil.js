@@ -104,6 +104,21 @@
     Jour.majStreak(etat);
     etat.compteurs.quetesValidees += 1;
     if (critique) etat.compteurs.critiques += 1;
+
+    // La séance guidée compte comme une séance de sport de la
+    // semaine : elle fait avancer la quête hebdomadaire, avec le
+    // gain d'XP habituel si l'objectif est atteint.
+    if (quete.type === "seance" && !hebdoEstAccomplie()) {
+      etat.hebdo.progres += 1;
+      if (hebdoEstAccomplie()) {
+        var critiqueHebdo = Regles.lancerCritique();
+        etat.hebdo.xpDonne = etat.hebdo.xp * (critiqueHebdo ? Regles.MULTIPLICATEUR_CRITIQUE : 1);
+        Regles.gagnerXp(etat, etat.hebdo.xpDonne, etat.hebdo.stat);
+        etat.compteurs.hebdosAccomplies += 1;
+        if (critiqueHebdo) etat.compteurs.critiques += 1;
+      }
+    }
+
     var nouvellesCartes = Cartes.verifier(etat);
     Etat.sauvegarder(etat);
 
@@ -130,6 +145,22 @@
     if (etaitCritique) {
       etat.compteurs.critiques = Math.max(0, etat.compteurs.critiques - 1);
     }
+
+    // Décocher une séance retire la séance de sport de la semaine,
+    // et rouvre l'hebdo si c'est elle qui l'avait accomplie.
+    if (quete.type === "seance" && etat.hebdo.progres > 0) {
+      if (hebdoEstAccomplie() && etat.hebdo.xpDonne) {
+        var hebdoCritique = etat.hebdo.xpDonne > etat.hebdo.xp;
+        Regles.retirerXp(etat, etat.hebdo.xpDonne, etat.hebdo.stat);
+        delete etat.hebdo.xpDonne;
+        etat.compteurs.hebdosAccomplies = Math.max(0, etat.compteurs.hebdosAccomplies - 1);
+        if (hebdoCritique) {
+          etat.compteurs.critiques = Math.max(0, etat.compteurs.critiques - 1);
+        }
+      }
+      etat.hebdo.progres -= 1;
+    }
+
     Etat.sauvegarder(etat);
     majAuraSansCeremonie(niveauAvant);
   }
@@ -144,6 +175,7 @@
   function majApresChangement() {
     majPuces();
     majQuetePrincipale();
+    rendreHebdo();
   }
 
   function devaliderParTap(quete) {
