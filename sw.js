@@ -14,7 +14,7 @@
 // - Police Google Fonts : non interceptée, reste réseau.
 // ============================================
 
-var CACHE = "life-rpg-v1";
+var CACHE = "life-rpg-v2";
 
 var FICHIERS = [
   "./",

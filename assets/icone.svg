@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Icône Life RPG : losange aux traits fins, lettre L en Saira très bold.
+       Source des PNG (icone-512, icone-192, apple-touch-icon), générés
+       par script canvas Node. -->
+  <rect width="512" height="512" fill="#0a0a0f"/>
+  <path d="M256 92.16 419.84 256 256 419.84 92.16 256Z"
+        fill="none" stroke="#6b8cae" stroke-width="6.14"/>
+  <path d="M256 61.44 450.56 256 256 450.56 61.44 256Z"
+        fill="none" stroke="#6b8cae" stroke-opacity="0.3" stroke-width="3.07"/>
+  <text x="256" y="261.12" font-family="Saira" font-size="153.6" font-weight="900"
+        fill="#e8e8ec" text-anchor="middle" dominant-baseline="central">L</text>
+</svg>
