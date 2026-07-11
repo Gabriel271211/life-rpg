@@ -206,6 +206,16 @@ var LifeRpgDebug = {
       Session.reglerAcceleration(actif !== false);
     }
   },
+  // Joue la séquence de montée de rang sans grinder : du rang
+  // actuel vers le suivant (ou A -> S si le sommet est atteint).
+  simulerMonteeDeRang: function () {
+    var etat = Etat.charger();
+    var info = Regles.rang(etat.niveau);
+    var ancienne = info.actuel.lettre;
+    var nouvelle = info.suivant ? info.suivant.lettre : "S";
+    if (!info.suivant) ancienne = "A";
+    Aura.monterRang(ancienne, nouvelle);
+  },
   // Débloque toutes les cartes pour vérifier le rendu des raretés.
   debloquerToutesLesCartes: function () {
     var etat = Etat.charger();

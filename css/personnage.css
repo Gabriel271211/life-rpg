@@ -44,7 +44,7 @@
   width: 246px;
   height: 246px;
   transform: translate(-50%, -46%);
-  border: 1px solid rgba(107, 140, 174, 0.16);
+  border: 1px solid rgba(var(--accent-rgb), 0.16);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -57,7 +57,7 @@
   width: 300px;
   height: 300px;
   transform: translate(-50%, -46%);
-  border: 1px solid rgba(107, 140, 174, 0.06);
+  border: 1px solid rgba(var(--accent-rgb), 0.06);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -73,13 +73,13 @@
   font-size: clamp(10rem, 54vw, 13rem);
   font-weight: 900;
   line-height: 0.95;
-  background: linear-gradient(180deg, #eef2f7 0%, #b9c9da 55%, var(--accent) 135%);
+  background: linear-gradient(180deg, #eef2f7 0%, var(--accent-clair) 55%, var(--accent) 135%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   filter:
-    drop-shadow(0 0 22px rgba(107, 140, 174, 0.35))
-    drop-shadow(0 0 70px rgba(107, 140, 174, 0.18));
+    drop-shadow(0 0 22px rgba(var(--accent-rgb), 0.35))
+    drop-shadow(0 0 70px rgba(var(--accent-rgb), 0.18));
 }
 
 /* Progression vers le rang suivant */
@@ -112,7 +112,7 @@
   width: 340px;
   height: 340px;
   transform: translate(-50%, -46%);
-  background: radial-gradient(circle, rgba(107, 140, 174, 0.16), rgba(107, 140, 174, 0.05) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.16), rgba(var(--accent-rgb), 0.05) 45%, transparent 70%);
   pointer-events: none;
 }
 

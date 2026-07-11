@@ -1,0 +1,126 @@
+/* ============================================
+   LIFE RPG — aura.css
+   Animation de montée de rang : la nouvelle
+   lettre dans l'ancienne couleur, puis l'aura
+   glisse vers la nouvelle. Lumière, lenteur.
+   ============================================ */
+
+.aura-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  padding: 22px;
+  background: #0a0a0f;
+  animation: aura-entree 0.4s ease;
+}
+
+.aura-overlay.aura-sortie {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+@keyframes aura-entree {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Les deux scènes superposées (ancienne couleur / nouvelle) */
+.aura-centre {
+  position: relative;
+  width: min(80vw, 340px);
+  aspect-ratio: 1;
+}
+
+.aura-scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* La lettre se pose lentement, sans rebond */
+  animation: aura-pose 2.5s ease-out;
+}
+
+@keyframes aura-pose {
+  from { transform: scale(1.07); }
+  to { transform: scale(1); }
+}
+
+/* La nouvelle couleur attend, puis prend le dessus en fondu */
+.aura-scene-nouvelle {
+  opacity: 0;
+  transition: opacity 1.3s ease;
+}
+
+.aura-overlay.glisse .aura-scene-nouvelle {
+  opacity: 1;
+}
+
+.aura-halo {
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.aura-anneau {
+  position: absolute;
+  border: 1px solid;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.aura-anneau-un {
+  inset: 13%;
+}
+
+.aura-anneau-deux {
+  inset: 1%;
+}
+
+.aura-lettre {
+  font-size: clamp(10rem, 54vw, 13rem);
+  font-weight: 900;
+  line-height: 0.95;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Étiquette "RANG C ATTEINT" */
+.aura-etiquette {
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  animation: aura-apparition 0.9s ease 0.5s backwards;
+}
+
+/* Continuer : n'apparaît qu'à la fin de la séquence (~2.5 s) */
+.aura-continuer {
+  margin-top: 16px;
+  padding: 15px 42px;
+  background: transparent;
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--texte);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  animation: aura-apparition 0.6s ease 2.3s backwards;
+}
+
+@keyframes aura-apparition {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}

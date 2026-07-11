@@ -73,9 +73,9 @@
   gap: 9px;
   padding: 10px 20px;
   background: rgba(18, 18, 26, 0.92);
-  border: 1px solid rgba(107, 140, 174, 0.32);
+  border: 1px solid rgba(var(--accent-rgb), 0.32);
   border-radius: 999px;
-  box-shadow: 0 0 26px rgba(107, 140, 174, 0.16);
+  box-shadow: 0 0 26px rgba(var(--accent-rgb), 0.16);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   pointer-events: none;
@@ -99,12 +99,12 @@
 
 /* Teintes de rareté pour les déblocages de cartes */
 .bandeau-niveau.rarete-rare {
-  border-color: rgba(107, 140, 174, 0.5);
+  border-color: rgba(var(--accent-rgb), 0.5);
 }
 
 .bandeau-niveau.rarete-epique {
-  border-color: rgba(107, 140, 174, 0.7);
-  box-shadow: 0 0 32px rgba(107, 140, 174, 0.28);
+  border-color: rgba(var(--accent-rgb), 0.7);
+  box-shadow: 0 0 32px rgba(var(--accent-rgb), 0.28);
 }
 
 .bandeau-niveau.rarete-legendaire {

@@ -99,7 +99,7 @@
 
 @keyframes quete-eclat {
   0% {
-    border-color: rgba(107, 140, 174, 0.75);
+    border-color: rgba(var(--accent-rgb), 0.75);
     box-shadow: 0 0 18px var(--accent-lueur);
   }
 }
@@ -228,8 +228,8 @@
 .quete-hebdo {
   margin-top: 12px;
   padding: 18px;
-  background: linear-gradient(180deg, rgba(107, 140, 174, 0.09), rgba(107, 140, 174, 0.03)), var(--surface);
-  border: 1px solid rgba(107, 140, 174, 0.22);
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.09), rgba(var(--accent-rgb), 0.03)), var(--surface);
+  border: 1px solid rgba(var(--accent-rgb), 0.22);
   border-radius: 16px;
 }
 
@@ -268,7 +268,7 @@
 
 /* Hebdo accomplie : même langage que les quêtes validées */
 .quete-hebdo.accomplie {
-  border-color: rgba(107, 140, 174, 0.4);
+  border-color: rgba(var(--accent-rgb), 0.4);
 }
 
 .quete-hebdo.accomplie .quete-cercle {

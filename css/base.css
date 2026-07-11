@@ -8,14 +8,59 @@
   --surface: #12121a;
   --bordure: rgba(255, 255, 255, 0.06);
 
+  /* L'aura : la couleur d'accent unique, qui dépend du rang.
+     Toutes les déclinaisons passent par --accent-rgb, pour que
+     les classes de rang n'aient que deux valeurs à redéfinir
+     (+ --accent-clair pour les dégradés de lettres). */
   --accent: #6b8cae;
-  --accent-doux: rgba(107, 140, 174, 0.12);
-  --accent-lueur: rgba(107, 140, 174, 0.35);
+  --accent-rgb: 107, 140, 174;
+  --accent-clair: #b9c9da;
+  --accent-doux: rgba(var(--accent-rgb), 0.12);
+  --accent-lueur: rgba(var(--accent-rgb), 0.35);
 
   --texte: #e8e8ec;
   --texte-second: #6a6a75;
 
   --nav-hauteur: 64px;
+}
+
+/* ----- Auras de rang : posées sur <html> par js/aura.js avant le
+   premier rendu. E terne au départ, S doré au sommet (le même or
+   que les cartes légendaires). ----- */
+.rang-e {
+  --accent: #7a7f88;
+  --accent-rgb: 122, 127, 136;
+  --accent-clair: #c3c5c9;
+}
+
+.rang-d {
+  --accent: #6b8cae;
+  --accent-rgb: 107, 140, 174;
+  --accent-clair: #b9c9da;
+}
+
+.rang-c {
+  --accent: #5da58c;
+  --accent-rgb: 93, 165, 140;
+  --accent-clair: #b6d7cb;
+}
+
+.rang-b {
+  --accent: #c98f5a;
+  --accent-rgb: 201, 143, 90;
+  --accent-clair: #e7cdb5;
+}
+
+.rang-a {
+  --accent: #c25f6e;
+  --accent-rgb: 194, 95, 110;
+  --accent-clair: #e4b7be;
+}
+
+.rang-s {
+  --accent: #c9a86a;
+  --accent-rgb: 201, 168, 106;
+  --accent-clair: #e7d8bc;
 }
 
 /* ----- Reset ----- */
@@ -35,7 +80,7 @@ html {
 body {
   min-height: 100dvh;
   background:
-    radial-gradient(ellipse 120% 45% at 50% -8%, rgba(107, 140, 174, 0.07), transparent 65%),
+    radial-gradient(ellipse 120% 45% at 50% -8%, rgba(var(--accent-rgb), 0.07), transparent 65%),
     var(--fond);
   color: var(--texte);
   font-family: "Saira", system-ui, sans-serif;

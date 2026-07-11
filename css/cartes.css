@@ -71,9 +71,9 @@
 
 /* Rare : liseré accent + très léger glow */
 .carte.rare {
-  border-color: rgba(107, 140, 174, 0.38);
-  background: linear-gradient(180deg, rgba(107, 140, 174, 0.05), transparent 55%), var(--surface);
-  box-shadow: 0 0 14px rgba(107, 140, 174, 0.1);
+  border-color: rgba(var(--accent-rgb), 0.38);
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.05), transparent 55%), var(--surface);
+  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.1);
 }
 
 .carte.rare .carte-ornement {
@@ -81,16 +81,16 @@
 }
 
 .carte.rare .carte-rarete {
-  color: rgba(107, 140, 174, 0.85);
+  color: rgba(var(--accent-rgb), 0.85);
 }
 
 /* Épique : liseré plus présent, glow net, ligne lumineuse en haut */
 .carte.epique {
-  border-color: rgba(107, 140, 174, 0.6);
-  background: linear-gradient(180deg, rgba(107, 140, 174, 0.09), transparent 60%), var(--surface);
+  border-color: rgba(var(--accent-rgb), 0.6);
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.09), transparent 60%), var(--surface);
   box-shadow:
-    0 0 22px rgba(107, 140, 174, 0.18),
-    inset 0 0 26px rgba(107, 140, 174, 0.05);
+    0 0 22px rgba(var(--accent-rgb), 0.18),
+    inset 0 0 26px rgba(var(--accent-rgb), 0.05);
 }
 
 .carte.epique::before {

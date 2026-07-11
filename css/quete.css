@@ -52,7 +52,7 @@
 }
 
 .etape.finie:not(:last-child)::before {
-  background: rgba(107, 140, 174, 0.45);
+  background: rgba(var(--accent-rgb), 0.45);
 }
 
 /* ----- Marqueur ----- */
@@ -78,7 +78,7 @@
 }
 
 .etape.finie .etape-marqueur {
-  border-color: rgba(107, 140, 174, 0.55);
+  border-color: rgba(var(--accent-rgb), 0.55);
   color: var(--accent);
 }
 
@@ -106,9 +106,9 @@
 .etape.active .etape-corps {
   padding: 15px 16px;
   background: var(--surface);
-  border: 1px solid rgba(107, 140, 174, 0.28);
+  border: 1px solid rgba(var(--accent-rgb), 0.28);
   border-radius: 14px;
-  box-shadow: 0 0 22px rgba(107, 140, 174, 0.08);
+  box-shadow: 0 0 22px rgba(var(--accent-rgb), 0.08);
 }
 
 /* Les étapes futures sont estompées */

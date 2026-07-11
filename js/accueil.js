@@ -55,7 +55,8 @@
   }
 
   // Feedback après un gain : bandeaux pour l'étape accomplie et la
-  // montée de niveau, révélation plein écran pour les cartes.
+  // montée de niveau, révélation plein écran pour les cartes,
+  // et la montée de rang — le moment fort — par-dessus tout.
   function afficherBandeaux(etapeFinie, niveauAvant, nouvellesCartes) {
     var bandeaux = [];
     if (etapeFinie) bandeaux.push(["Étape accomplie", etapeFinie.nom]);
@@ -65,6 +66,20 @@
     });
     if (nouvellesCartes && nouvellesCartes.length > 0) {
       Revelation.montrer(nouvellesCartes);
+    }
+
+    var rangAvant = Regles.rang(niveauAvant).actuel.lettre;
+    var rangApres = Regles.rang(etat.niveau).actuel.lettre;
+    if (rangApres !== rangAvant) {
+      Aura.monterRang(rangAvant, rangApres);
+    }
+  }
+
+  // Rang redescendu (décochage) : l'aura suit, sans cérémonie.
+  function majAuraSansCeremonie(niveauAvant) {
+    var rangApres = Regles.rang(etat.niveau).actuel.lettre;
+    if (rangApres !== Regles.rang(niveauAvant).actuel.lettre) {
+      Aura.appliquer(rangApres);
     }
   }
 
@@ -100,6 +115,7 @@
     // On décrémente les compteurs pour rester honnête — mais les
     // cartes déjà débloquées ne se re-verrouillent jamais.
     var etaitCritique = Boolean(quete.xpDonne && quete.xpDonne > quete.xp);
+    var niveauAvant = etat.niveau;
     quete.faite = false;
     Regles.retirerXp(etat, quete.xpDonne || quete.xp, quete.stat);
     delete quete.xpDonne;
@@ -110,6 +126,7 @@
       etat.compteurs.critiques = Math.max(0, etat.compteurs.critiques - 1);
     }
     Etat.sauvegarder(etat);
+    majAuraSansCeremonie(niveauAvant);
   }
 
   function majCarte(quete) {
@@ -310,7 +327,9 @@
     // les cartes débloquées restent débloquées).
     if (hebdoEstAccomplie() && h.xpDonne) {
       var etaitCritique = h.xpDonne > h.xp;
+      var niveauAvant = etat.niveau;
       Regles.retirerXp(etat, h.xpDonne, h.stat);
+      majAuraSansCeremonie(niveauAvant);
       delete h.xpDonne;
       etat.compteurs.hebdosAccomplies = Math.max(0, etat.compteurs.hebdosAccomplies - 1);
       if (etaitCritique) {
