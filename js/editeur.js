@@ -46,6 +46,7 @@ var Editeur = (function () {
   function etiquetteType(type) {
     if (type === "minuterie") return "Minuterie";
     if (type === "series") return "Séries";
+    if (type === "seance") return "Séance guidée — bientôt personnalisable";
     return "Simple";
   }
 
@@ -105,9 +106,15 @@ var Editeur = (function () {
     ligne.querySelector(".editeur-ligne-meta").textContent =
       "+" + quete.xp + " XP · " + etiquetteStat(quete.stat) + " · " + etiquetteType(quete.type);
 
-    ligne.querySelector(".editeur-ligne-infos").addEventListener("click", function () {
-      vueFormulaire(quete);
-    });
+    // Les séances ne s'éditent pas encore (l'édition de blocs viendra
+    // avec l'IA) : la ligne reste visible et supprimable, sans formulaire.
+    if (quete.type === "seance") {
+      ligne.querySelector(".editeur-ligne-infos").disabled = true;
+    } else {
+      ligne.querySelector(".editeur-ligne-infos").addEventListener("click", function () {
+        vueFormulaire(quete);
+      });
+    }
     ligne.querySelector(".editeur-supprimer").addEventListener("click", function () {
       demanderSuppression(ligne, quete);
     });

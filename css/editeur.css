@@ -103,6 +103,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Séance guidée : pas encore éditable, la ligne n'est pas un lien */
+.editeur-ligne-infos:disabled {
+  cursor: default;
+}
+
 .editeur-ligne-nom {
   font-size: 0.92rem;
   font-weight: 600;

@@ -267,6 +267,56 @@
   line-height: 1.1;
 }
 
+/* ----- Séance : enchaînement de blocs ----- */
+.seance-tete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Fine barre segmentée : un segment par bloc */
+.seance-segments {
+  display: flex;
+  gap: 3px;
+  width: min(58vw, 230px);
+}
+
+.seance-segment {
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.seance-segment.fait {
+  background: var(--accent);
+}
+
+.seance-segment.actif {
+  background: var(--accent);
+  opacity: 0.45;
+}
+
+.seance-infos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Nom de bloc minuté : étiquette, comme le "Repos" des séries */
+.etiquette.seance-nom {
+  font-size: 0.78rem;
+}
+
+.seance-detail {
+  font-size: 1.05rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--texte-second);
+}
+
 /* ----- Écran de fin ----- */
 .session-fin {
   display: flex;

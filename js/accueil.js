@@ -33,12 +33,17 @@
     'stroke-linecap="round" aria-hidden="true">' +
     '<path d="M5.5 19v-6"/><path d="M12 19V7"/><path d="M18.5 19v-9"/></svg>';
 
+  var SVG_SEANCE =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+    'stroke-linecap="round" aria-hidden="true">' +
+    '<path d="M5 6.5h14"/><path d="M5 12h14"/><path d="M5 17.5h9"/></svg>';
+
   function etiquetteStat(cle) {
     return cle.charAt(0).toUpperCase() + cle.slice(1);
   }
 
   function estGuidee(quete) {
-    return quete.type === "minuterie" || quete.type === "series";
+    return quete.type === "minuterie" || quete.type === "series" || quete.type === "seance";
   }
 
   function majPuce(el, valeur) {
@@ -183,7 +188,8 @@
           '<span class="quete-tag"></span>' +
           (guidee
             ? '<span class="quete-indicateur">' +
-                (quete.type === "minuterie" ? SVG_CHRONO : SVG_SERIES) +
+                (quete.type === "minuterie" ? SVG_CHRONO :
+                 quete.type === "seance" ? SVG_SEANCE : SVG_SERIES) +
               "</span>"
             : "") +
         "</div>" +

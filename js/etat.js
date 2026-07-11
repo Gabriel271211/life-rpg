@@ -35,6 +35,21 @@ var Etat = (function () {
       {
         id: "rangement", nom: "Ranger ton espace de travail", xp: 15, stat: "discipline", faite: false,
         type: "simple", enCours: "Rangement en cours"
+      },
+      {
+        id: "seance-corps", nom: "Séance complète du jour", xp: 40, stat: "corps", faite: false,
+        type: "seance",
+        blocs: [
+          { nom: "Échauffement", detail: "Mobilité articulaire", duree: 120 },
+          { nom: "Pompes", detail: "15 répétitions" },
+          { nom: "Repos", duree: 60, repos: true },
+          { nom: "Squats", detail: "20 répétitions" },
+          { nom: "Repos", duree: 60, repos: true },
+          { nom: "Gainage", detail: "Tiens la position", duree: 45 },
+          { nom: "Repos", duree: 60, repos: true },
+          { nom: "Pompes", detail: "12 répétitions" },
+          { nom: "Étirements", detail: "Retour au calme", duree: 90 }
+        ]
       }
     ],
     hebdo: {
@@ -96,6 +111,21 @@ var Etat = (function () {
     }
     if (!Array.isArray(etat.cartesDebloquees)) {
       etat.cartesDebloquees = [];
+      modifie = true;
+    }
+    // La séance guidée par défaut, ajoutée UNE seule fois aux états
+    // existants : le marqueur évite qu'elle ressuscite si le joueur
+    // la supprime ensuite dans l'éditeur.
+    if (!etat.seanceParDefautAjoutee) {
+      var dejaPresente = etat.quetes.some(function (q) { return q.id === "seance-corps"; });
+      if (!dejaPresente) {
+        for (var j = 0; j < DEFAUT.quetes.length; j++) {
+          if (DEFAUT.quetes[j].id === "seance-corps") {
+            etat.quetes.push(JSON.parse(JSON.stringify(DEFAUT.quetes[j])));
+          }
+        }
+      }
+      etat.seanceParDefautAjoutee = true;
       modifie = true;
     }
     // Types de quêtes (mode Session) : on complète depuis les définitions

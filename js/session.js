@@ -108,7 +108,7 @@ var Session = (function () {
     }
 
     // Trois dernières secondes de repos : pulsation + petite vibration.
-    if (ctx.phase === "repos" && restant <= 3 && restant > 0) {
+    if ((ctx.phase === "repos" || ctx.phase === "seance-repos") && restant <= 3 && restant > 0) {
       var seconde = Math.ceil(restant);
       if (seconde !== c.derniereSeconde) {
         c.derniereSeconde = seconde;
@@ -194,8 +194,77 @@ var Session = (function () {
       phaseEffort(1);
     } else if (ctx.quete.type === "minuterie") {
       phaseMinuterie();
+    } else if (ctx.quete.type === "seance") {
+      phaseSeance(0);
     } else {
       phaseActivite();
+    }
+  }
+
+  // ----- Séance : enchaînement guidé de blocs -----
+  // Bloc minuté -> anneau + chrono, enchaînement automatique.
+  // Bloc libre  -> nom + détail en grand, bouton Terminé.
+  // Bloc repos  -> style repos existant (pulsation en fin de compte).
+
+  function indicateurBlocs(index) {
+    var total = ctx.quete.blocs.length;
+    var segments = "";
+    for (var i = 0; i < total; i++) {
+      segments += '<div class="seance-segment' +
+        (i < index ? " fait" : i === index ? " actif" : "") + '"></div>';
+    }
+    return '<div class="seance-tete">' +
+      '<p class="etiquette">Bloc ' + (index + 1) + " / " + total + "</p>" +
+      '<div class="seance-segments">' + segments + "</div>" +
+    "</div>";
+  }
+
+  function phaseSeance(index) {
+    var bloc = ctx.quete.blocs[index];
+    ctx.bloc = index;
+
+    if (bloc.duree) {
+      ctx.phase = bloc.repos ? "seance-repos" : "seance-chrono";
+      var duree = bloc.duree / acceleration;
+      montrerPhase(
+        indicateurBlocs(index) +
+        '<div class="seance-infos">' +
+          '<p class="etiquette seance-nom"></p>' +
+          (bloc.detail ? '<p class="seance-detail"></p>' : "") +
+        "</div>" +
+        gabaritAnneau(formaterTemps(duree)) +
+        (bloc.repos ? "" : '<button class="session-bouton" type="button" data-action="pause">Pause</button>')
+      );
+      demarrerChrono(duree, finBloc);
+    } else {
+      ctx.phase = "seance-valider";
+      montrerPhase(
+        indicateurBlocs(index) +
+        '<div class="seance-infos">' +
+          '<p class="session-effort-texte seance-nom"></p>' +
+          (bloc.detail ? '<p class="seance-detail"></p>' : "") +
+        "</div>" +
+        '<button class="session-bouton" type="button" data-action="bloc-termine">Terminé</button>'
+      );
+    }
+
+    ctx.overlay.querySelector(".seance-nom").textContent = bloc.nom;
+    var detail = ctx.overlay.querySelector(".seance-detail");
+    if (detail) detail.textContent = bloc.detail;
+  }
+
+  // Fin d'un bloc (chrono écoulé, Terminé, ou passer ») :
+  // bloc suivant, ou écran de fin après le dernier.
+  function finBloc() {
+    arreterChrono();
+    var suivant = ctx.bloc + 1;
+    if (suivant >= ctx.quete.blocs.length) {
+      ctx.phase = "transition";
+      Juice.vibrer([80, 60, 80]);
+      accomplir();
+    } else {
+      Juice.vibrer(40);
+      phaseSeance(suivant);
     }
   }
 
@@ -294,6 +363,9 @@ var Session = (function () {
       finRepos();
     } else if (ctx.phase === "activite") {
       finActivite();
+    } else if (ctx.phase === "seance-chrono" || ctx.phase === "seance-repos" ||
+               ctx.phase === "seance-valider") {
+      finBloc();
     }
   }
 
@@ -358,6 +430,7 @@ var Session = (function () {
       overlay: null,
       phase: null,
       serie: 0,
+      bloc: 0,
       chrono: null,
       intervalle: null,
       decompte: null,
@@ -398,6 +471,7 @@ var Session = (function () {
       else if (action === "pause") basculerPause();
       else if (action === "serie-terminee") serieTerminee();
       else if (action === "termine") finActivite();
+      else if (action === "bloc-termine") finBloc();
       else if (action === "passer") passer();
       else if (action === "continuer") fermer();
     });
