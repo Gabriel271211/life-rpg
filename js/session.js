@@ -151,6 +151,54 @@ var Session = (function () {
     corps.innerHTML = html;
   }
 
+  // Compte à rebours d'entrée : 3, 2, 1 avant la première phase.
+  function phaseDecompte() {
+    ctx.phase = "decompte";
+    montrerPhase(
+      '<p class="etiquette">Prépare-toi</p>' +
+      '<div class="decompte-chiffre" aria-live="assertive">3</div>'
+    );
+    decompteTick(3);
+  }
+
+  function decompteTick(n) {
+    var chiffre = ctx.overlay.querySelector(".decompte-chiffre");
+    if (!chiffre) return;
+    chiffre.textContent = n;
+    chiffre.classList.remove("pop");
+    void chiffre.offsetWidth; // relance l'animation à chaque seconde
+    chiffre.classList.add("pop");
+    Juice.vibrer(30);
+    ctx.decompte = setTimeout(function () {
+      if (!ctx) return;
+      ctx.decompte = null;
+      if (n > 1) {
+        decompteTick(n - 1);
+      } else {
+        Juice.vibrer(80);
+        phaseInitiale();
+      }
+    }, 1000);
+  }
+
+  function annulerDecompte() {
+    if (ctx && ctx.decompte) {
+      clearTimeout(ctx.decompte);
+      ctx.decompte = null;
+    }
+  }
+
+  // Première vraie phase selon le type de quête.
+  function phaseInitiale() {
+    if (ctx.quete.type === "series") {
+      phaseEffort(1);
+    } else if (ctx.quete.type === "minuterie") {
+      phaseMinuterie();
+    } else {
+      phaseActivite();
+    }
+  }
+
   // Quête simple : activité libre — cercle qui tourne, phrase
   // "… en cours", et on termine soi-même (Terminé ou »).
   function phaseActivite() {
@@ -234,7 +282,10 @@ var Session = (function () {
   // Le bouton "passer" (») : jamais culpabilisant, sans confirmation.
   function passer() {
     if (!ctx) return;
-    if (ctx.phase === "minuterie") {
+    if (ctx.phase === "decompte") {
+      annulerDecompte();
+      phaseInitiale();
+    } else if (ctx.phase === "minuterie") {
       finMinuterie();
     } else if (ctx.phase === "effort") {
       serieTerminee();
@@ -288,6 +339,7 @@ var Session = (function () {
   function fermer() {
     if (!ctx) return;
     var surFermer = ctx.surFermer;
+    annulerDecompte();
     arreterChrono();
     relacherWakeLock();
     ctx.overlay.remove();
@@ -308,6 +360,7 @@ var Session = (function () {
       serie: 0,
       chrono: null,
       intervalle: null,
+      decompte: null,
       wakeLock: null
     };
 
@@ -353,13 +406,7 @@ var Session = (function () {
     ctx.overlay = overlay;
     demanderWakeLock();
 
-    if (quete.type === "series") {
-      phaseEffort(1);
-    } else if (quete.type === "minuterie") {
-      phaseMinuterie();
-    } else {
-      phaseActivite();
-    }
+    phaseDecompte();
   }
 
   return {

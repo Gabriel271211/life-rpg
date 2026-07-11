@@ -120,6 +120,34 @@
   to { opacity: 1; transform: none; }
 }
 
+/* ----- Compte à rebours d'entrée : 3, 2, 1 ----- */
+.decompte-chiffre {
+  font-size: clamp(8rem, 46vw, 11rem);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #eef2f7 0%, #b9c9da 55%, var(--accent) 135%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter:
+    drop-shadow(0 0 22px var(--accent-lueur))
+    drop-shadow(0 0 70px var(--accent-doux));
+}
+
+/* Chaque seconde : le chiffre se pose, respire, puis s'estompe
+   juste avant le suivant. */
+.decompte-chiffre.pop {
+  animation: decompte-pop 1s ease-out;
+}
+
+@keyframes decompte-pop {
+  0% { opacity: 0; transform: scale(1.5); }
+  18% { opacity: 1; transform: scale(1); }
+  78% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.2; transform: scale(0.94); }
+}
+
 /* ----- Anneau de progression ----- */
 .anneau {
   position: relative;
