@@ -224,3 +224,71 @@
   display: flex;
   justify-content: center;
 }
+
+/* ----- Sauvegarde : export / import discret ----- */
+.sauvegarde {
+  margin-top: 52px;
+  padding-top: 22px;
+  border-top: 1px solid var(--bordure);
+  text-align: center;
+}
+
+.sauvegarde-boutons {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.sauvegarde-bouton {
+  padding: 9px 22px;
+  background: none;
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  color: var(--texte-second);
+  font-family: inherit;
+  font-size: 0.66rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.sauvegarde-bouton:active {
+  color: var(--accent);
+  border-color: var(--accent-lueur);
+}
+
+.sauvegarde-question {
+  margin-top: 14px;
+  font-size: 0.82rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+
+.sauvegarde-texte {
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  color: var(--texte-second);
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.sauvegarde-texte-accent {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.sauvegarde-message {
+  margin-top: 12px;
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--texte-second);
+}

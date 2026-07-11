@@ -164,10 +164,20 @@ var Etat = (function () {
     return JSON.parse(JSON.stringify(DEFAUT));
   }
 
+  // Écrit un état brut (import de sauvegarde) sans le migrer :
+  // la migration s'applique au prochain charger(), comme pour
+  // n'importe quel état ancien.
+  function remplacer(etatBrut) {
+    try {
+      localStorage.setItem(CLE, JSON.stringify(etatBrut));
+    } catch (e) {}
+  }
+
   return {
     charger: charger,
     sauvegarder: sauvegarder,
-    reinitialiser: reinitialiser
+    reinitialiser: reinitialiser,
+    remplacer: remplacer
   };
 })();
 
