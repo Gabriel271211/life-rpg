@@ -9,19 +9,25 @@ var Etat = (function () {
 
   var CLE = "life-rpg-etat-v1";
 
+  // État de TEST / SECOURS uniquement. Le vrai état d'un joueur est
+  // créé par l'onboarding (Templates.etatNeuf) : DEFAUT ne sert plus
+  // que de filet quand le stockage est indisponible, et de référence
+  // aux migrations qui complètent les vieilles sauvegardes (quêtes
+  // par id, blocs de séance). Rien ici n'est affiché à un joueur
+  // ayant traversé l'onboarding.
   var DEFAUT = {
-    nom: "Gabriel",
-    classe: "Athlète",
-    niveau: 12,
-    xp: 840,
-    streak: 6,
+    nom: "Aventurier",
+    classe: "Aventurier",
+    niveau: 1,
+    xp: 0,
+    streak: 0,
     streakValideAujourdhui: false,
     dernierJour: null,   // rempli à la date du jour par la migration
     lundiSemaine: null,  // rempli au lundi de la semaine par la migration
     stats: {
-      corps: { niveau: 8, xp: 130 },
-      esprit: { niveau: 5, xp: 90 },
-      discipline: { niveau: 11, xp: 210 }
+      corps: { niveau: 1, xp: 0 },
+      esprit: { niveau: 1, xp: 0 },
+      discipline: { niveau: 1, xp: 0 }
     },
     quetes: [
       {
@@ -62,7 +68,7 @@ var Etat = (function () {
       nom: "3 séances de sport complètes",
       xp: 150,
       stat: "corps",
-      progres: 1,
+      progres: 0,
       objectif: 3
     },
     quetePrincipale: {
@@ -79,9 +85,11 @@ var Etat = (function () {
       quetesValidees: 0,   // total historique de quêtes quotidiennes validées
       critiques: 0,        // total de coups critiques obtenus
       hebdosAccomplies: 0, // total de quêtes hebdo terminées
-      meilleurStreak: 6    // record de streak atteint (ne redescend jamais)
+      meilleurStreak: 0    // record de streak atteint (ne redescend jamais)
     },
-    cartesDebloquees: []
+    cartesDebloquees: [],
+    historique: {},
+    onboardingFait: true
   };
 
   // Ajoute les propriétés manquantes aux états sauvegardés par
@@ -117,6 +125,17 @@ var Etat = (function () {
     }
     if (!Array.isArray(etat.cartesDebloquees)) {
       etat.cartesDebloquees = [];
+      modifie = true;
+    }
+    // Les états d'avant l'onboarding sont considérés comme l'ayant
+    // fait : seul un état neuf (ou remis à false en debug) y passe.
+    if (typeof etat.onboardingFait !== "boolean") {
+      etat.onboardingFait = true;
+      modifie = true;
+    }
+    // Historique de progression : XP total gagné par jour ("YYYY-MM-DD").
+    if (!etat.historique || typeof etat.historique !== "object" || Array.isArray(etat.historique)) {
+      etat.historique = {};
       modifie = true;
     }
     // La séance guidée par défaut, ajoutée UNE seule fois aux états
@@ -282,5 +301,21 @@ var LifeRpgDebug = {
   reinitialiser: function () {
     Etat.reinitialiser();
     location.reload();
+  },
+  // Rejoue l'onboarding avec le personnage actuel : remet juste le
+  // flag, la garde redirige au rechargement. Terminer le parcours
+  // recrée un état neuf.
+  relancerOnboarding: function () {
+    var etat = Etat.charger();
+    etat.onboardingFait = false;
+    Etat.sauvegarder(etat);
+    location.href = "onboarding.html";
+  },
+  // Vrai premier lancement : efface tout et repart de zéro.
+  nouveauJoueur: function () {
+    try {
+      localStorage.removeItem("life-rpg-etat-v1");
+    } catch (e) {}
+    location.href = "onboarding.html";
   }
 };

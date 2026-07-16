@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr" class="rang-e">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0f">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icone-192.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Life RPG">
+  <title>Nouveau personnage — Life RPG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Saira:wght@300;600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/session.css">
+  <link rel="stylesheet" href="css/editeur.css">
+  <link rel="stylesheet" href="css/objectif.css">
+  <link rel="stylesheet" href="css/onboarding.css">
+</head>
+<body data-page="onboarding">
+
+  <main class="ecran onboarding">
+
+    <div class="onb-traits" aria-hidden="true">
+      <div class="onb-trait actif"></div>
+      <div class="onb-trait"></div>
+      <div class="onb-trait"></div>
+    </div>
+
+    <!-- Étape 1 — Identité -->
+    <section class="onb-etape" data-etape="1">
+      <p class="etiquette">Nouveau personnage</p>
+      <h1 class="onb-question">Comment t'appelles-tu ?</h1>
+      <form class="onb-formulaire" id="onb-form-nom" novalidate>
+        <input class="editeur-entree onb-prenom" id="onb-prenom" type="text"
+               maxlength="20" autocomplete="given-name" placeholder="Ton prénom"
+               aria-label="Ton prénom">
+        <p class="onb-erreur" id="onb-erreur-nom" hidden>Il te faut un nom pour entrer dans la légende.</p>
+        <button class="session-bouton onb-continuer" type="submit">Continuer</button>
+      </form>
+    </section>
+
+    <!-- Étape 2 — Objectif -->
+    <section class="onb-etape" data-etape="2" hidden>
+      <p class="etiquette">Ton objectif</p>
+      <h1 class="onb-question">Quelle est ta quête ?</h1>
+      <div class="onb-objectifs" id="onb-objectifs"></div>
+      <button class="session-bouton onb-continuer" id="onb-valider-objectif" type="button" disabled>Continuer</button>
+    </section>
+
+    <!-- Étape 3 — Révélation -->
+    <section class="onb-etape onb-revelation" data-etape="3" hidden>
+      <p class="etiquette rev-etiquette">Ton aventure commence</p>
+      <p class="rev-classe" id="rev-classe"></p>
+      <div class="rev-rang" aria-label="Rang E">
+        <div class="rev-halo" aria-hidden="true"></div>
+        <div class="rev-anneau rev-anneau-un" aria-hidden="true"></div>
+        <div class="rev-anneau rev-anneau-deux" aria-hidden="true"></div>
+        <div class="rev-lettre">E</div>
+      </div>
+      <p class="etiquette rev-rang-etiquette">Rang E</p>
+      <div class="rev-quete">
+        <p class="etiquette">Quête principale</p>
+        <p class="rev-quete-nom" id="rev-quete-nom"></p>
+      </div>
+      <button class="session-bouton rev-commencer" id="onb-commencer" type="button">Commencer</button>
+    </section>
+
+  </main>
+
+  <script src="js/jour.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/etat.js"></script>
+  <script src="js/objectif.js"></script>
+  <script src="js/onboarding.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

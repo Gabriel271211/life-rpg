@@ -8,8 +8,20 @@
   padding-top: 30px;
 }
 
-.qp-titre {
+/* Ligne titre + crayon (même langage que l'accueil) */
+.quete-entete-ligne {
   margin-top: 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.quete-entete-ligne .editeur-ouvrir {
+  margin-top: 8px;
+}
+
+.qp-titre {
   font-size: 1.9rem;
   font-weight: 800;
   line-height: 1.12;

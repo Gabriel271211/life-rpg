@@ -1,0 +1,69 @@
+/* ============================================
+   LIFE RPG — objectif.css
+   Choix d'objectif : cartes de templates,
+   partagées entre l'onboarding et le
+   changement d'objectif.
+   ============================================ */
+
+.objectif-grille {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.objectif-carte {
+  padding: 15px 17px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.objectif-carte:focus-visible {
+  outline: none;
+  border-color: rgba(var(--accent-rgb), 0.5);
+}
+
+/* Liseré accent sur la carte choisie */
+.objectif-carte.actif {
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.12);
+}
+
+.objectif-nom {
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.objectif-classe {
+  margin-top: 3px;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.objectif-description {
+  margin-top: 7px;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--texte-second);
+}
+
+/* Champ révélé par la carte "objectif personnalisé" */
+.objectif-perso-champ {
+  margin-top: 12px;
+}
+
+.objectif-perso-champ[hidden] {
+  display: none;
+}
+
+.objectif-perso-champ input {
+  width: 100%;
+}

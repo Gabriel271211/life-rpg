@@ -14,7 +14,7 @@
 // - Police Google Fonts : non interceptée, reste réseau.
 // ============================================
 
-var CACHE = "life-rpg-v2";
+var CACHE = "life-rpg-v3";
 
 var FICHIERS = [
   "./",
@@ -22,6 +22,7 @@ var FICHIERS = [
   "personnage.html",
   "collection.html",
   "quete.html",
+  "onboarding.html",
   "manifest.json",
   "css/base.css",
   "css/aura.css",
@@ -33,16 +34,23 @@ var FICHIERS = [
   "css/session.css",
   "css/revelation.css",
   "css/editeur.css",
+  "css/objectif.css",
+  "css/onboarding.css",
   "css/juice.css",
   "js/regles.js",
   "js/aura.js",
+  "js/garde.js",
   "js/jour.js",
   "js/cartes.js",
   "js/etat.js",
+  "js/templates.js",
   "js/juice.js",
   "js/revelation.js",
   "js/session.js",
   "js/editeur.js",
+  "js/editeur-principale.js",
+  "js/objectif.js",
+  "js/onboarding.js",
   "js/accueil.js",
   "js/personnage.js",
   "js/collection.js",

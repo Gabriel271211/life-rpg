@@ -47,7 +47,7 @@ var Aura = (function () {
         if (typeof niveau === "number") return niveau;
       }
     } catch (e) {}
-    return 12; // niveau de départ de l'état par défaut
+    return 1; // aucun état : aura grise du rang E, comme à l'onboarding
   }
 
   // theme-color : le fond très légèrement teinté par l'aura.

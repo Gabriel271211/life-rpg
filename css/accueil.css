@@ -159,6 +159,50 @@
   opacity: 0.45;
 }
 
+/* ----- Journée accomplie : petit bloc sobre sous la liste ----- */
+.jour-accompli {
+  margin-top: 18px;
+  padding: 20px 18px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid rgba(var(--accent-rgb), 0.22);
+  border-radius: 16px;
+  animation: entree-elt 0.35s ease backwards;
+}
+
+.jour-accompli[hidden] {
+  display: none;
+}
+
+.jour-accompli-titre {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.jour-accompli-xp {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--texte-second);
+}
+
+.jour-accompli-xp span {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.jour-accompli-suite {
+  margin-top: 8px;
+  font-size: 0.66rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
 /* Apparition en cascade des blocs fixes, après les cartes de quêtes */
 .qp-lien,
 .hebdo {

@@ -76,6 +76,15 @@ var Jour = (function () {
       delete quete.xpDonne;
     });
 
+    // L'historique de progression ne garde que les 90 derniers jours.
+    if (etat.historique) {
+      Object.keys(etat.historique).forEach(function (date) {
+        if (joursEcoules(date, aujourdhui) > 90) {
+          delete etat.historique[date];
+        }
+      });
+    }
+
     etat.streakValideAujourdhui = false;
     etat.dernierJour = aujourdhui;
     return true;

@@ -57,9 +57,20 @@ var Regles = (function () {
     return { actuel: actuel, suivant: suivant, progression: progression };
   }
 
+  // Historique de progression : XP total gagné par jour. La clé est
+  // etat.dernierJour, synchronisé à la date du jour au chargement —
+  // regles.js reste pur, sans lire l'horloge. Plancher à zéro : le
+  // décochage ne creuse jamais de dette.
+  function noterHistorique(etat, delta) {
+    if (!etat.historique || typeof etat.dernierJour !== "string") return;
+    var total = (etat.historique[etat.dernierJour] || 0) + delta;
+    etat.historique[etat.dernierJour] = Math.max(0, total);
+  }
+
   // Ajoute de l'XP au personnage et à la stat associée,
   // en gérant les montées de niveau successives.
   function gagnerXp(etat, quantite, statCle) {
+    noterHistorique(etat, quantite);
     etat.xp += quantite;
     while (etat.xp >= xpRequisNiveau(etat.niveau)) {
       etat.xp -= xpRequisNiveau(etat.niveau);
@@ -78,6 +89,7 @@ var Regles = (function () {
 
   // Retire de l'XP (quête décochée), en redescendant les niveaux si besoin.
   function retirerXp(etat, quantite, statCle) {
+    noterHistorique(etat, -quantite);
     etat.xp -= quantite;
     while (etat.xp < 0 && etat.niveau > 1) {
       etat.niveau -= 1;
@@ -123,6 +135,23 @@ var Regles = (function () {
     return null;
   }
 
+  // Rattrapage après édition de la quête principale : si l'objectif
+  // d'une étape en cours a été réduit sous son progrès, elle se
+  // complète (bonus compris) — le progrès n'est jamais volé.
+  // Retourne les étapes accomplies par ce rattrapage.
+  function rattraperQuetePrincipale(etat) {
+    var accomplies = [];
+    var etape = etapeActive(etat.quetePrincipale);
+    while (etape && etape.progres >= etape.objectif) {
+      etape.progres = etape.objectif;
+      etat.quetePrincipale.etapeActive += 1;
+      gagnerXp(etat, etape.bonusXp);
+      accomplies.push(etape);
+      etape = etapeActive(etat.quetePrincipale);
+    }
+    return accomplies;
+  }
+
   // -1 au progrès de l'étape active (plancher 0). Les étapes déjà
   // accomplies ne sont pas rouvertes : leur bonus reste acquis.
   function regresserQuetePrincipale(etat) {
@@ -139,6 +168,7 @@ var Regles = (function () {
     etapeActive: etapeActive,
     quetePrincipaleAccomplie: quetePrincipaleAccomplie,
     progresserQuetePrincipale: progresserQuetePrincipale,
+    rattraperQuetePrincipale: rattraperQuetePrincipale,
     regresserQuetePrincipale: regresserQuetePrincipale,
     xpRequisNiveau: xpRequisNiveau,
     xpRequisStat: xpRequisStat,

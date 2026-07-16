@@ -194,6 +194,67 @@
   color: var(--texte-second);
 }
 
+/* ----- Historique : 14 derniers jours ----- */
+.historique {
+  margin-top: 44px;
+}
+
+.historique-tete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.historique-total {
+  font-size: 0.78rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--texte-second);
+}
+
+.historique-total span {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--texte);
+}
+
+.historique-graphique {
+  margin-top: 14px;
+}
+
+.historique-graphique svg {
+  width: 100%;
+  height: 84px;
+}
+
+/* Jour à 0 : trace discrète ; jour actif : l'aura, avec son glow */
+.historique-graphique rect.vide {
+  fill: rgba(255, 255, 255, 0.06);
+}
+
+.historique-graphique rect.actif {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 5px var(--accent-lueur));
+}
+
+/* Aujourd'hui : légèrement plus lumineux */
+.historique-graphique rect.aujourdhui.actif {
+  fill: var(--accent-clair);
+  filter: drop-shadow(0 0 7px var(--accent-lueur));
+}
+
+.historique-reperes {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.56rem;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
 /* ----- Bilan de l'aventure ----- */
 .bilan {
   margin-top: 44px;

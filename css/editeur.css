@@ -249,6 +249,85 @@
   font-weight: 600;
 }
 
+/* ----- Éditeur de la quête principale ----- */
+.ep-etape {
+  align-items: flex-start;
+}
+
+/* Étape accomplie : verrouillée, grisée */
+.ep-etape.ep-accomplie {
+  opacity: 0.45;
+}
+
+.ep-etape.ep-accomplie .editeur-ligne-infos {
+  cursor: default;
+}
+
+.ep-etape-champs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ep-etape-nombres {
+  display: flex;
+  gap: 10px;
+}
+
+.ep-etape-nombres .editeur-champ {
+  flex: 1;
+  gap: 6px;
+}
+
+.ep-progres {
+  margin-top: 0;
+}
+
+.ep-ajouter {
+  margin-top: 14px;
+  align-self: flex-start;
+  color: var(--accent);
+}
+
+.ep-changer {
+  margin-top: 8px;
+  padding-bottom: 12px;
+}
+
+.ep-changer-lignes {
+  margin-top: 12px;
+}
+
+.ep-choix-titre {
+  margin-top: 8px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.ep-choix-grille {
+  margin-top: 18px;
+}
+
+.ep-choix-boutons {
+  margin-top: 26px;
+}
+
+.ep-choix-boutons .session-bouton:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.ep-choix-question {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--texte-second);
+}
+
 /* ----- Erreur + boutons du formulaire ----- */
 .editeur-erreur {
   font-size: 0.7rem;

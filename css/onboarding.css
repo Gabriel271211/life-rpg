@@ -1,0 +1,210 @@
+/* ============================================
+   LIFE RPG — onboarding.css
+   Création de personnage : trois étapes en
+   fondu dans la même page, sans nav basse.
+   ============================================ */
+
+.onboarding {
+  min-height: 100dvh;
+  padding-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ----- Indicateur discret : trois traits en haut ----- */
+.onb-traits {
+  padding-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+}
+
+.onb-trait {
+  width: 26px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.4s ease;
+}
+
+.onb-trait.actif {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-lueur);
+}
+
+/* ----- Étapes : une seule visible, fondu à chaque passage ----- */
+.onb-etape {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 48px;
+  animation: onb-fondu 0.45s ease;
+}
+
+.onb-etape[hidden] {
+  display: none;
+}
+
+@keyframes onb-fondu {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.onb-question {
+  margin-top: 10px;
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+
+/* ----- Étape 1 : identité ----- */
+.onb-formulaire {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.onb-prenom {
+  font-size: 1.15rem;
+  font-weight: 600;
+  padding: 15px 16px;
+}
+
+.onb-erreur {
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--texte-second);
+}
+
+.onb-erreur[hidden] {
+  display: none;
+}
+
+.onb-continuer {
+  margin-top: 10px;
+  align-self: center;
+}
+
+.onb-continuer:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ----- Étape 2 : objectifs ----- */
+.onb-objectifs {
+  margin-top: 24px;
+}
+
+.onb-etape[data-etape="2"] .onb-continuer {
+  margin-top: 26px;
+}
+
+/* ----- Étape 3 : révélation ----- */
+.onb-revelation {
+  align-items: center;
+  justify-content: center;
+  padding-top: 12px;
+  text-align: center;
+}
+
+.rev-etiquette {
+  letter-spacing: 0.34em;
+  animation: rev-apparition 0.8s ease 0.15s backwards;
+}
+
+/* La classe, en grand */
+.rev-classe {
+  margin-top: 12px;
+  font-size: 2.1rem;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  animation: rev-apparition 0.8s ease 0.45s backwards;
+}
+
+/* Le rang E, énorme, halo et anneaux — esprit montée de rang */
+.rev-rang {
+  position: relative;
+  margin-top: 8px;
+  width: min(74vw, 310px);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: rev-pose 2.2s ease-out 0.7s backwards;
+}
+
+@keyframes rev-pose {
+  from { opacity: 0; transform: scale(1.07); }
+  20% { opacity: 1; }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.rev-halo {
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.16), rgba(var(--accent-rgb), 0.05) 45%, transparent 70%);
+  pointer-events: none;
+}
+
+.rev-anneau {
+  position: absolute;
+  border: 1px solid;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.rev-anneau-un {
+  inset: 13%;
+  border-color: rgba(var(--accent-rgb), 0.16);
+}
+
+.rev-anneau-deux {
+  inset: 1%;
+  border-color: rgba(var(--accent-rgb), 0.06);
+}
+
+.rev-lettre {
+  font-size: clamp(9rem, 50vw, 12rem);
+  font-weight: 900;
+  line-height: 0.95;
+  background: linear-gradient(180deg, #eef2f7 0%, var(--accent-clair) 55%, var(--accent) 135%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter:
+    drop-shadow(0 0 22px rgba(var(--accent-rgb), 0.35))
+    drop-shadow(0 0 70px rgba(var(--accent-rgb), 0.18));
+}
+
+.rev-rang-etiquette {
+  animation: rev-apparition 0.8s ease 1.3s backwards;
+}
+
+.rev-quete {
+  margin-top: 26px;
+  animation: rev-apparition 0.8s ease 1.7s backwards;
+}
+
+.rev-quete-nom {
+  margin-top: 8px;
+  max-width: 300px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.rev-commencer {
+  margin-top: 34px;
+  animation: rev-apparition 0.7s ease 2.3s backwards;
+}
+
+@keyframes rev-apparition {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}

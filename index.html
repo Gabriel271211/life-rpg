@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Life RPG">
+  <script src="js/garde.js"></script>
   <script src="js/aura.js"></script>
   <title>Accueil — Life RPG</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,12 +35,12 @@
         <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
           <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/>
         </svg>
-        <span class="puce-valeur" id="puce-streak">6</span>
+        <span class="puce-valeur" id="puce-streak">—</span>
         <span class="puce-unite">jours</span>
       </div>
       <div class="puce">
         <span class="puce-unite">Niv.</span>
-        <span class="puce-valeur" id="puce-niveau">12</span>
+        <span class="puce-valeur" id="puce-niveau">—</span>
       </div>
     </header>
 
@@ -58,14 +59,20 @@
 
     <section class="quetes" id="quetes" aria-label="Quêtes quotidiennes"></section>
 
+    <section class="jour-accompli" id="jour-accompli" hidden aria-label="Journée accomplie">
+      <p class="jour-accompli-titre">Toutes tes quêtes du jour sont accomplies.</p>
+      <p class="jour-accompli-xp"><span id="jour-accompli-xp">0</span> XP aujourd'hui</p>
+      <p class="jour-accompli-suite">Reviens demain.</p>
+    </section>
+
     <a class="qp-lien" href="quete.html" aria-label="Voir la quête principale">
       <svg class="qp-icone" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M12 21c-4-3.8-6-7-6-9.8a6 6 0 1 1 12 0C18 14 16 17.2 12 21z"/>
         <circle cx="12" cy="11" r="2.2"/>
       </svg>
       <span class="qp-libelle">Quête principale</span>
-      <span class="qp-etape" id="qp-etape">Fondations</span>
-      <span class="qp-progres" id="qp-progres">0/15</span>
+      <span class="qp-etape" id="qp-etape"></span>
+      <span class="qp-progres" id="qp-progres"></span>
       <svg class="qp-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M9 5l7 7-7 7"/>
       </svg>
@@ -76,9 +83,9 @@
       <article class="quete-hebdo" id="hebdo-carte">
         <div class="hebdo-haut">
           <div class="quete-infos">
-            <p class="quete-nom" id="hebdo-nom">3 séances de sport complètes</p>
+            <p class="quete-nom" id="hebdo-nom"></p>
             <div class="quete-meta">
-              <span class="quete-xp" id="hebdo-xp">+150 XP</span>
+              <span class="quete-xp" id="hebdo-xp"></span>
             </div>
           </div>
           <button class="quete-cercle" id="hebdo-bouton" type="button" aria-label="Progresser dans la quête hebdomadaire">
@@ -89,7 +96,7 @@
         </div>
         <div class="hebdo-progression">
           <div class="hebdo-segments" id="hebdo-segments" aria-hidden="true"></div>
-          <p class="hebdo-compte" id="hebdo-compte">1 <span>/ 3</span></p>
+          <p class="hebdo-compte" id="hebdo-compte"></p>
         </div>
         <button class="hebdo-annuler" id="hebdo-annuler" type="button" hidden>annuler</button>
       </article>

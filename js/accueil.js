@@ -172,10 +172,26 @@
     el.bouton.setAttribute("aria-pressed", String(quete.faite));
   }
 
+  // --- Journée accomplie : le moment de fierté quotidien ---
+
+  var jourAccompli = document.getElementById("jour-accompli");
+  var jourAccompliXp = document.getElementById("jour-accompli-xp");
+
+  function majJourAccompli() {
+    var toutFait = etat.quetes.length > 0 &&
+      etat.quetes.every(function (q) { return q.faite; });
+    if (toutFait) {
+      jourAccompliXp.textContent =
+        (etat.historique && etat.historique[etat.dernierJour]) || 0;
+    }
+    jourAccompli.hidden = !toutFait;
+  }
+
   function majApresChangement() {
     majPuces();
     majQuetePrincipale();
     rendreHebdo();
+    majJourAccompli();
   }
 
   function devaliderParTap(quete) {
@@ -272,6 +288,7 @@
       rendreHebdo();
       majPuces();
       majQuetePrincipale();
+      majJourAccompli();
     });
   });
 
@@ -384,5 +401,6 @@
   majPuces();
   majQuetePrincipale();
   rendreHebdo();
+  majJourAccompli();
 
 })();

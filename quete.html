@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Life RPG">
+  <script src="js/garde.js"></script>
   <script src="js/aura.js"></script>
   <title>Quête principale — Life RPG</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +21,9 @@
   <link rel="stylesheet" href="css/aura.css">
   <link rel="stylesheet" href="css/quete.css">
   <link rel="stylesheet" href="css/juice.css">
+  <link rel="stylesheet" href="css/session.css">
+  <link rel="stylesheet" href="css/editeur.css">
+  <link rel="stylesheet" href="css/objectif.css">
 </head>
 <body data-page="quete">
 
@@ -27,8 +31,16 @@
 
     <header class="quete-entete">
       <p class="etiquette">Quête principale</p>
-      <h1 class="qp-titre" id="qp-titre">Transformation physique</h1>
-      <p class="qp-description" id="qp-description">Devenir la meilleure version de toi-même, séance après séance.</p>
+      <div class="quete-entete-ligne">
+        <h1 class="qp-titre" id="qp-titre"></h1>
+        <button class="editeur-ouvrir" id="qp-editer" type="button" aria-label="Modifier ta quête principale">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 20l1.2-4.2L16.7 4.3a2 2 0 0 1 2.9 2.9L8.2 18.8 4 20z"/>
+            <path d="M14.5 6.5l3 3"/>
+          </svg>
+        </button>
+      </div>
+      <p class="qp-description" id="qp-description"></p>
     </header>
 
     <ol class="etapes" id="etapes"></ol>
@@ -75,6 +87,9 @@
   <script src="js/cartes.js"></script>
   <script src="js/etat.js"></script>
   <script src="js/juice.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/objectif.js"></script>
+  <script src="js/editeur-principale.js"></script>
   <script src="js/quete.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/pwa.js"></script>

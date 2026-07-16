@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Life RPG">
+  <script src="js/garde.js"></script>
   <script src="js/aura.js"></script>
   <title>Personnage — Life RPG</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,27 +28,27 @@
 
     <header class="perso-entete">
       <p class="etiquette">Personnage</p>
-      <h1 class="perso-nom" id="perso-nom">Gabriel</h1>
-      <p class="perso-classe" id="perso-classe">Athlète</p>
+      <h1 class="perso-nom" id="perso-nom"></h1>
+      <p class="perso-classe" id="perso-classe"></p>
     </header>
 
     <section class="rang" aria-label="Rang">
       <div class="rang-halo" aria-hidden="true"></div>
       <p class="etiquette rang-etiquette">Rang</p>
-      <div class="rang-lettre" id="rang-lettre">D</div>
+      <div class="rang-lettre" id="rang-lettre"></div>
       <div class="rang-prochain">
         <div class="barre rang-prochain-barre">
           <div class="barre-remplie" id="rang-prochain-remplie"></div>
         </div>
-        <p class="rang-prochain-texte" id="rang-prochain-texte">Rang C au niveau 20</p>
+        <p class="rang-prochain-texte" id="rang-prochain-texte"></p>
       </div>
     </section>
 
     <section class="niveau" aria-label="Niveau">
       <div class="niveau-ligne">
-        <span class="niveau-num" id="niveau-num">12</span>
+        <span class="niveau-num" id="niveau-num">—</span>
         <span class="etiquette">Niveau</span>
-        <span class="niveau-xp" id="niveau-xp"><strong>840</strong> / 1200 XP</span>
+        <span class="niveau-xp" id="niveau-xp">—</span>
       </div>
       <div class="barre">
         <div class="barre-remplie" id="xp-remplie"></div>
@@ -58,49 +59,61 @@
       <div class="stat" data-stat="corps">
         <div class="stat-ligne">
           <span class="stat-nom">Corps</span>
-          <span class="stat-niveau">8</span>
+          <span class="stat-niveau">—</span>
         </div>
         <div class="barre"><div class="barre-remplie"></div></div>
         <div class="stat-detail">
-          <span class="stat-prochain">Prochain : niv. 9</span>
-          <span class="stat-xp">130 / 240 XP</span>
+          <span class="stat-prochain"></span>
+          <span class="stat-xp">—</span>
         </div>
       </div>
       <div class="stat" data-stat="esprit">
         <div class="stat-ligne">
           <span class="stat-nom">Esprit</span>
-          <span class="stat-niveau">5</span>
+          <span class="stat-niveau">—</span>
         </div>
         <div class="barre"><div class="barre-remplie"></div></div>
         <div class="stat-detail">
-          <span class="stat-prochain">Prochain : niv. 6</span>
-          <span class="stat-xp">90 / 150 XP</span>
+          <span class="stat-prochain"></span>
+          <span class="stat-xp">—</span>
         </div>
       </div>
       <div class="stat" data-stat="discipline">
         <div class="stat-ligne">
           <span class="stat-nom">Discipline</span>
-          <span class="stat-niveau">11</span>
+          <span class="stat-niveau">—</span>
         </div>
         <div class="barre"><div class="barre-remplie"></div></div>
         <div class="stat-detail">
-          <span class="stat-prochain">Prochain : niv. 12</span>
-          <span class="stat-xp">210 / 330 XP</span>
+          <span class="stat-prochain"></span>
+          <span class="stat-xp">—</span>
         </div>
+      </div>
+    </section>
+
+    <section class="historique" aria-label="Progression des 14 derniers jours">
+      <div class="historique-tete">
+        <p class="etiquette">14 derniers jours</p>
+        <p class="historique-total"><span id="historique-total">—</span> XP</p>
+      </div>
+      <div class="historique-graphique" id="historique-graphique"></div>
+      <div class="historique-reperes" aria-hidden="true">
+        <span>il y a 14 j</span>
+        <span>aujourd'hui</span>
       </div>
     </section>
 
     <section class="bilan" aria-label="Bilan de l'aventure">
       <div class="bilan-item">
-        <span class="bilan-valeur" id="bilan-quetes">0</span>
+        <span class="bilan-valeur" id="bilan-quetes">—</span>
         <span class="etiquette">Quêtes</span>
       </div>
       <div class="bilan-item">
-        <span class="bilan-valeur" id="bilan-critiques">0</span>
+        <span class="bilan-valeur" id="bilan-critiques">—</span>
         <span class="etiquette">Critiques</span>
       </div>
       <div class="bilan-item">
-        <span class="bilan-valeur" id="bilan-record">0</span>
+        <span class="bilan-valeur" id="bilan-record">—</span>
         <span class="etiquette">Record</span>
       </div>
     </section>
@@ -110,7 +123,7 @@
         <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
           <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/>
         </svg>
-        <span class="puce-valeur" id="streak-valeur">6</span>
+        <span class="puce-valeur" id="streak-valeur">—</span>
         <span class="puce-unite">jours de suite</span>
       </div>
     </div>
