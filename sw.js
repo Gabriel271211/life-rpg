@@ -14,7 +14,11 @@
 // - Police Google Fonts : non interceptée, reste réseau.
 // ============================================
 
-var CACHE = "life-rpg-v3";
+// Version à incrémenter à chaque déploiement qui modifie plusieurs
+// fichiers JS interdépendants : le nouveau worker ré-installe un
+// pré-cache complet et cohérent, au lieu de laisser le rafraîchissement
+// en arrière-plan mélanger anciens et nouveaux fichiers.
+var CACHE = "life-rpg-v4";
 
 var FICHIERS = [
   "./",

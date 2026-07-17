@@ -345,7 +345,7 @@
 
   // Le tap manuel reste possible quel que soit le lien : une action
   // faite hors app compte aussi.
-  hebdoBouton.addEventListener("click", function () {
+  function progresserHebdoManuel() {
     var niveauAvant = etat.niveau;
     var res = Regles.progresserHebdo(etat);
     if (!res) return;
@@ -368,9 +368,22 @@
 
     rendreHebdo();
     majPuces();
+  }
+
+  hebdoBouton.addEventListener("click", function (e) {
+    e.stopPropagation();
+    progresserHebdoManuel();
   });
 
-  hebdoAnnuler.addEventListener("click", function () {
+  // Comme les quêtes du jour : la carte entière réagit au tap,
+  // pas seulement le cercle. "annuler" garde son propre rôle.
+  hebdoCarte.addEventListener("click", function (e) {
+    if (e.target.closest("#hebdo-annuler")) return;
+    progresserHebdoManuel();
+  });
+
+  hebdoAnnuler.addEventListener("click", function (e) {
+    e.stopPropagation();
     if (etat.hebdo.progres === 0) return;
     // Annuler retire un progrès ; si l'hebdo était accomplie, elle se
     // rouvre et l'XP donné est retiré à l'identique (les cartes

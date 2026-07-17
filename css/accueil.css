@@ -275,6 +275,12 @@
   background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.09), rgba(var(--accent-rgb), 0.03)), var(--surface);
   border: 1px solid rgba(var(--accent-rgb), 0.22);
   border-radius: 16px;
+  /* Comme les quêtes du jour : la carte entière réagit au tap */
+  cursor: pointer;
+}
+
+.quete-hebdo.accomplie {
+  cursor: default;
 }
 
 .quete-hebdo .quete-nom {
