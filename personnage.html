@@ -133,6 +133,7 @@
       <div class="sauvegarde-boutons" id="sauvegarde-actions">
         <button class="sauvegarde-bouton" id="sauvegarde-exporter" type="button">Exporter</button>
         <button class="sauvegarde-bouton" id="sauvegarde-importer" type="button">Importer</button>
+        <button class="sauvegarde-bouton" id="sauvegarde-quitter" type="button">Quitter</button>
       </div>
       <input type="file" id="sauvegarde-fichier" accept=".json,application/json" hidden>
       <div class="sauvegarde-confirmation" id="sauvegarde-confirmation" hidden>
@@ -140,6 +141,13 @@
         <div class="sauvegarde-boutons">
           <button class="sauvegarde-texte sauvegarde-texte-accent" id="sauvegarde-confirmer" type="button">Remplacer</button>
           <button class="sauvegarde-texte" id="sauvegarde-abandonner" type="button">Annuler</button>
+        </div>
+      </div>
+      <div class="sauvegarde-confirmation" id="quitter-confirmation" hidden>
+        <p class="sauvegarde-question">Abandonner ce personnage ? Sa progression sera effacée pour toujours.</p>
+        <div class="sauvegarde-boutons">
+          <button class="sauvegarde-texte sauvegarde-texte-accent" id="quitter-confirmer" type="button">Abandonner</button>
+          <button class="sauvegarde-texte" id="quitter-annuler" type="button">Annuler</button>
         </div>
       </div>
       <p class="sauvegarde-message" id="sauvegarde-message" hidden></p>

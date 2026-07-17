@@ -69,7 +69,8 @@ var Etat = (function () {
       xp: 150,
       stat: "corps",
       progres: 0,
-      objectif: 3
+      objectif: 3,
+      lien: "seance"
     },
     quetePrincipale: {
       titre: "Transformation physique",
@@ -136,6 +137,28 @@ var Etat = (function () {
     // Historique de progression : XP total gagné par jour ("YYYY-MM-DD").
     if (!etat.historique || typeof etat.historique !== "object" || Array.isArray(etat.historique)) {
       etat.historique = {};
+      modifie = true;
+    }
+    // Lien de progression automatique de l'hebdo : déduit du nom si
+    // l'hebdo vient d'un template connu (noms actuels et historiques),
+    // sinon null (progression manuelle) — une hebdo personnalisée ne
+    // se met pas à avancer toute seule.
+    if (etat.hebdo && !("lien" in etat.hebdo)) {
+      var LIENS_CONNUS = {
+        "3 séances de sport complètes": "seance",
+        "3 séances complètes": "seance",
+        "5 sessions de révision": "minuterie:esprit",
+        "Lire 5 jours cette semaine": "minuterie:esprit",
+        "4 sessions de lecture": "minuterie:esprit",
+        "4 sessions de création": "minuterie:esprit",
+        "5 matins maîtrisés": "journee",
+        "6 journées avec toutes les quêtes validées": "journee",
+        "5 jours d'action vers ton objectif": "quete",
+        "5 quêtes accomplies dans la semaine": "quete"
+      };
+      etat.hebdo.lien = Object.prototype.hasOwnProperty.call(LIENS_CONNUS, etat.hebdo.nom)
+        ? LIENS_CONNUS[etat.hebdo.nom]
+        : null;
       modifie = true;
     }
     // La séance guidée par défaut, ajoutée UNE seule fois aux états

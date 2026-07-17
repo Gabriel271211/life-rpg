@@ -249,6 +249,15 @@
   font-weight: 600;
 }
 
+/* Lien de progression automatique de l'hebdo (lecture seule) */
+.editeur-hebdo-lien {
+  margin-top: -8px;
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
 /* ----- Éditeur de la quête principale ----- */
 .ep-etape {
   align-items: flex-start;

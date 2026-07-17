@@ -105,18 +105,14 @@
     etat.compteurs.quetesValidees += 1;
     if (critique) etat.compteurs.critiques += 1;
 
-    // La séance guidée compte comme une séance de sport de la
-    // semaine : elle fait avancer la quête hebdomadaire, avec le
-    // gain d'XP habituel si l'objectif est atteint.
-    if (quete.type === "seance" && !hebdoEstAccomplie()) {
-      etat.hebdo.progres += 1;
-      if (hebdoEstAccomplie()) {
-        var critiqueHebdo = Regles.lancerCritique();
-        etat.hebdo.xpDonne = etat.hebdo.xp * (critiqueHebdo ? Regles.MULTIPLICATEUR_CRITIQUE : 1);
-        Regles.gagnerXp(etat, etat.hebdo.xpDonne, etat.hebdo.stat);
-        etat.compteurs.hebdosAccomplies += 1;
-        if (critiqueHebdo) etat.compteurs.critiques += 1;
-      }
+    // Progression automatique de l'hebdo selon son lien (séance,
+    // minuterie d'une stat, toute quête...). Le marqueur hebdoCompte
+    // retient que CETTE quête a fait avancer l'hebdo : le décochage
+    // retirera exactement ce progrès-là, et rien d'autre.
+    var hebdoProgres = false;
+    if (Regles.queteCompteDansHebdo(etat.hebdo, quete)) {
+      hebdoProgres = Regles.progresserHebdo(etat) !== null;
+      if (hebdoProgres) quete.hebdoCompte = true;
     }
 
     var nouvellesCartes = Cartes.verifier(etat);
@@ -127,7 +123,8 @@
       xpDonne: quete.xpDonne,
       etapeFinie: etapeFinie,
       niveauAvant: niveauAvant,
-      nouvellesCartes: nouvellesCartes
+      nouvellesCartes: nouvellesCartes,
+      hebdoProgres: hebdoProgres
     };
   }
 
@@ -146,19 +143,12 @@
       etat.compteurs.critiques = Math.max(0, etat.compteurs.critiques - 1);
     }
 
-    // Décocher une séance retire la séance de sport de la semaine,
-    // et rouvre l'hebdo si c'est elle qui l'avait accomplie.
-    if (quete.type === "seance" && etat.hebdo.progres > 0) {
-      if (hebdoEstAccomplie() && etat.hebdo.xpDonne) {
-        var hebdoCritique = etat.hebdo.xpDonne > etat.hebdo.xp;
-        Regles.retirerXp(etat, etat.hebdo.xpDonne, etat.hebdo.stat);
-        delete etat.hebdo.xpDonne;
-        etat.compteurs.hebdosAccomplies = Math.max(0, etat.compteurs.hebdosAccomplies - 1);
-        if (hebdoCritique) {
-          etat.compteurs.critiques = Math.max(0, etat.compteurs.critiques - 1);
-        }
-      }
-      etat.hebdo.progres -= 1;
+    // Si cette quête avait fait avancer l'hebdo (progression
+    // automatique), son décochage retire ce progrès — et rouvre
+    // l'hebdo si c'est lui qui l'avait accomplie.
+    if (quete.hebdoCompte) {
+      Regles.regresserHebdo(etat);
+      delete quete.hebdoCompte;
     }
 
     Etat.sauvegarder(etat);
@@ -209,17 +199,31 @@
     setTimeout(function () { el.carte.classList.remove("eclat"); }, 700);
   }
 
+  // Étiquette du flottant de progression automatique, selon le lien.
+  function libelleProgresHebdo() {
+    return etat.hebdo.lien === "seance" ? "+1 séance" : "+1";
+  }
+
   // La session est le SEUL moyen de valider une quête, quel que soit
   // son type. À la fin, elle valide par le chemin classique.
   function ouvrirSession(quete) {
+    var hebdoAvancee = false;
     Session.ouvrir(quete, function () {
       var res = validerQuete(quete);
+      hebdoAvancee = res.hebdoProgres;
       majCarte(quete);
       majApresChangement();
       afficherBandeaux(res.etapeFinie, res.niveauAvant, res.nouvellesCartes);
       return res;
     }, function () {
-      if (quete.faite) eclatCarte(quete);
+      if (quete.faite) {
+        eclatCarte(quete);
+        // La session a fait avancer l'hebdo : petit flottant sur sa
+        // carte au retour, pour relier la session à la semaine.
+        if (hebdoAvancee) {
+          Juice.xpFlottant(hebdoCarte, libelleProgresHebdo(), false);
+        }
+      }
     });
   }
 
@@ -316,7 +320,7 @@
   var hebdoAnnuler = document.getElementById("hebdo-annuler");
 
   function hebdoEstAccomplie() {
-    return etat.hebdo.progres >= etat.hebdo.objectif;
+    return Regles.hebdoAccomplie(etat.hebdo);
   }
 
   function rendreHebdo() {
@@ -339,27 +343,20 @@
     hebdoAnnuler.hidden = h.progres === 0;
   }
 
+  // Le tap manuel reste possible quel que soit le lien : une action
+  // faite hors app compte aussi.
   hebdoBouton.addEventListener("click", function () {
-    var h = etat.hebdo;
-    if (hebdoEstAccomplie()) return;
-    h.progres += 1;
+    var niveauAvant = etat.niveau;
+    var res = Regles.progresserHebdo(etat);
+    if (!res) return;
 
-    if (hebdoEstAccomplie()) {
-      // Objectif atteint : gain de l'XP hebdomadaire (critique possible).
-      var critique = Regles.lancerCritique();
-      h.xpDonne = h.xp * (critique ? Regles.MULTIPLICATEUR_CRITIQUE : 1);
-
-      var niveauAvant = etat.niveau;
-      Regles.gagnerXp(etat, h.xpDonne, h.stat);
-      etat.compteurs.hebdosAccomplies += 1;
-      if (critique) etat.compteurs.critiques += 1;
+    if (res.accomplie) {
       var nouvellesCartes = Cartes.verifier(etat);
       Etat.sauvegarder(etat);
-
       Juice.xpFlottant(
         hebdoBouton,
-        (critique ? "CRITIQUE ! +" : "+") + h.xpDonne + " XP",
-        critique
+        (res.critique ? "CRITIQUE ! +" : "+") + etat.hebdo.xpDonne + " XP",
+        res.critique
       );
       Juice.vibrer(nouvellesCartes.length > 0 ? 70 : 40);
       afficherBandeaux(null, niveauAvant, nouvellesCartes);
@@ -374,24 +371,13 @@
   });
 
   hebdoAnnuler.addEventListener("click", function () {
-    var h = etat.hebdo;
-    if (h.progres === 0) return;
-
-    // Annuler sur une hebdo accomplie : on retire exactement
-    // l'XP donné et on rouvre la quête (les compteurs redescendent,
-    // les cartes débloquées restent débloquées).
-    if (hebdoEstAccomplie() && h.xpDonne) {
-      var etaitCritique = h.xpDonne > h.xp;
-      var niveauAvant = etat.niveau;
-      Regles.retirerXp(etat, h.xpDonne, h.stat);
-      majAuraSansCeremonie(niveauAvant);
-      delete h.xpDonne;
-      etat.compteurs.hebdosAccomplies = Math.max(0, etat.compteurs.hebdosAccomplies - 1);
-      if (etaitCritique) {
-        etat.compteurs.critiques = Math.max(0, etat.compteurs.critiques - 1);
-      }
-    }
-    h.progres -= 1;
+    if (etat.hebdo.progres === 0) return;
+    // Annuler retire un progrès ; si l'hebdo était accomplie, elle se
+    // rouvre et l'XP donné est retiré à l'identique (les cartes
+    // débloquées restent débloquées).
+    var niveauAvant = etat.niveau;
+    Regles.regresserHebdo(etat);
+    majAuraSansCeremonie(niveauAvant);
     Etat.sauvegarder(etat);
 
     rendreHebdo();

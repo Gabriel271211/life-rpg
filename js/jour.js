@@ -71,9 +71,20 @@ var Jour = (function () {
       etat.streak = 0;
     }
 
+    // Hebdo liée à la journée accomplie : la journée qui se ferme
+    // compte (+1, une seule fois) si toutes ses quêtes étaient
+    // validées — avant le reset, l'XP éventuel crédité à ce jour-là.
+    // Regles est chargé avant jour.js sur tous les écrans.
+    if (etat.hebdo && etat.hebdo.lien === "journee" &&
+        etat.quetes.length > 0 &&
+        etat.quetes.every(function (q) { return q.faite; })) {
+      Regles.progresserHebdo(etat);
+    }
+
     etat.quetes.forEach(function (quete) {
       quete.faite = false;
       delete quete.xpDonne;
+      delete quete.hebdoCompte;
     });
 
     // L'historique de progression ne garde que les 90 derniers jours.

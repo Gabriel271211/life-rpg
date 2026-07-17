@@ -32,8 +32,23 @@ une classe, un rang et des stats qui montent grâce à tes actions réelles
 - **minuterie** — durée fixe avec anneau de progression, pause possible.
 - **series** — N séries d'un effort, entrecoupées de repos chronométrés.
 - **seance** — enchaînement guidé de blocs (échauffement, exercices, repos,
-  étirements), avec écran de préparation avant chaque exercice. Valider une
-  séance fait aussi progresser la quête hebdomadaire.
+  étirements), avec écran de préparation avant chaque exercice.
+
+## Quête hebdomadaire
+
+Chaque template apporte une hebdo cohérente avec sa discipline. Son champ
+`lien` définit ce qui la fait progresser automatiquement, en plus du tap
+manuel (toujours possible, « annuler » aussi) :
+
+- `"seance"` — une séance terminée compte (+1, flottant « +1 séance »)
+- `"minuterie:esprit"` — une session minutée de la stat compte
+- `"journee"` — une journée avec toutes les quêtes validées compte
+  (appliqué au changement de jour)
+- `"quete"` — toute quête quotidienne validée compte
+- `null` — progression manuelle uniquement (ex. Business, actions hors app)
+
+Le décochage d'une quête retire exactement le progrès automatique qu'elle
+avait apporté (marqueur `hebdoCompte`).
 
 ## Architecture
 

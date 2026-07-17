@@ -311,6 +311,9 @@ var Editeur = (function () {
         champTexte("Nom", "nom", 60) +
         champNombre("XP (50 à 300)", "xp", BORNES.hebdoXp) +
         champNombre("Objectif par semaine (1 à 7)", "objectif", BORNES.objectif) +
+        // Le lien de progression automatique se lit, il ne s'édite
+        // pas encore : la phrase vient de Regles.descriptionLienHebdo.
+        '<p class="editeur-hebdo-lien"></p>' +
         '<p class="editeur-erreur" hidden></p>' +
         '<div class="editeur-formulaire-boutons">' +
           '<button class="session-bouton" type="submit">Enregistrer</button>' +
@@ -324,6 +327,8 @@ var Editeur = (function () {
     form.nom.value = h.nom;
     form.xp.value = h.xp;
     form.objectif.value = h.objectif;
+    corps.querySelector(".editeur-hebdo-lien").textContent =
+      Regles.descriptionLienHebdo(h.lien);
 
     form.querySelector('[data-role="annuler"]').addEventListener("click", vueListe);
 

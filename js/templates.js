@@ -61,7 +61,7 @@ var Templates = (function () {
           type: "minuterie", duree: 600
         }
       ],
-      hebdo: { nom: "3 séances de sport complètes", xp: 150, stat: "corps", objectif: 3 }
+      hebdo: { nom: "3 séances complètes", xp: 150, stat: "corps", objectif: 3, lien: "seance" }
     },
     {
       id: "etudes",
@@ -91,7 +91,7 @@ var Templates = (function () {
           type: "simple", enCours: "Planification en cours"
         }
       ],
-      hebdo: { nom: "5 sessions de révision", xp: 150, stat: "esprit", objectif: 5 }
+      hebdo: { nom: "5 sessions de révision", xp: 150, stat: "esprit", objectif: 5, lien: "minuterie:esprit" }
     },
     {
       id: "business",
@@ -121,7 +121,9 @@ var Templates = (function () {
           type: "minuterie", duree: 2700
         }
       ],
-      hebdo: { nom: "5 journées d'action pour ton projet", xp: 200, stat: "discipline", objectif: 5 }
+      // Une action business se fait souvent hors de l'app :
+      // progression manuelle uniquement (lien null).
+      hebdo: { nom: "5 actions concrètes pour ton business", xp: 180, stat: "discipline", objectif: 5, lien: null }
     },
     {
       id: "lecture",
@@ -147,7 +149,7 @@ var Templates = (function () {
           type: "simple", enCours: "Prise de notes en cours"
         }
       ],
-      hebdo: { nom: "Lire 5 jours cette semaine", xp: 150, stat: "esprit", objectif: 5 }
+      hebdo: { nom: "4 sessions de lecture", xp: 120, stat: "esprit", objectif: 4, lien: "minuterie:esprit" }
     },
     {
       id: "discipline",
@@ -177,7 +179,7 @@ var Templates = (function () {
           type: "simple", enCours: "Planification en cours"
         }
       ],
-      hebdo: { nom: "5 matins maîtrisés", xp: 150, stat: "discipline", objectif: 5 }
+      hebdo: { nom: "6 journées avec toutes les quêtes validées", xp: 200, stat: "discipline", objectif: 6, lien: "journee" }
     },
     {
       id: "creation",
@@ -207,7 +209,7 @@ var Templates = (function () {
           type: "simple", enCours: "Préparation en cours"
         }
       ],
-      hebdo: { nom: "4 sessions de création", xp: 150, stat: "esprit", objectif: 4 }
+      hebdo: { nom: "4 sessions de création", xp: 150, stat: "esprit", objectif: 4, lien: "minuterie:esprit" }
     }
   ];
 
@@ -254,7 +256,7 @@ var Templates = (function () {
           type: "simple", enCours: "Préparation en cours"
         }
       ],
-      hebdo: { nom: "5 jours d'action vers ton objectif", xp: 150, stat: "discipline", objectif: 5 }
+      hebdo: { nom: "5 quêtes accomplies dans la semaine", xp: 150, stat: "discipline", objectif: 5, lien: "quete" }
     };
   }
 

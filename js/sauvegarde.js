@@ -14,6 +14,10 @@
   var boutonConfirmer = document.getElementById("sauvegarde-confirmer");
   var boutonAbandonner = document.getElementById("sauvegarde-abandonner");
   var message = document.getElementById("sauvegarde-message");
+  var boutonQuitter = document.getElementById("sauvegarde-quitter");
+  var quitterConfirmation = document.getElementById("quitter-confirmation");
+  var quitterConfirmer = document.getElementById("quitter-confirmer");
+  var quitterAnnuler = document.getElementById("quitter-annuler");
 
   // État importé en attente de confirmation.
   var enAttente = null;
@@ -107,5 +111,26 @@
   });
 
   boutonAbandonner.addEventListener("click", fermerConfirmation);
+
+  // --- Quitter : abandonner ce personnage et repartir de zéro ---
+  // Confirmation inline (jamais de popup native). Tout est effacé :
+  // la garde renvoie vers l'onboarding, comme au premier lancement.
+  boutonQuitter.addEventListener("click", function () {
+    message.hidden = true;
+    actions.hidden = true;
+    quitterConfirmation.hidden = false;
+  });
+
+  quitterAnnuler.addEventListener("click", function () {
+    quitterConfirmation.hidden = true;
+    actions.hidden = false;
+  });
+
+  quitterConfirmer.addEventListener("click", function () {
+    try {
+      localStorage.removeItem("life-rpg-etat-v1");
+    } catch (e) {}
+    location.href = "onboarding.html";
+  });
 
 })();
