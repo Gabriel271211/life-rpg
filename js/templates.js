@@ -15,6 +15,27 @@ var Templates = (function () {
     { nom: "Dépassement", objectif: 80, bonusXp: 800 }
   ];
 
+  // La séance guidée du template Sport, partagée entre la quête
+  // quotidienne et la session de l'hebdo. Toujours copiée avant
+  // d'entrer dans l'état (quetesDe / hebdoDe).
+  var BLOCS_SEANCE = [
+    { nom: "Échauffement", detail: "Mobilité articulaire", duree: 120,
+      explication: "Cercles de bras, rotations du bassin, montées de genoux : réveille chaque articulation en douceur." },
+    { nom: "Pompes", detail: "15 répétitions",
+      explication: "Mains sous les épaules, corps bien gainé : descends la poitrine près du sol, remonte sans cambrer." },
+    { nom: "Repos", duree: 60, repos: true },
+    { nom: "Squats", detail: "20 répétitions",
+      explication: "Pieds largeur d'épaules, dos droit : descends comme pour t'asseoir, talons au sol." },
+    { nom: "Repos", duree: 60, repos: true },
+    { nom: "Gainage", detail: "Tiens la position", duree: 45,
+      explication: "En appui sur les avant-bras, corps aligné des épaules aux talons : ne laisse pas le bassin tomber." },
+    { nom: "Repos", duree: 60, repos: true },
+    { nom: "Pompes", detail: "12 répétitions",
+      explication: "Même consigne que la première série : amplitude complète, rythme régulier." },
+    { nom: "Étirements", detail: "Retour au calme", duree: 90,
+      explication: "Respire profondément et étire chaque groupe musculaire travaillé, sans à-coups." }
+  ];
+
   var LISTE = [
     {
       id: "sport",
@@ -34,23 +55,7 @@ var Templates = (function () {
         {
           id: "seance-corps", nom: "Séance complète du jour", xp: 40, stat: "corps",
           type: "seance",
-          blocs: [
-            { nom: "Échauffement", detail: "Mobilité articulaire", duree: 120,
-              explication: "Cercles de bras, rotations du bassin, montées de genoux : réveille chaque articulation en douceur." },
-            { nom: "Pompes", detail: "15 répétitions",
-              explication: "Mains sous les épaules, corps bien gainé : descends la poitrine près du sol, remonte sans cambrer." },
-            { nom: "Repos", duree: 60, repos: true },
-            { nom: "Squats", detail: "20 répétitions",
-              explication: "Pieds largeur d'épaules, dos droit : descends comme pour t'asseoir, talons au sol." },
-            { nom: "Repos", duree: 60, repos: true },
-            { nom: "Gainage", detail: "Tiens la position", duree: 45,
-              explication: "En appui sur les avant-bras, corps aligné des épaules aux talons : ne laisse pas le bassin tomber." },
-            { nom: "Repos", duree: 60, repos: true },
-            { nom: "Pompes", detail: "12 répétitions",
-              explication: "Même consigne que la première série : amplitude complète, rythme régulier." },
-            { nom: "Étirements", detail: "Retour au calme", duree: 90,
-              explication: "Respire profondément et étire chaque groupe musculaire travaillé, sans à-coups." }
-          ]
+          blocs: BLOCS_SEANCE
         },
         {
           id: "sport-pompes", nom: "30 pompes", xp: 25, stat: "corps",
@@ -61,7 +66,10 @@ var Templates = (function () {
           type: "minuterie", duree: 600
         }
       ],
-      hebdo: { nom: "3 séances complètes", xp: 150, stat: "corps", objectif: 3, lien: "seance" }
+      hebdo: {
+        nom: "3 séances complètes", xp: 150, stat: "corps", objectif: 3, lien: "seance",
+        session: { type: "seance", blocs: BLOCS_SEANCE }
+      }
     },
     {
       id: "etudes",
@@ -91,7 +99,10 @@ var Templates = (function () {
           type: "simple", enCours: "Planification en cours"
         }
       ],
-      hebdo: { nom: "5 sessions de révision", xp: 150, stat: "esprit", objectif: 5, lien: "minuterie:esprit" }
+      hebdo: {
+        nom: "5 sessions de révision", xp: 150, stat: "esprit", objectif: 5, lien: "minuterie:esprit",
+        session: { type: "minuterie", duree: 1500 }
+      }
     },
     {
       id: "business",
@@ -121,9 +132,13 @@ var Templates = (function () {
           type: "minuterie", duree: 2700
         }
       ],
-      // Une action business se fait souvent hors de l'app :
-      // progression manuelle uniquement (lien null).
-      hebdo: { nom: "5 actions concrètes pour ton business", xp: 180, stat: "discipline", objectif: 5, lien: null }
+      // Pas de lien automatique (une action business se fait souvent
+      // hors de l'app), mais le tap ouvre une session guidée : l'action
+      // se fait en conscience, puis compte.
+      hebdo: {
+        nom: "5 actions concrètes pour ton business", xp: 180, stat: "discipline", objectif: 5, lien: null,
+        session: { type: "simple", enCours: "Action en cours" }
+      }
     },
     {
       id: "lecture",
@@ -149,7 +164,10 @@ var Templates = (function () {
           type: "simple", enCours: "Prise de notes en cours"
         }
       ],
-      hebdo: { nom: "4 sessions de lecture", xp: 120, stat: "esprit", objectif: 4, lien: "minuterie:esprit" }
+      hebdo: {
+        nom: "4 sessions de lecture", xp: 120, stat: "esprit", objectif: 4, lien: "minuterie:esprit",
+        session: { type: "minuterie", duree: 1200 }
+      }
     },
     {
       id: "discipline",
@@ -179,7 +197,12 @@ var Templates = (function () {
           type: "simple", enCours: "Planification en cours"
         }
       ],
-      hebdo: { nom: "6 journées avec toutes les quêtes validées", xp: 200, stat: "discipline", objectif: 6, lien: "journee" }
+      // Une journée complète ne se joue pas en une session : pas de
+      // session guidée, la progression vient du lien "journee".
+      hebdo: {
+        nom: "6 journées avec toutes les quêtes validées", xp: 200, stat: "discipline", objectif: 6, lien: "journee",
+        session: null
+      }
     },
     {
       id: "creation",
@@ -209,7 +232,10 @@ var Templates = (function () {
           type: "simple", enCours: "Préparation en cours"
         }
       ],
-      hebdo: { nom: "4 sessions de création", xp: 150, stat: "esprit", objectif: 4, lien: "minuterie:esprit" }
+      hebdo: {
+        nom: "4 sessions de création", xp: 150, stat: "esprit", objectif: 4, lien: "minuterie:esprit",
+        session: { type: "minuterie", duree: 2700 }
+      }
     }
   ];
 
@@ -256,7 +282,12 @@ var Templates = (function () {
           type: "simple", enCours: "Préparation en cours"
         }
       ],
-      hebdo: { nom: "5 quêtes accomplies dans la semaine", xp: 150, stat: "discipline", objectif: 5, lien: "quete" }
+      // Les quêtes du jour font déjà avancer l'hebdo (lien "quete") :
+      // pas de session guidée dédiée.
+      hebdo: {
+        nom: "5 quêtes accomplies dans la semaine", xp: 150, stat: "discipline", objectif: 5, lien: "quete",
+        session: null
+      }
     };
   }
 

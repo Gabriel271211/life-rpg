@@ -36,9 +36,13 @@ une classe, un rang et des stats qui montent grâce à tes actions réelles
 
 ## Quête hebdomadaire
 
-Chaque template apporte une hebdo cohérente avec sa discipline. Son champ
-`lien` définit ce qui la fait progresser automatiquement, en plus du tap
-manuel (toujours possible, « annuler » aussi) :
+Chaque template apporte une hebdo cohérente avec sa discipline. Taper la
+carte ouvre sa **session guidée** (champ `session` : séance en blocs pour le
+sport, minuterie pour révision/lecture/création, action libre pour le
+business) — le +1 tombe à la fin de la session, comme pour une quête du
+jour. Sans session (`null`), le tap fait +1 directement. Son champ `lien`
+définit en plus ce qui la fait progresser automatiquement (« annuler »
+reste toujours possible) :
 
 - `"seance"` — une séance terminée compte (+1, flottant « +1 séance »)
 - `"minuterie:esprit"` — une session minutée de la stat compte

@@ -370,16 +370,76 @@
     majPuces();
   }
 
+  // L'hebdo se vit comme une quête du jour : si elle définit une
+  // session guidée (séance en blocs, minuterie, action), le tap la
+  // traverse étape par étape et le +1 tombe à la fin. Sans session
+  // (journée complète, quêtes accomplies), le tap direct reste.
+  function tapHebdo() {
+    if (hebdoEstAccomplie()) return;
+    if (etat.hebdo.session) {
+      ouvrirSessionHebdo();
+    } else {
+      progresserHebdoManuel();
+    }
+  }
+
+  function ouvrirSessionHebdo() {
+    var s = etat.hebdo.session;
+    var uniteValidee = false;
+
+    Session.ouvrir({
+      nom: etat.hebdo.nom,
+      type: s.type,
+      duree: s.duree,
+      blocs: s.blocs,
+      series: s.series,
+      parSerie: s.parSerie,
+      repos: s.repos,
+      enCours: s.enCours
+    }, function () {
+      uniteValidee = true;
+      var niveauAvant = etat.niveau;
+      var res = Regles.progresserHebdo(etat);
+      var nouvellesCartes = Cartes.verifier(etat);
+      Etat.sauvegarder(etat);
+      rendreHebdo();
+      majPuces();
+
+      if (res && res.accomplie) {
+        afficherBandeaux(null, niveauAvant, nouvellesCartes);
+        return {
+          critique: res.critique,
+          xpDonne: etat.hebdo.xpDonne,
+          finEtiquette: "Quête hebdomadaire accomplie"
+        };
+      }
+      return {
+        critique: false,
+        xpDonne: 0,
+        finEtiquette: "Quête hebdomadaire",
+        finTexte: etat.hebdo.progres + " / " + etat.hebdo.objectif
+      };
+    }, function () {
+      if (uniteValidee) eclatHebdo();
+    });
+  }
+
+  // Bref éclat de la carte hebdo, même langage que les quêtes du jour.
+  function eclatHebdo() {
+    hebdoCarte.classList.add("eclat");
+    setTimeout(function () { hebdoCarte.classList.remove("eclat"); }, 700);
+  }
+
   hebdoBouton.addEventListener("click", function (e) {
     e.stopPropagation();
-    progresserHebdoManuel();
+    tapHebdo();
   });
 
   // Comme les quêtes du jour : la carte entière réagit au tap,
   // pas seulement le cercle. "annuler" garde son propre rôle.
   hebdoCarte.addEventListener("click", function (e) {
     if (e.target.closest("#hebdo-annuler")) return;
-    progresserHebdoManuel();
+    tapHebdo();
   });
 
   hebdoAnnuler.addEventListener("click", function (e) {

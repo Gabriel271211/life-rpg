@@ -418,16 +418,23 @@ var Session = (function () {
     ctx.overlay.querySelector(".session-passer").hidden = true;
     masquerConfirmation();
 
+    // Le callback de validation peut surcharger l'écran de fin :
+    // finEtiquette remplace "Quête accomplie", finTexte remplace
+    // "+X XP" (ex. progression hebdomadaire "2 / 5").
     montrerPhase(
       '<div class="session-fin">' +
-        '<p class="etiquette">Quête accomplie</p>' +
+        '<p class="etiquette session-fin-etiquette"></p>' +
         '<h2 class="session-fin-nom"></h2>' +
         (res.critique ? '<p class="etiquette session-fin-critique">Coup critique</p>' : "") +
-        '<p class="session-fin-xp' + (res.critique ? " critique" : "") + '">+' + res.xpDonne + " XP</p>" +
+        '<p class="session-fin-xp' + (res.critique ? " critique" : "") + '"></p>' +
         '<button class="session-bouton" type="button" data-action="continuer">Continuer</button>' +
       "</div>"
     );
+    ctx.overlay.querySelector(".session-fin-etiquette").textContent =
+      res.finEtiquette || "Quête accomplie";
     ctx.overlay.querySelector(".session-fin-nom").textContent = ctx.quete.nom;
+    ctx.overlay.querySelector(".session-fin-xp").textContent =
+      res.finTexte || ("+" + res.xpDonne + " XP");
 
     var xp = ctx.overlay.querySelector(".session-fin-xp");
     setTimeout(function () { if (xp) Juice.pulser(xp); }, 350);

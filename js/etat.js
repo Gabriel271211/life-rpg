@@ -161,6 +161,37 @@ var Etat = (function () {
         : null;
       modifie = true;
     }
+    // Session guidée de l'hebdo : le tap sur la carte traverse une
+    // vraie session (séance en blocs, minuterie, action) au lieu d'un
+    // simple +1. Déduite du nom si l'hebdo vient d'un template connu,
+    // sinon null (tap direct conservé).
+    if (etat.hebdo && !("session" in etat.hebdo)) {
+      var SESSIONS_CONNUES = {
+        "3 séances de sport complètes": { type: "seance" },
+        "3 séances complètes": { type: "seance" },
+        "5 sessions de révision": { type: "minuterie", duree: 1500 },
+        "Lire 5 jours cette semaine": { type: "minuterie", duree: 1200 },
+        "4 sessions de lecture": { type: "minuterie", duree: 1200 },
+        "4 sessions de création": { type: "minuterie", duree: 2700 },
+        "5 actions concrètes pour ton business": { type: "simple", enCours: "Action en cours" },
+        "5 journées d'action pour ton projet": { type: "simple", enCours: "Action en cours" }
+      };
+      var sessionConnue = SESSIONS_CONNUES[etat.hebdo.nom] || null;
+      if (sessionConnue) {
+        sessionConnue = JSON.parse(JSON.stringify(sessionConnue));
+        // La séance reprend les blocs de la séance par défaut,
+        // référence des migrations.
+        if (sessionConnue.type === "seance") {
+          for (var s = 0; s < DEFAUT.quetes.length; s++) {
+            if (DEFAUT.quetes[s].id === "seance-corps") {
+              sessionConnue.blocs = JSON.parse(JSON.stringify(DEFAUT.quetes[s].blocs));
+            }
+          }
+        }
+      }
+      etat.hebdo.session = sessionConnue;
+      modifie = true;
+    }
     // La séance guidée par défaut, ajoutée UNE seule fois aux états
     // existants : le marqueur évite qu'elle ressuscite si le joueur
     // la supprime ensuite dans l'éditeur.

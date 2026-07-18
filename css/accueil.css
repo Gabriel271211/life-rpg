@@ -316,6 +316,11 @@
   display: none;
 }
 
+/* Bref éclat au retour d'une session hebdo accomplie */
+.quete-hebdo.eclat {
+  animation: quete-eclat 0.6s ease;
+}
+
 /* Hebdo accomplie : même langage que les quêtes validées */
 .quete-hebdo.accomplie {
   border-color: rgba(var(--accent-rgb), 0.4);
