@@ -108,8 +108,8 @@ La clé API n'est JAMAIS dans le front. Tout passe par `api/ia.js`, une
 fonction serverless Vercel :
 
 - `POST /api/ia` avec `{ type, donnees }` — types routés un par un
-  (`onboarding` pour l'instant ; `quetes`, `hebdo`, `seance`,
-  `suite-principale`, `secondaires`, `chat` viendront)
+  (`onboarding`, `suite-principale`, `quetes`, `hebdo`, `seance` ;
+  `secondaires`, `chat` viendront)
 - clé dans la variable d'environnement `GROQ_API_KEY` (dashboard Vercel →
   Settings → Environment Variables ; en local : fichier `.env.local`,
   ignoré par git)

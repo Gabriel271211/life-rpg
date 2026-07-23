@@ -80,5 +80,78 @@ module.exports = {
     "vraie vie, ordonnés du plus accessible au plus ambitieux, clairement " +
     "plus exigeants que ceux déjà accomplis. Le critere décrit précisément " +
     "ce qui doit être vrai, mesurable par le joueur lui-même.\n" +
+    "- Français sobre, ton RPG discret, pas d'emojis.",
+
+  // ----- quetes -----
+  // Entrée : l'objectif du joueur, le jalon actif de sa quête
+  // principale, ses quêtes du jour actuelles, le niveau de ses stats.
+  // Sortie : 2-3 nouvelles quêtes quotidiennes qui font avancer le
+  // jalon actif, sans doublon avec l'existant.
+  quetes: CADRE + "\n\n" +
+    "Le joueur veut de nouvelles quêtes quotidiennes. Tu en proposes 2 à 3 " +
+    "qui le rapprochent CONCRÈTEMENT du jalon qu'il vise en ce moment.\n\n" +
+    "Schéma JSON attendu :\n" +
+    '{ "quetes": [ { "nom": "...", "xp": 25, "stat": "...", "type": "...",\n' +
+    '  "duree": 0, "series": 0, "parSerie": "...", "repos": 0 } ] }\n\n' +
+    "Règles strictes :\n" +
+    "- Chaque quête est une MICRO-ACTION précise, faisable aujourd'hui, qui " +
+    "fait avancer le JALON ACTIF donné (ex. jalon \"Premier fournisseur " +
+    "trouvé\" -> \"Contacter 3 fournisseurs\", pas \"Travailler sur le " +
+    "projet\").\n" +
+    "- N'invente RIEN qui double une quête actuelle du joueur (donnée en " +
+    "contexte) : propose du neuf.\n" +
+    "- stat parmi corps, esprit, discipline. type parmi simple, minuterie, " +
+    "series : minuterie pour un travail en durée (duree en secondes, 300 à " +
+    "3600), series pour des répétitions physiques (series 2 à 5, parSerie " +
+    "décrit une série, repos 30 à 120 secondes), simple sinon (duree, " +
+    "series, repos à 0). xp entre 5 et 50, proportionnel à l'effort.\n" +
+    "- Français sobre, ton RPG discret, pas d'emojis.",
+
+  // ----- hebdo -----
+  // Entrée : objectif, jalon actif, hebdo précédente + si elle a été
+  // réussie, niveaux des stats. Sortie : UNE quête hebdomadaire, de
+  // difficulté ajustée, avec un lien de progression auto choisi.
+  hebdo: CADRE + "\n\n" +
+    "Tu forges la quête hebdomadaire du joueur pour la semaine qui " +
+    "commence. Un seul engagement, mesurable, tenu sur sept jours.\n\n" +
+    "Schéma JSON attendu :\n" +
+    '{ "nom": "...", "xp": 150, "stat": "...", "objectif": 5, "lien": null }\n\n' +
+    "Règles strictes :\n" +
+    "- L'engagement doit rapprocher du JALON ACTIF donné et rester tenable " +
+    "en une semaine.\n" +
+    "- DIFFICULTÉ AJUSTÉE d'après la semaine précédente : si elle a été " +
+    "réussie, vise légèrement plus ambitieux ; si elle a échoué, propose " +
+    "plus accessible, JAMAIS de reproche, jamais de ton culpabilisant.\n" +
+    "- objectif : nombre de fois dans la semaine, entre 2 et 7. xp entre 50 " +
+    "et 300, proportionnel. stat parmi corps, esprit, discipline.\n" +
+    "- lien : ce qui fait avancer l'hebdo automatiquement. UNE valeur parmi " +
+    "\"quete\" (toute quête du jour validée compte), \"journee\" (une " +
+    "journée entière de quêtes validées compte), \"minuterie:corps\", " +
+    "\"minuterie:esprit\", \"minuterie:discipline\" (une session minutée de " +
+    "cette stat compte), ou null (le joueur coche lui-même, pour une action " +
+    "hors application). Choisis le lien le plus cohérent avec l'engagement.\n" +
+    "- Français sobre, ton RPG discret, pas d'emojis.",
+
+  // ----- seance -----
+  // Entrée : niveau de la stat corps, durée souhaitée (minutes).
+  // Sortie : une séance au poids du corps en blocs enchaînés.
+  seance: CADRE + "\n\n" +
+    "Tu composes une séance de sport au POIDS DU CORPS, sans aucun " +
+    "matériel, enchaînée en blocs guidés minute par minute.\n\n" +
+    "Schéma JSON attendu :\n" +
+    '{ "blocs": [ { "nom": "...", "detail": "...", "duree": 60,\n' +
+    '  "explication": "...", "repos": false } ] }\n\n' +
+    "Règles strictes :\n" +
+    "- 5 à 14 blocs. Le PREMIER est un échauffement, le DERNIER un retour " +
+    "au calme (étirements). Entre les deux, des exercices et des repos.\n" +
+    "- Chaque bloc a une duree en secondes entre 20 et 300.\n" +
+    "- Bloc d'exercice : nom court (ex. \"Pompes\"), detail bref (ex. " +
+    "\"Rythme lent\"), explication d'une phrase sur la bonne exécution, " +
+    "repos à false.\n" +
+    "- Bloc de repos : nom \"Repos\", repos à true, pas besoin de detail ni " +
+    "d'explication. Intercale un repos entre les exercices intenses.\n" +
+    "- Exercices au poids du corps UNIQUEMENT (pompes, squats, gainage, " +
+    "fentes, montées de genoux...), adaptés au niveau donné : plus le " +
+    "niveau est bas, plus c'est accessible.\n" +
     "- Français sobre, ton RPG discret, pas d'emojis."
 };

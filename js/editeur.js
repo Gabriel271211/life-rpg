@@ -76,6 +76,7 @@ var Editeur = (function () {
       '<div class="editeur-liste"></div>' +
       '<p class="editeur-message" hidden></p>' +
       '<button class="session-bouton editeur-nouvelle" type="button">Nouvelle quête</button>' +
+      '<button class="session-lien accent editeur-ia" type="button">Demander au Système</button>' +
       '<p class="etiquette editeur-section">Quête hebdomadaire</p>' +
       '<div class="editeur-liste"></div>'
     );
@@ -89,6 +90,95 @@ var Editeur = (function () {
     corps.querySelector(".editeur-nouvelle").addEventListener("click", function () {
       vueFormulaire(null);
     });
+    corps.querySelector(".editeur-ia").addEventListener("click", vueDemanderSysteme);
+  }
+
+  // --- Quêtes proposées par le Système (type "quetes") ---
+  // Le Système propose, le joueur compose : chaque proposition
+  // s'ajoute d'un tap, jamais de remplacement automatique.
+
+  function vueDemanderSysteme() {
+    montrerVue(
+      '<p class="etiquette">Le Système forge</p>' +
+      '<div class="editeur-attente">' +
+        '<div class="anneau rotatif editeur-anneau" aria-hidden="true">' +
+          '<svg viewBox="0 0 200 200">' +
+            '<circle class="anneau-piste" cx="100" cy="100" r="90"/>' +
+            '<circle class="anneau-progression" cx="100" cy="100" r="90" ' +
+              'stroke-dasharray="141 565.5" stroke-dashoffset="0"/>' +
+          "</svg>" +
+        "</div>" +
+        '<p class="etiquette editeur-attente-texte">Des quêtes pour ton objectif…</p>' +
+      "</div>"
+    );
+
+    var actif = Regles.jalonActif(ctx.etat.quetePrincipale);
+    IA.appeler("quetes", {
+      objectif: ctx.etat.objectifTexte || ctx.etat.quetePrincipale.titre,
+      jalon: actif ? { nom: actif.jalon.nom, critere: actif.jalon.critere } : null,
+      quetesActuelles: ctx.etat.quetes.map(function (q) { return q.nom; }),
+      stats: {
+        corps: ctx.etat.stats.corps.niveau,
+        esprit: ctx.etat.stats.esprit.niveau,
+        discipline: ctx.etat.stats.discipline.niveau
+      }
+    }).then(function (resultat) {
+      if (resultat && resultat.quetes && resultat.quetes.length) {
+        vuePropositions(resultat.quetes);
+      } else {
+        vueListe();
+        message(IA.MESSAGE_SILENCE);
+      }
+    });
+  }
+
+  function vuePropositions(propositions) {
+    var corps = montrerVue(
+      '<p class="etiquette">Le Système propose</p>' +
+      '<p class="editeur-ia-intro">Des quêtes pour avancer vers ton jalon. Ajoute celles qui te parlent.</p>' +
+      '<div class="editeur-props"></div>' +
+      '<button class="session-lien editeur-props-retour" type="button">Retour à mes quêtes</button>'
+    );
+
+    var conteneur = corps.querySelector(".editeur-props");
+    propositions.forEach(function (quete) {
+      conteneur.appendChild(cartePropositionQuete(quete));
+    });
+    corps.querySelector(".editeur-props-retour").addEventListener("click", vueListe);
+  }
+
+  function cartePropositionQuete(quete) {
+    var carte = document.createElement("div");
+    carte.className = "editeur-prop";
+    carte.innerHTML =
+      '<div class="editeur-prop-infos">' +
+        '<p class="editeur-ligne-nom"></p>' +
+        '<p class="editeur-ligne-meta"></p>' +
+      "</div>" +
+      '<button class="editeur-prop-ajouter" type="button" aria-label="Ajouter cette quête">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+        'stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>' +
+      "</button>";
+    carte.querySelector(".editeur-ligne-nom").textContent = quete.nom;
+    carte.querySelector(".editeur-ligne-meta").textContent =
+      "+" + quete.xp + " XP · " + etiquetteStat(quete.stat) + " · " + etiquetteType(quete.type);
+
+    var bouton = carte.querySelector(".editeur-prop-ajouter");
+    bouton.addEventListener("click", function () {
+      if (carte.classList.contains("ajoutee")) return;
+      var q = JSON.parse(JSON.stringify(quete));
+      q.id = "ia-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+      q.faite = false;
+      ctx.etat.quetes.push(q);
+      Etat.sauvegarder(ctx.etat);
+      // La carte se marque "ajoutée", elle ne re-déclenche plus.
+      carte.classList.add("ajoutee");
+      bouton.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" ' +
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        '<path d="M5.5 12.5l4.2 4.2L18.5 8"/></svg>';
+    });
+    return carte;
   }
 
   function ligneQuete(quete) {
@@ -106,10 +196,15 @@ var Editeur = (function () {
     ligne.querySelector(".editeur-ligne-meta").textContent =
       "+" + quete.xp + " XP · " + etiquetteStat(quete.stat) + " · " + etiquetteType(quete.type);
 
-    // Les séances ne s'éditent pas encore (l'édition de blocs viendra
-    // avec l'IA) : la ligne reste visible et supprimable, sans formulaire.
+    // Une séance ne se règle pas au formulaire : la ligne ouvre la
+    // vue de régénération par le Système (nouveaux blocs guidés).
     if (quete.type === "seance") {
-      ligne.querySelector(".editeur-ligne-infos").disabled = true;
+      ligne.querySelector(".editeur-ligne-meta").textContent =
+        (quete.blocs ? quete.blocs.length + " blocs · " : "") +
+        etiquetteStat(quete.stat) + " · Séance guidée";
+      ligne.querySelector(".editeur-ligne-infos").addEventListener("click", function () {
+        vueSeance(quete);
+      });
     } else {
       ligne.querySelector(".editeur-ligne-infos").addEventListener("click", function () {
         vueFormulaire(quete);
@@ -299,6 +394,112 @@ var Editeur = (function () {
 
       Etat.sauvegarder(ctx.etat);
       vueListe();
+    });
+  }
+
+  // --- Séance : régénération par le Système ---
+  // Choix de la durée, appel type "seance", aperçu des blocs, et
+  // remplacement CONFIRMÉ — les blocs actuels ne sont jamais écrasés
+  // sans le voir.
+
+  function vueSeance(quete) {
+    var corps = montrerVue(
+      '<p class="etiquette">Séance guidée</p>' +
+      '<h3 class="editeur-seance-titre"></h3>' +
+      '<p class="editeur-ia-intro">Le Système peut composer une nouvelle séance au poids du corps, adaptée à ton niveau.</p>' +
+      groupePuces("Durée", "duree", [
+        ["10", "10 min"], ["20", "20 min"], ["30", "30 min"]
+      ]) +
+      '<div class="editeur-seance-zone"></div>' +
+      '<div class="editeur-formulaire-boutons">' +
+        '<button class="session-bouton editeur-seance-generer" type="button">Régénérer avec l\'IA</button>' +
+        '<button class="session-lien" type="button" data-role="retour">Retour</button>' +
+      "</div>"
+    );
+
+    corps.querySelector(".editeur-seance-titre").textContent = quete.nom;
+    poserPuce(corps, "duree", "20");
+
+    corps.addEventListener("click", function (e) {
+      var puce = e.target.closest(".editeur-puce");
+      if (!puce) return;
+      poserPuce(corps, puce.parentNode.getAttribute("data-champ"), puce.getAttribute("data-valeur"));
+    });
+
+    corps.querySelector('[data-role="retour"]').addEventListener("click", vueListe);
+
+    corps.querySelector(".editeur-seance-generer").addEventListener("click", function () {
+      regenererSeance(quete, corps);
+    });
+  }
+
+  function regenererSeance(quete, corps) {
+    var zone = corps.querySelector(".editeur-seance-zone");
+    var duree = parseInt(lirePuce(corps, "duree"), 10);
+    zone.innerHTML =
+      '<div class="editeur-attente">' +
+        '<div class="anneau rotatif editeur-anneau" aria-hidden="true">' +
+          '<svg viewBox="0 0 200 200">' +
+            '<circle class="anneau-piste" cx="100" cy="100" r="90"/>' +
+            '<circle class="anneau-progression" cx="100" cy="100" r="90" ' +
+              'stroke-dasharray="141 565.5" stroke-dashoffset="0"/>' +
+          "</svg>" +
+        "</div>" +
+        '<p class="etiquette editeur-attente-texte">Le Système compose ta séance…</p>' +
+      "</div>";
+
+    IA.appeler("seance", {
+      niveauCorps: ctx.etat.stats.corps.niveau,
+      duree: duree
+    }).then(function (resultat) {
+      if (resultat && resultat.blocs && resultat.blocs.length) {
+        apercuSeance(quete, corps, resultat.blocs);
+      } else {
+        // Échec : message sobre dans la zone, le bouton reste pour réessayer.
+        zone.innerHTML = '<p class="editeur-message editeur-seance-silence"></p>';
+        zone.querySelector(".editeur-seance-silence").textContent = IA.MESSAGE_SILENCE;
+      }
+    });
+  }
+
+  function apercuSeance(quete, corps, blocs) {
+    var zone = corps.querySelector(".editeur-seance-zone");
+    var liste = "";
+    blocs.forEach(function (bloc) {
+      var meta = bloc.repos
+        ? "Repos · " + bloc.duree + " s"
+        : (bloc.detail ? bloc.detail + " · " : "") + bloc.duree + " s";
+      liste +=
+        '<div class="editeur-seance-bloc' + (bloc.repos ? " repos" : "") + '">' +
+          '<p class="editeur-seance-bloc-nom"></p>' +
+          '<p class="editeur-seance-bloc-meta"></p>' +
+        "</div>";
+      // Les textes sont posés juste après, sans injection HTML.
+    });
+    zone.innerHTML =
+      '<p class="etiquette editeur-section">Nouvelle séance — ' + blocs.length + " blocs</p>" +
+      '<div class="editeur-seance-blocs">' + liste + "</div>" +
+      '<div class="editeur-ligne-boutons editeur-seance-confirme">' +
+        '<button class="session-lien accent" type="button" data-role="remplacer">Remplacer la séance</button>' +
+        '<button class="session-lien" type="button" data-role="garder">Garder l\'ancienne</button>' +
+      "</div>";
+
+    var elts = zone.querySelectorAll(".editeur-seance-bloc");
+    blocs.forEach(function (bloc, i) {
+      elts[i].querySelector(".editeur-seance-bloc-nom").textContent = bloc.nom;
+      elts[i].querySelector(".editeur-seance-bloc-meta").textContent = bloc.repos
+        ? "Repos · " + bloc.duree + " s"
+        : (bloc.detail ? bloc.detail + " · " : "") + bloc.duree + " s";
+    });
+
+    zone.querySelector('[data-role="garder"]').addEventListener("click", function () {
+      zone.innerHTML = "";
+    });
+    zone.querySelector('[data-role="remplacer"]').addEventListener("click", function () {
+      quete.blocs = blocs;
+      Etat.sauvegarder(ctx.etat);
+      vueListe();
+      message("Séance régénérée.");
     });
   }
 

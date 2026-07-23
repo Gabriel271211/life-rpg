@@ -269,6 +269,47 @@
   margin-top: 28px;
 }
 
+/* Proposition d'hebdo par le Système : douce, au-dessus de la carte */
+.hebdo-proposition {
+  margin-top: 12px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid rgba(var(--accent-rgb), 0.28);
+  border-radius: 16px;
+  animation: entree-elt 0.4s ease backwards;
+}
+
+.hebdo-proposition[hidden] {
+  display: none;
+}
+
+.hebdo-proposition-nom {
+  margin-top: 8px;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.hebdo-proposition-meta {
+  margin-top: 5px;
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: var(--texte-second);
+}
+
+.hebdo-proposition-boutons {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.hebdo-proposition-boutons .session-bouton {
+  padding: 11px 26px;
+  font-size: 0.72rem;
+}
+
 .quete-hebdo {
   margin-top: 12px;
   padding: 18px;

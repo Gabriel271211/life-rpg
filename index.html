@@ -80,6 +80,17 @@
 
     <section class="hebdo" aria-label="Quête hebdomadaire">
       <p class="etiquette">Quête hebdomadaire</p>
+
+      <div class="hebdo-proposition" id="hebdo-proposition" hidden>
+        <p class="etiquette">Le Système propose ta quête de la semaine</p>
+        <p class="hebdo-proposition-nom" id="hebdo-proposition-nom"></p>
+        <p class="hebdo-proposition-meta" id="hebdo-proposition-meta"></p>
+        <div class="hebdo-proposition-boutons">
+          <button class="session-bouton" id="hebdo-proposition-accepter" type="button">Accepter</button>
+          <button class="session-lien" id="hebdo-proposition-garder" type="button">Garder l'actuelle</button>
+        </div>
+      </div>
+
       <article class="quete-hebdo" id="hebdo-carte">
         <div class="hebdo-haut">
           <div class="quete-infos">
@@ -144,6 +155,7 @@
   <script src="js/juice.js"></script>
   <script src="js/revelation.js"></script>
   <script src="js/session.js"></script>
+  <script src="js/ia.js"></script>
   <script src="js/editeur.js"></script>
   <script src="js/accueil.js"></script>
   <script src="js/nav.js"></script>

@@ -163,8 +163,175 @@
   width: 100%;
 }
 
+/* Bouton "Demander au Système" : discret, sous la création manuelle */
+.editeur-ia {
+  margin-top: 14px;
+  width: 100%;
+  text-align: center;
+}
+
 .editeur-section {
   margin-top: 30px;
+}
+
+/* ----- Attente IA (dans l'éditeur) ----- */
+.editeur-attente {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 50px 0;
+}
+
+.editeur-anneau {
+  width: min(38vw, 150px);
+}
+
+.editeur-anneau svg {
+  animation-duration: 3.2s;
+}
+
+.editeur-attente-texte {
+  letter-spacing: 0.24em;
+  animation: onb-respiration 2.4s ease-in-out infinite;
+}
+
+@keyframes onb-respiration {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* ----- Propositions de quêtes ----- */
+.editeur-ia-intro {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--texte-second);
+}
+
+.editeur-props {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.editeur-prop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 13px;
+  transition: border-color 0.25s ease, opacity 0.25s ease;
+}
+
+.editeur-prop.ajoutee {
+  border-color: rgba(var(--accent-rgb), 0.5);
+  opacity: 0.7;
+}
+
+.editeur-prop-infos {
+  flex: 1;
+  min-width: 0;
+}
+
+.editeur-prop-ajouter {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  border-radius: 50%;
+  color: var(--accent);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editeur-prop.ajoutee .editeur-prop-ajouter {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--fond);
+}
+
+.editeur-prop-ajouter svg {
+  width: 16px;
+  height: 16px;
+}
+
+.editeur-props-retour {
+  margin-top: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+/* ----- Régénération de séance ----- */
+.editeur-seance-titre {
+  margin-top: 8px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.editeur-seance-generer {
+  width: 100%;
+}
+
+.editeur-seance-zone {
+  margin-top: 8px;
+}
+
+.editeur-seance-blocs {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editeur-seance-bloc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 15px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 11px;
+}
+
+/* Un repos se lit d'un coup d'œil : plus effacé */
+.editeur-seance-bloc.repos {
+  opacity: 0.55;
+}
+
+.editeur-seance-bloc-nom {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.editeur-seance-bloc-meta {
+  font-size: 0.64rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  white-space: nowrap;
+}
+
+.editeur-seance-confirme {
+  margin-top: 18px;
+  justify-content: center;
+}
+
+.editeur-seance-silence {
+  margin-top: 16px;
+  text-align: center;
 }
 
 .editeur-message {

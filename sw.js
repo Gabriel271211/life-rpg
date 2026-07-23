@@ -18,7 +18,7 @@
 // fichiers JS interdépendants : le nouveau worker ré-installe un
 // pré-cache complet et cohérent, au lieu de laisser le rafraîchissement
 // en arrière-plan mélanger anciens et nouveaux fichiers.
-var CACHE = "life-rpg-v8";
+var CACHE = "life-rpg-v9";
 
 var FICHIERS = [
   "./",

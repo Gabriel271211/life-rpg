@@ -451,9 +451,89 @@
     majPuces();
   });
 
+  // --- Hebdo guidée : proposition en douceur au fil des semaines ---
+  // Au premier lancement d'une nouvelle semaine (drapeau posé par
+  // jour.js), si le joueur a un objectif, le Système propose une hebdo
+  // ajustée à la semaine passée. Jamais de remplacement silencieux :
+  // Accepter ou Garder l'actuelle. Échec de l'appel -> l'hebdo en
+  // cours est reconduite en silence, aucun message.
+
+  var hebdoProposition = document.getElementById("hebdo-proposition");
+  var hebdoPropositionAccepter = document.getElementById("hebdo-proposition-accepter");
+  var hebdoPropositionGarder = document.getElementById("hebdo-proposition-garder");
+  var propositionHebdo = null;
+
+  function libelleLienHebdo(lien) {
+    if (lien === "seance") return "à chaque séance";
+    if (lien === "quete") return "à chaque quête validée";
+    if (lien === "journee") return "à chaque journée complète";
+    if (lien && lien.indexOf("minuterie") === 0) return "à chaque session minutée";
+    return "à cocher toi-même";
+  }
+
+  function proposerHebdoSiBesoin() {
+    if (!etat.propositionHebdoAttendue || !etat.objectifTexte) return;
+
+    var actif = Regles.jalonActif(etat.quetePrincipale);
+    IA.appeler("hebdo", {
+      objectif: etat.objectifTexte,
+      jalon: actif ? { nom: actif.jalon.nom, critere: actif.jalon.critere } : null,
+      hebdoPrecedente: etat.hebdoPrecedente,
+      stats: {
+        corps: etat.stats.corps.niveau,
+        esprit: etat.stats.esprit.niveau,
+        discipline: etat.stats.discipline.niveau
+      }
+    }).then(function (resultat) {
+      if (resultat) {
+        propositionHebdo = resultat;
+        afficherPropositionHebdo(resultat);
+      } else {
+        // Reconduite silencieuse : on éteint le drapeau, aucune erreur.
+        etat.propositionHebdoAttendue = false;
+        Etat.sauvegarder(etat);
+      }
+    });
+  }
+
+  function afficherPropositionHebdo(h) {
+    document.getElementById("hebdo-proposition-nom").textContent = h.nom;
+    document.getElementById("hebdo-proposition-meta").textContent =
+      "+" + h.xp + " XP · " + h.objectif + " fois · progresse " + libelleLienHebdo(h.lien);
+    hebdoProposition.hidden = false;
+  }
+
+  hebdoPropositionAccepter.addEventListener("click", function () {
+    if (!propositionHebdo) return;
+    // La nouvelle hebdo remplace l'actuelle, remise à zéro. La session
+    // guidée éventuelle sera rattachée par un chantier ultérieur.
+    etat.hebdo = {
+      nom: propositionHebdo.nom,
+      xp: propositionHebdo.xp,
+      stat: propositionHebdo.stat,
+      objectif: propositionHebdo.objectif,
+      lien: propositionHebdo.lien,
+      session: null,
+      progres: 0
+    };
+    etat.propositionHebdoAttendue = false;
+    propositionHebdo = null;
+    Etat.sauvegarder(etat);
+    hebdoProposition.hidden = true;
+    rendreHebdo();
+  });
+
+  hebdoPropositionGarder.addEventListener("click", function () {
+    etat.propositionHebdoAttendue = false;
+    propositionHebdo = null;
+    Etat.sauvegarder(etat);
+    hebdoProposition.hidden = true;
+  });
+
   majPuces();
   majQuetePrincipale();
   rendreHebdo();
   majJourAccompli();
+  proposerHebdoSiBesoin();
 
 })();

@@ -50,6 +50,16 @@ var Jour = (function () {
     var lundi = lundiDe(aujourdhui);
     if (etat.lundiSemaine === lundi) return false;
 
+    // La semaine qui se ferme est mémorisée (nom + réussie) : le
+    // Système ajuste la difficulté de la suivante d'après ce résultat.
+    // Un drapeau signale à l'accueil qu'une proposition d'hebdo attend
+    // le joueur — proposée en douceur, jamais imposée.
+    etat.hebdoPrecedente = {
+      nom: etat.hebdo.nom,
+      reussie: etat.hebdo.progres >= etat.hebdo.objectif
+    };
+    etat.propositionHebdoAttendue = true;
+
     etat.hebdo.progres = 0;
     delete etat.hebdo.xpDonne;
     etat.lundiSemaine = lundi;

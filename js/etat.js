@@ -155,6 +155,17 @@ var Etat = (function () {
       etat.quetesAccomplies = [];
       modifie = true;
     }
+    // Proposition d'hebdo hebdomadaire (chantier 4) : l'hebdo qui vient
+    // de se clore et le drapeau qui déclenche la proposition sur
+    // l'accueil. Un état existant n'a rien en attente.
+    if (!("hebdoPrecedente" in etat)) {
+      etat.hebdoPrecedente = null;
+      modifie = true;
+    }
+    if (typeof etat.propositionHebdoAttendue !== "boolean") {
+      etat.propositionHebdoAttendue = false;
+      modifie = true;
+    }
     if (!etat.compteurs) {
       etat.compteurs = {
         quetesValidees: 0,

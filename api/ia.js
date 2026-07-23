@@ -78,6 +78,55 @@ function validerQueteQuotidienne(q) {
   return quete;
 }
 
+// Une hebdo générée : nom exigé, bornes clampées, lien parmi la liste
+// fermée. Partagée par les types onboarding et hebdo.
+function validerHebdo(h) {
+  if (!h || typeof h !== "object") return null;
+  var nom = texte(h.nom, 60);
+  if (!nom) return null;
+  return {
+    nom: nom,
+    xp: entier(h.xp, 50, 300, 150),
+    stat: parmi(h.stat, STATS, "discipline"),
+    objectif: entier(h.objectif, 2, 7, 5),
+    lien: LIENS.indexOf(h.lien) !== -1 ? h.lien : null
+  };
+}
+
+// Un bloc de séance : soit repos (nom + durée), soit exercice (nom +
+// détail + explication + durée). Durée clampée 20-300 s.
+function validerBloc(b) {
+  if (!b || typeof b !== "object") return null;
+  var nom = texte(b.nom, 40);
+  if (!nom) return null;
+  var duree = entier(b.duree, 20, 300, 60);
+  if (b.repos === true) {
+    return { nom: "Repos", duree: duree, repos: true };
+  }
+  return {
+    nom: nom,
+    detail: texte(b.detail, 60),
+    duree: duree,
+    explication: texte(b.explication, 200)
+  };
+}
+
+// Une séance générée : 5 à 14 blocs, premier et dernier NON repos
+// (échauffement / retour au calme). Retourne les blocs propres, ou
+// null si la structure ne tient pas.
+function validerBlocsSeance(liste) {
+  if (!Array.isArray(liste)) return null;
+  var blocs = [];
+  liste.slice(0, 14).forEach(function (b) {
+    var propre = validerBloc(b);
+    if (propre) blocs.push(propre);
+  });
+  if (blocs.length < 5) return null;
+  // Un échauffement et un retour au calme ne sont jamais des repos.
+  if (blocs[0].repos || blocs[blocs.length - 1].repos) return null;
+  return blocs;
+}
+
 // ----- Types d'appels -----
 // Chaque type définit : son prompt système, la construction du message
 // utilisateur (filtrage strict de l'entrée) et la validation de la
@@ -116,8 +165,8 @@ var TYPES = {
       });
       if (quetes.length < 2) return null;
 
-      var h = o.hebdo;
-      if (!h || typeof h !== "object" || !texte(h.nom, 60)) return null;
+      var hebdo = validerHebdo(o.hebdo);
+      if (!hebdo) return null;
 
       return {
         classe: parmi(o.classe, CLASSES, "Aventurier"),
@@ -128,13 +177,7 @@ var TYPES = {
           jalons: jalons
         },
         quetesQuotidiennes: quetes,
-        hebdo: {
-          nom: texte(h.nom, 60),
-          xp: entier(h.xp, 50, 300, 150),
-          stat: parmi(h.stat, STATS, "discipline"),
-          objectif: entier(h.objectif, 1, 7, 5),
-          lien: LIENS.indexOf(h.lien) !== -1 ? h.lien : null
-        }
+        hebdo: hebdo
       };
     }
   },
@@ -172,6 +215,97 @@ var TYPES = {
         niveau: entier(donnees && donnees.niveau, 1, 98, 1) + 1,
         jalons: jalons
       };
+    }
+  },
+
+  quetes: {
+    json: true,
+    // Entrée : { objectif, jalon{nom,critere}, quetesActuelles[], stats{} }.
+    message: function (d) {
+      if (!d || typeof d !== "object") return null;
+      var objectif = texte(d.objectif, 500).slice(0, 80);
+      if (!objectif) return null;
+      var jalon = d.jalon && typeof d.jalon === "object"
+        ? texte(d.jalon.nom, 60) + (d.jalon.critere ? " — " + texte(d.jalon.critere, 120) : "")
+        : "aucun jalon en cours";
+      var actuelles = Array.isArray(d.quetesActuelles)
+        ? d.quetesActuelles.slice(0, 8).map(function (n) { return texte(n, 60); })
+            .filter(function (n) { return n; })
+        : [];
+      var stats = d.stats && typeof d.stats === "object"
+        ? "corps " + entier(d.stats.corps, 1, 999, 1) +
+          ", esprit " + entier(d.stats.esprit, 1, 999, 1) +
+          ", discipline " + entier(d.stats.discipline, 1, 999, 1)
+        : "inconnus";
+      return "Objectif de fond du joueur : " + objectif +
+        "\nJalon actif à faire avancer : " + jalon +
+        "\nQuêtes du jour actuelles (à ne PAS dupliquer) :\n- " +
+        (actuelles.length ? actuelles.join("\n- ") : "aucune") +
+        "\nNiveaux de stats : " + stats;
+    },
+    // Sortie : { quetes: [...] } — 2 à 3 quêtes bornées.
+    valider: function (o) {
+      if (!o || typeof o !== "object" || !Array.isArray(o.quetes)) return null;
+      var quetes = [];
+      o.quetes.slice(0, 3).forEach(function (q) {
+        var propre = validerQueteQuotidienne(q);
+        if (propre) quetes.push(propre);
+      });
+      if (quetes.length < 1) return null;
+      return { quetes: quetes };
+    }
+  },
+
+  hebdo: {
+    json: true,
+    // Entrée : { objectif, jalon{}, hebdoPrecedente{nom,reussie}, stats{} }.
+    message: function (d) {
+      if (!d || typeof d !== "object") return null;
+      var objectif = texte(d.objectif, 500).slice(0, 80);
+      if (!objectif) return null;
+      var jalon = d.jalon && typeof d.jalon === "object"
+        ? texte(d.jalon.nom, 60) + (d.jalon.critere ? " — " + texte(d.jalon.critere, 120) : "")
+        : "aucun jalon en cours";
+      var precedente = "aucune";
+      if (d.hebdoPrecedente && typeof d.hebdoPrecedente === "object") {
+        var nomPrec = texte(d.hebdoPrecedente.nom, 60);
+        if (nomPrec) {
+          precedente = "\"" + nomPrec + "\" — " +
+            (d.hebdoPrecedente.reussie ? "RÉUSSIE la semaine dernière" : "NON accomplie la semaine dernière");
+        }
+      }
+      var stats = d.stats && typeof d.stats === "object"
+        ? "corps " + entier(d.stats.corps, 1, 999, 1) +
+          ", esprit " + entier(d.stats.esprit, 1, 999, 1) +
+          ", discipline " + entier(d.stats.discipline, 1, 999, 1)
+        : "inconnus";
+      return "Objectif de fond du joueur : " + objectif +
+        "\nJalon actif à faire avancer : " + jalon +
+        "\nSemaine précédente : " + precedente +
+        "\nNiveaux de stats : " + stats;
+    },
+    // Sortie : une hebdo bornée.
+    valider: function (o) {
+      return validerHebdo(o);
+    }
+  },
+
+  seance: {
+    json: true,
+    // Entrée : { niveauCorps, duree (minutes 10/20/30) }.
+    message: function (d) {
+      if (!d || typeof d !== "object") return null;
+      var minutes = entier(d.duree, 5, 90, 20);
+      return "Niveau physique du joueur (stat corps) : " + entier(d.niveauCorps, 1, 999, 1) +
+        "\nDurée totale souhaitée : environ " + minutes + " minutes" +
+        "\nCompose la séance au poids du corps en conséquence.";
+    },
+    // Sortie : { blocs: [...] } — 5 à 14 blocs validés.
+    valider: function (o) {
+      if (!o || typeof o !== "object") return null;
+      var blocs = validerBlocsSeance(o.blocs);
+      if (!blocs) return null;
+      return { blocs: blocs };
     }
   }
 };
