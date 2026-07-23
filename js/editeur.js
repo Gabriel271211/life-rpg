@@ -122,7 +122,8 @@ var Editeur = (function () {
         esprit: ctx.etat.stats.esprit.niveau,
         discipline: ctx.etat.stats.discipline.niveau
       }
-    }).then(function (resultat) {
+    // Forcé : le joueur peut redemander des quêtes plusieurs fois de suite.
+    }, { forcer: true }).then(function (resultat) {
       if (resultat && resultat.quetes && resultat.quetes.length) {
         vuePropositions(resultat.quetes);
       } else {
@@ -448,10 +449,11 @@ var Editeur = (function () {
         '<p class="etiquette editeur-attente-texte">Le Système compose ta séance…</p>' +
       "</div>";
 
+    // Forcé : le joueur peut régénérer plusieurs séances de suite.
     IA.appeler("seance", {
       niveauCorps: ctx.etat.stats.corps.niveau,
       duree: duree
-    }).then(function (resultat) {
+    }, { forcer: true }).then(function (resultat) {
       if (resultat && resultat.blocs && resultat.blocs.length) {
         apercuSeance(quete, corps, resultat.blocs);
       } else {

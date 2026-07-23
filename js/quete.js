@@ -211,7 +211,9 @@
     }
 
     var attente = montrerAttente();
-    IA.appeler("suite-principale", contexteSuite()).then(function (resultat) {
+    // Forcé : "Forger la suite" peut suivre de près une quête accomplie
+    // (elle-même déclenchée après un appel), et doit toujours répondre.
+    IA.appeler("suite-principale", contexteSuite(), { forcer: true }).then(function (resultat) {
       attente.remove();
       if (resultat) {
         propositionSuite = resultat;
@@ -302,7 +304,8 @@
             '<div class="suite-corps-attente">' +
               '<p class="etiquette onb-attente-texte">Le Système forge une autre voie…</p>' +
             "</div>";
-          IA.appeler("suite-principale", contexteSuite()).then(function (resultat) {
+          // Forcé : "Régénérer" suit toujours de près la proposition.
+          IA.appeler("suite-principale", contexteSuite(), { forcer: true }).then(function (resultat) {
             if (resultat) propositionSuite = resultat;
             rendreContenu();
             if (!resultat) {

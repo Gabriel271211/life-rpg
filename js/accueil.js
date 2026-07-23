@@ -505,15 +505,16 @@
 
   hebdoPropositionAccepter.addEventListener("click", function () {
     if (!propositionHebdo) return;
-    // La nouvelle hebdo remplace l'actuelle, remise à zéro. La session
-    // guidée éventuelle sera rattachée par un chantier ultérieur.
+    // La nouvelle hebdo remplace l'actuelle, remise à zéro. Sa session
+    // guidée est déduite du lien, comme les hebdos de template : une
+    // hebdo IA minutée se tape en minuterie, pas en +1 sec.
     etat.hebdo = {
       nom: propositionHebdo.nom,
       xp: propositionHebdo.xp,
       stat: propositionHebdo.stat,
       objectif: propositionHebdo.objectif,
       lien: propositionHebdo.lien,
-      session: null,
+      session: Templates.sessionPourLien(propositionHebdo.lien),
       progres: 0
     };
     etat.propositionHebdoAttendue = false;

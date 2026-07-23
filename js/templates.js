@@ -297,6 +297,18 @@ var Templates = (function () {
 
   // ----- Copies prêtes à poser dans l'état -----
 
+  // Session guidée déduite du lien d'une hebdo (IA ou manuelle) : le
+  // tap sur la carte doit se vivre comme les hebdos de template au
+  // même lien — une minuterie pour "minuterie:*", une séance pour
+  // "seance", rien pour "journee"/"quete"/null (tap direct +1).
+  function sessionPourLien(lien) {
+    if (lien === "seance") return { type: "seance", blocs: copier(BLOCS_SEANCE) };
+    if (typeof lien === "string" && lien.indexOf("minuterie:") === 0) {
+      return { type: "minuterie", duree: 1200 };
+    }
+    return null;
+  }
+
   // Quête principale prête à poser dans l'état : jalons vierges,
   // niveau 1 (ou celui du template — la suite IA en fournit un).
   function quetePrincipaleDe(template) {
@@ -365,6 +377,7 @@ var Templates = (function () {
     liste: liste,
     parId: parId,
     personnalise: personnalise,
+    sessionPourLien: sessionPourLien,
     quetePrincipaleDe: quetePrincipaleDe,
     quetesDe: quetesDe,
     hebdoDe: hebdoDe,

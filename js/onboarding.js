@@ -226,7 +226,8 @@
       return copie;
     });
     var hebdo = JSON.parse(JSON.stringify(proposition.hebdo));
-    hebdo.session = null; // session guidée d'hebdo : chantiers suivants
+    // Session guidée déduite du lien (comme les hebdos de template).
+    hebdo.session = Templates.sessionPourLien(hebdo.lien);
     return {
       id: "ia",
       classe: proposition.classe,
