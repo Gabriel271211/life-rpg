@@ -84,6 +84,11 @@ js/quete.js              — rendu de l'écran Quête principale
 js/sauvegarde.js         — export / import JSON de la progression
 js/nav.js                — navigation basse
 js/pwa.js                — enregistrement du service worker (sw.js)
+js/ia.js                 — client de la fonction IA : IA.appeler(type, donnees),
+                           null sur tout échec, anti-spam local 10 s
+api/ia.js                — fonction serverless Vercel : unique porte vers Groq,
+                           routée par type, validation stricte et bornée
+api/_prompts.js          — prompts système de l'IA, un par type (non exposé)
 ```
 
 L'état vit dans `localStorage` (`life-rpg-etat-v1`). Toute nouvelle propriété
@@ -92,10 +97,37 @@ au chargement sans jamais perdre de progression. L'état `DEFAUT` de `etat.js`
 ne sert qu'aux tests et de secours (stockage indisponible) — le vrai état d'un
 joueur est créé par l'onboarding (`Templates.etatNeuf`).
 
+## L'IA (Groq via serverless)
+
+La clé API n'est JAMAIS dans le front. Tout passe par `api/ia.js`, une
+fonction serverless Vercel :
+
+- `POST /api/ia` avec `{ type, donnees }` — types routés un par un
+  (`onboarding` pour l'instant ; `quetes`, `hebdo`, `seance`,
+  `suite-principale`, `secondaires`, `chat` viendront)
+- clé dans la variable d'environnement `GROQ_API_KEY` (dashboard Vercel →
+  Settings → Environment Variables ; en local : fichier `.env.local`,
+  ignoré par git)
+- modèle `llama-3.3-70b-versatile`, `response_format json_object` (sauf
+  futur type `chat`), timeout amont 20 s
+- validation stricte maison par type : structure exigée, valeurs hors
+  borne clampées (XP quotidiennes 5–50, hebdo 50–300, durées 20–7200 s,
+  textes tronqués), JSON amont invalide → 502
+- vie privée : seuls les champs listés par type partent vers Groq —
+  jamais le prénom, jamais l'historique complet
+
+Côté front, `IA.appeler(type, donnees)` retourne le JSON validé ou `null`
+sur TOUT échec (réseau, 4xx/5xx, timeout) : chaque écran a un contenu de
+secours, l'IA ne casse jamais le jeu. Au pire l'utilisateur lit « Le
+Système est silencieux — réessaie plus tard ». Anti-spam local : un même
+type d'appel au plus une fois toutes les 10 s. Le service worker ne met
+jamais `/api/` en cache.
+
 ## Développement
 
-Aucun build : servir le dossier tel quel (ex. `npx serve .`) ou ouvrir
-`index.html` directement. Déployé sur Vercel à chaque push.
+Aucun build pour le front : servir le dossier tel quel (ex. `npx serve .`).
+Pour tester l'IA en local : `npx vercel dev` (après `npx vercel link`),
+avec `GROQ_API_KEY` dans `.env.local`. Déployé sur Vercel à chaque push.
 
 Outils de test en console :
 

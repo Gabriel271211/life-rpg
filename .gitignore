@@ -1,5 +1,10 @@
 # Config locale de l'outillage
 .claude/
+.vercel/
+
+# Secrets locaux (GROQ_API_KEY pour `vercel dev`) — jamais commités
+.env
+.env.local
 
 # Dépendances éventuelles
 node_modules/

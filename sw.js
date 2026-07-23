@@ -18,7 +18,7 @@
 // fichiers JS interdépendants : le nouveau worker ré-installe un
 // pré-cache complet et cohérent, au lieu de laisser le rafraîchissement
 // en arrière-plan mélanger anciens et nouveaux fichiers.
-var CACHE = "life-rpg-v5";
+var CACHE = "life-rpg-v6";
 
 var FICHIERS = [
   "./",
@@ -44,6 +44,7 @@ var FICHIERS = [
   "js/regles.js",
   "js/aura.js",
   "js/garde.js",
+  "js/ia.js",
   "js/jour.js",
   "js/cartes.js",
   "js/etat.js",
@@ -102,6 +103,8 @@ self.addEventListener("fetch", function (event) {
   var url = new URL(requete.url);
   // La police (et tout autre domaine) reste réseau.
   if (url.origin !== self.location.origin) return;
+  // L'IA (/api/) ne passe JAMAIS par le cache : toujours réseau.
+  if (url.pathname.indexOf("/api/") === 0) return;
 
   // HTML : réseau d'abord, cache en secours (mode hors-ligne).
   if (requete.mode === "navigate" || url.pathname.slice(-5) === ".html") {
