@@ -192,6 +192,18 @@ var Etat = (function () {
       etat.hebdo.session = sessionConnue;
       modifie = true;
     }
+    // Contexte d'objectif pour les appels IA : la phrase d'objectif du
+    // joueur et ses réponses d'onboarding (deadline, temps, niveau).
+    // Pour les états d'avant : le titre de la quête principale fait
+    // office d'objectif, les réponses restent inconnues (null).
+    if (typeof etat.objectifTexte !== "string") {
+      etat.objectifTexte = (etat.quetePrincipale && etat.quetePrincipale.titre) || "";
+      modifie = true;
+    }
+    if (!("reponsesOnboarding" in etat)) {
+      etat.reponsesOnboarding = null;
+      modifie = true;
+    }
     // La séance guidée par défaut, ajoutée UNE seule fois aux états
     // existants : le marqueur évite qu'elle ressuscite si le joueur
     // la supprime ensuite dans l'éditeur.

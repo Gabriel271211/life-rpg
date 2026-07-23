@@ -102,6 +102,168 @@
   margin-top: 26px;
 }
 
+/* ----- Étape 2b : trois questions à puces ----- */
+.onb-questions {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.onb-etape[data-etape="questions"] .onb-continuer {
+  margin-top: 30px;
+}
+
+/* ----- Étape 2c : attente, le Système forge ----- */
+.onb-attente {
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
+/* Anneau lent : la rotation du mode Session, apaisée */
+.onb-anneau {
+  width: min(46vw, 190px);
+}
+
+.onb-anneau svg {
+  animation-duration: 3.2s;
+}
+
+.onb-attente-texte {
+  letter-spacing: 0.3em;
+  animation: onb-respiration 2.4s ease-in-out infinite;
+}
+
+@keyframes onb-respiration {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* ----- Étape 2d : proposition ----- */
+.onb-prop-classe {
+  margin-top: 8px;
+  font-size: 1.9rem;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.onb-prop-bloc {
+  margin-top: 26px;
+}
+
+.onb-prop-titre {
+  margin-top: 10px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.onb-prop-description {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--texte-second);
+}
+
+.onb-prop-jalons {
+  margin-top: 14px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.onb-prop-jalon {
+  position: relative;
+  padding-left: 18px;
+}
+
+/* Petit repère de chemin, écho discret de l'écran Quête */
+.onb-prop-jalon::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 7px;
+  width: 7px;
+  height: 7px;
+  border: 1px solid rgba(var(--accent-rgb), 0.55);
+  border-radius: 50%;
+}
+
+.onb-prop-jalon-nom {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.onb-prop-jalon-critere {
+  margin-top: 2px;
+  font-size: 0.76rem;
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--texte-second);
+}
+
+.onb-prop-quetes,
+.onb-prop-hebdo {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.onb-prop-quete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 13px;
+}
+
+.onb-prop-quete-nom {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.onb-prop-quete-meta {
+  margin-top: 3px;
+  font-size: 0.66rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+.onb-prop-retirer {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.onb-prop-retirer svg {
+  width: 14px;
+  height: 14px;
+}
+
+.onb-etape[data-etape="proposition"] .onb-continuer {
+  margin-top: 32px;
+}
+
 /* ----- Étape 3 : révélation ----- */
 .onb-revelation {
   align-items: center;

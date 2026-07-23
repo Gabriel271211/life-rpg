@@ -52,6 +52,77 @@
       <button class="session-bouton onb-continuer" id="onb-valider-objectif" type="button" disabled>Continuer</button>
     </section>
 
+    <!-- Étape 2b — Trois questions (objectif personnalisé) -->
+    <section class="onb-etape" data-etape="questions" hidden>
+      <p class="etiquette">Ton objectif</p>
+      <h1 class="onb-question">Précise ta quête</h1>
+      <div class="onb-questions">
+        <div class="editeur-champ">
+          <span class="etiquette">Échéance</span>
+          <div class="editeur-puces" data-champ="deadline">
+            <button class="editeur-puce" type="button" data-valeur="1 mois">1 mois</button>
+            <button class="editeur-puce" type="button" data-valeur="3 mois">3 mois</button>
+            <button class="editeur-puce" type="button" data-valeur="6 mois">6 mois</button>
+            <button class="editeur-puce" type="button" data-valeur="12 mois">12 mois</button>
+          </div>
+        </div>
+        <div class="editeur-champ">
+          <span class="etiquette">Temps par jour</span>
+          <div class="editeur-puces" data-champ="tempsParJour">
+            <button class="editeur-puce" type="button" data-valeur="15 min">15 min</button>
+            <button class="editeur-puce" type="button" data-valeur="30 min">30 min</button>
+            <button class="editeur-puce" type="button" data-valeur="60+ min">60+ min</button>
+          </div>
+        </div>
+        <div class="editeur-champ">
+          <span class="etiquette">Ton niveau</span>
+          <div class="editeur-puces" data-champ="niveau">
+            <button class="editeur-puce" type="button" data-valeur="Débutant">Débutant</button>
+            <button class="editeur-puce" type="button" data-valeur="Intermédiaire">Intermédiaire</button>
+            <button class="editeur-puce" type="button" data-valeur="Avancé">Avancé</button>
+          </div>
+        </div>
+      </div>
+      <button class="session-bouton onb-continuer" id="onb-valider-questions" type="button">Continuer</button>
+    </section>
+
+    <!-- Étape 2c — Attente : le Système forge -->
+    <section class="onb-etape onb-attente" data-etape="attente" hidden>
+      <div class="anneau rotatif onb-anneau" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <circle class="anneau-piste" cx="100" cy="100" r="90"/>
+          <circle class="anneau-progression" cx="100" cy="100" r="90"
+                  stroke-dasharray="141 565.5" stroke-dashoffset="0"/>
+        </svg>
+      </div>
+      <p class="etiquette onb-attente-texte">Le Système forge ta quête…</p>
+    </section>
+
+    <!-- Étape 2d — Proposition : l'IA propose, l'humain dispose -->
+    <section class="onb-etape" data-etape="proposition" hidden>
+      <p class="etiquette">Le Système propose</p>
+      <p class="onb-prop-classe" id="prop-classe"></p>
+
+      <div class="onb-prop-bloc">
+        <p class="etiquette">Quête principale</p>
+        <p class="onb-prop-titre" id="prop-titre"></p>
+        <p class="onb-prop-description" id="prop-description"></p>
+        <ol class="onb-prop-jalons" id="prop-jalons"></ol>
+      </div>
+
+      <div class="onb-prop-bloc">
+        <p class="etiquette">Quêtes quotidiennes</p>
+        <div class="onb-prop-quetes" id="prop-quetes"></div>
+      </div>
+
+      <div class="onb-prop-bloc">
+        <p class="etiquette">Quête hebdomadaire</p>
+        <div class="onb-prop-hebdo" id="prop-hebdo"></div>
+      </div>
+
+      <button class="session-bouton onb-continuer" id="onb-cest-parti" type="button">C'est parti</button>
+    </section>
+
     <!-- Étape 3 — Révélation -->
     <section class="onb-etape onb-revelation" data-etape="3" hidden>
       <p class="etiquette rev-etiquette">Ton aventure commence</p>
@@ -76,6 +147,7 @@
   <script src="js/templates.js"></script>
   <script src="js/etat.js"></script>
   <script src="js/objectif.js"></script>
+  <script src="js/ia.js"></script>
   <script src="js/onboarding.js"></script>
   <script src="js/pwa.js"></script>
 </body>
