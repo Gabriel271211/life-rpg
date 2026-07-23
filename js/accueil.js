@@ -59,16 +59,13 @@
     majPuce(puceNiveau, etat.niveau);
   }
 
-  // Feedback après un gain : bandeaux pour l'étape accomplie et la
-  // montée de niveau, révélation plein écran pour les cartes,
-  // et la montée de rang — le moment fort — par-dessus tout.
-  function afficherBandeaux(etapeFinie, niveauAvant, nouvellesCartes) {
-    var bandeaux = [];
-    if (etapeFinie) bandeaux.push(["Étape accomplie", etapeFinie.nom]);
-    if (etat.niveau > niveauAvant) bandeaux.push(["Niveau", etat.niveau]);
-    bandeaux.forEach(function (b, i) {
-      setTimeout(function () { Juice.bandeau(b[0], b[1]); }, i * 2700);
-    });
+  // Feedback après un gain : bandeau de montée de niveau, révélation
+  // plein écran pour les cartes, et la montée de rang — le moment
+  // fort — par-dessus tout.
+  function afficherBandeaux(niveauAvant, nouvellesCartes) {
+    if (etat.niveau > niveauAvant) {
+      Juice.bandeau("Niveau", etat.niveau);
+    }
     if (nouvellesCartes && nouvellesCartes.length > 0) {
       Revelation.montrer(nouvellesCartes);
     }
@@ -100,7 +97,6 @@
 
     var niveauAvant = etat.niveau;
     Regles.gagnerXp(etat, quete.xpDonne, quete.stat);
-    var etapeFinie = Regles.progresserQuetePrincipale(etat);
     Jour.majStreak(etat);
     etat.compteurs.quetesValidees += 1;
     if (critique) etat.compteurs.critiques += 1;
@@ -121,7 +117,6 @@
     return {
       critique: critique,
       xpDonne: quete.xpDonne,
-      etapeFinie: etapeFinie,
       niveauAvant: niveauAvant,
       nouvellesCartes: nouvellesCartes,
       hebdoProgres: hebdoProgres
@@ -136,7 +131,6 @@
     quete.faite = false;
     Regles.retirerXp(etat, quete.xpDonne || quete.xp, quete.stat);
     delete quete.xpDonne;
-    Regles.regresserQuetePrincipale(etat);
     Jour.majStreak(etat);
     etat.compteurs.quetesValidees = Math.max(0, etat.compteurs.quetesValidees - 1);
     if (etaitCritique) {
@@ -213,7 +207,7 @@
       hebdoAvancee = res.hebdoProgres;
       majCarte(quete);
       majApresChangement();
-      afficherBandeaux(res.etapeFinie, res.niveauAvant, res.nouvellesCartes);
+      afficherBandeaux(res.niveauAvant, res.nouvellesCartes);
       return res;
     }, function () {
       if (quete.faite) {
@@ -304,12 +298,12 @@
   function majQuetePrincipale() {
     var qp = etat.quetePrincipale;
     if (Regles.quetePrincipaleAccomplie(qp)) {
-      qpEtape.textContent = "Accomplie";
+      qpEtape.textContent = "Entre deux quêtes";
       qpProgres.textContent = "";
     } else {
-      var e = Regles.etapeActive(qp);
-      qpEtape.textContent = e.nom;
-      qpProgres.textContent = e.progres + "/" + e.objectif;
+      var actif = Regles.jalonActif(qp);
+      qpEtape.textContent = actif.jalon.nom;
+      qpProgres.textContent = Regles.nbJalonsAtteints(qp) + "/" + qp.jalons.length;
     }
   }
 
@@ -359,7 +353,7 @@
         res.critique
       );
       Juice.vibrer(nouvellesCartes.length > 0 ? 70 : 40);
-      afficherBandeaux(null, niveauAvant, nouvellesCartes);
+      afficherBandeaux(niveauAvant, nouvellesCartes);
     } else {
       Etat.sauvegarder(etat);
       Juice.xpFlottant(hebdoBouton, "+1", false);
@@ -406,7 +400,7 @@
       majPuces();
 
       if (res && res.accomplie) {
-        afficherBandeaux(null, niveauAvant, nouvellesCartes);
+        afficherBandeaux(niveauAvant, nouvellesCartes);
         return {
           critique: res.critique,
           xpDonne: etat.hebdo.xpDonne,

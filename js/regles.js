@@ -108,57 +108,61 @@ var Regles = (function () {
     }
   }
 
-  // ----- Quête principale -----
-  // Chaque quête quotidienne validée fait progresser l'étape active.
+  // ----- Quête principale : jalons auto-déclarés -----
+  // Un jalon = un accomplissement CONCRET de la vraie vie, décrit par
+  // son critère. L'app fait confiance : le joueur déclare lui-même le
+  // jalon atteint — se mentir n'apporte que de l'XP creux. Les jalons
+  // se valident DANS L'ORDRE : le suivant se déverrouille quand le
+  // précédent est atteint.
 
-  function etapeActive(quetePrincipale) {
-    return quetePrincipale.etapes[quetePrincipale.etapeActive] || null;
-  }
-
-  function quetePrincipaleAccomplie(quetePrincipale) {
-    return quetePrincipale.etapeActive >= quetePrincipale.etapes.length;
-  }
-
-  // +1 au progrès de l'étape active. Si elle est complétée : bonus d'XP
-  // et passage à l'étape suivante. Retourne l'étape accomplie, sinon null.
-  function progresserQuetePrincipale(etat) {
-    var etape = etapeActive(etat.quetePrincipale);
-    if (!etape) return null;
-
-    etape.progres += 1;
-    if (etape.progres >= etape.objectif) {
-      etape.progres = etape.objectif;
-      etat.quetePrincipale.etapeActive += 1;
-      gagnerXp(etat, etape.bonusXp);
-      return etape;
+  // Premier jalon non atteint, ou null si tout est accompli.
+  function jalonActif(quetePrincipale) {
+    if (!quetePrincipale || !Array.isArray(quetePrincipale.jalons)) return null;
+    for (var i = 0; i < quetePrincipale.jalons.length; i++) {
+      if (!quetePrincipale.jalons[i].atteint) {
+        return { jalon: quetePrincipale.jalons[i], index: i };
+      }
     }
     return null;
   }
 
-  // Rattrapage après édition de la quête principale : si l'objectif
-  // d'une étape en cours a été réduit sous son progrès, elle se
-  // complète (bonus compris) — le progrès n'est jamais volé.
-  // Retourne les étapes accomplies par ce rattrapage.
-  function rattraperQuetePrincipale(etat) {
-    var accomplies = [];
-    var etape = etapeActive(etat.quetePrincipale);
-    while (etape && etape.progres >= etape.objectif) {
-      etape.progres = etape.objectif;
-      etat.quetePrincipale.etapeActive += 1;
-      gagnerXp(etat, etape.bonusXp);
-      accomplies.push(etape);
-      etape = etapeActive(etat.quetePrincipale);
-    }
-    return accomplies;
+  function nbJalonsAtteints(quetePrincipale) {
+    var n = 0;
+    quetePrincipale.jalons.forEach(function (jalon) {
+      if (jalon.atteint) n += 1;
+    });
+    return n;
   }
 
-  // -1 au progrès de l'étape active (plancher 0). Les étapes déjà
-  // accomplies ne sont pas rouvertes : leur bonus reste acquis.
-  function regresserQuetePrincipale(etat) {
-    var etape = etapeActive(etat.quetePrincipale);
-    if (etape && etape.progres > 0) {
-      etape.progres -= 1;
+  function quetePrincipaleAccomplie(quetePrincipale) {
+    return Boolean(quetePrincipale.terminee) || jalonActif(quetePrincipale) === null;
+  }
+
+  // Déclare atteint le jalon actif : bonus d'XP, date du jour (via
+  // etat.dernierJour, synchronisé au chargement — pas d'horloge ici).
+  // Si c'était le dernier : la quête se termine et entre au palmarès.
+  // Retourne { jalon, terminee }, ou null si rien à atteindre.
+  function atteindreJalon(etat) {
+    var qp = etat.quetePrincipale;
+    var actif = jalonActif(qp);
+    if (!actif) return null;
+
+    actif.jalon.atteint = true;
+    actif.jalon.dateAtteint = etat.dernierJour || null;
+    gagnerXp(etat, qp.bonusXpParJalon || 150);
+
+    var terminee = jalonActif(qp) === null;
+    if (terminee && !qp.terminee) {
+      qp.terminee = true;
+      if (Array.isArray(etat.quetesAccomplies)) {
+        etat.quetesAccomplies.push({
+          titre: qp.titre,
+          niveau: qp.niveau || 1,
+          date: etat.dernierJour || null
+        });
+      }
     }
+    return { jalon: actif.jalon, terminee: terminee };
   }
 
   // ----- Quête hebdomadaire -----
@@ -245,11 +249,10 @@ var Regles = (function () {
     regresserHebdo: regresserHebdo,
     descriptionLienHebdo: descriptionLienHebdo,
     lancerCritique: lancerCritique,
-    etapeActive: etapeActive,
+    jalonActif: jalonActif,
+    nbJalonsAtteints: nbJalonsAtteints,
     quetePrincipaleAccomplie: quetePrincipaleAccomplie,
-    progresserQuetePrincipale: progresserQuetePrincipale,
-    rattraperQuetePrincipale: rattraperQuetePrincipale,
-    regresserQuetePrincipale: regresserQuetePrincipale,
+    atteindreJalon: atteindreJalon,
     xpRequisNiveau: xpRequisNiveau,
     xpRequisStat: xpRequisStat,
     rang: rang,

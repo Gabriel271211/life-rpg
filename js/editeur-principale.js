@@ -2,12 +2,12 @@
 // LIFE RPG — editeur-principale.js
 // Éditeur de la quête principale : overlay au
 // même langage que l'éditeur de quêtes. Titre,
-// description, étapes (ajout / retrait / bornes),
-// et changement complet d'objectif via les
-// templates. Cohérence : une étape accomplie est
-// verrouillée, l'XP acquis ne bouge jamais, et
-// un objectif réduit sous le progrès se complète
-// au prochain rendu (Regles.rattraperQuetePrincipale).
+// description, jalons (nom + critère, ajout /
+// retrait bornés), et changement complet
+// d'objectif via les templates. Cohérence : un
+// jalon atteint est verrouillé, l'XP acquis ne
+// bouge jamais. C'est aussi le secours quand le
+// Système se tait : la suite se forge à la main.
 // ============================================
 
 var EditeurPrincipale = (function () {
@@ -17,10 +17,9 @@ var EditeurPrincipale = (function () {
   var BORNES = {
     titre: 60,
     description: 120,
-    nomEtape: 40,
-    objectif: { min: 5, max: 200 },
-    bonusXp: { min: 50, max: 1000 },
-    maxEtapes: 6
+    nomJalon: 40,
+    critere: 120,
+    maxJalons: 6
   };
 
   var SVG_CROIX =
@@ -35,14 +34,8 @@ var EditeurPrincipale = (function () {
     '<path d="M6.5 7l.8 12.1A1.5 1.5 0 0 0 8.8 20.5h6.4a1.5 1.5 0 0 0 1.5-1.4L17.5 7"/>' +
     '<path d="M10 11v6M14 11v6"/></svg>';
 
-  function borner(valeur, bornes) {
-    var n = parseInt(valeur, 10);
-    if (isNaN(n)) n = bornes.min;
-    return Math.min(bornes.max, Math.max(bornes.min, n));
-  }
-
-  // Copie de travail des étapes : rien ne touche l'état avant
-  // Enregistrer. Les étapes accomplies sont copiées telles quelles.
+  // Copie de travail des jalons : rien ne touche l'état avant
+  // Enregistrer. Les jalons atteints sont copiés tels quels.
   var brouillon = null;
 
   function montrerVue(html) {
@@ -52,6 +45,12 @@ var EditeurPrincipale = (function () {
     corps.classList.add("fondu");
     corps.innerHTML = html;
     return corps;
+  }
+
+  function message(corps, texte) {
+    var el = corps.querySelector(".editeur-message");
+    el.textContent = texte;
+    el.hidden = false;
   }
 
   // --- Formulaire principal ---
@@ -65,16 +64,16 @@ var EditeurPrincipale = (function () {
 
   function vueFormulaire() {
     var qp = ctx.etat.quetePrincipale;
-    brouillon = JSON.parse(JSON.stringify(qp.etapes));
+    brouillon = JSON.parse(JSON.stringify(qp.jalons));
 
     var corps = montrerVue(
       '<form class="editeur-formulaire" novalidate>' +
         champTexte("Titre", "titre", BORNES.titre) +
         champTexte("Description", "description", BORNES.description) +
-        '<p class="etiquette editeur-section">Étapes</p>' +
+        '<p class="etiquette editeur-section">Jalons</p>' +
         '<div class="editeur-liste ep-etapes"></div>' +
         '<p class="editeur-message" hidden></p>' +
-        '<button class="session-lien ep-ajouter" type="button">Ajouter une étape</button>' +
+        '<button class="session-lien ep-ajouter" type="button">Ajouter un jalon</button>' +
         '<p class="editeur-erreur" hidden></p>' +
         '<div class="editeur-formulaire-boutons">' +
           '<button class="session-bouton" type="submit">Enregistrer</button>' +
@@ -91,22 +90,22 @@ var EditeurPrincipale = (function () {
     form.titre.value = qp.titre;
     form.description.value = qp.description;
 
-    rendreEtapes(corps);
+    rendreJalons(corps);
     rendreChangerObjectif(corps);
 
     corps.querySelector(".ep-ajouter").addEventListener("click", function () {
-      if (brouillon.length >= BORNES.maxEtapes) {
-        message(corps, "Six étapes au maximum : garde une quête lisible.");
+      if (brouillon.length >= BORNES.maxJalons) {
+        message(corps, "Six jalons au maximum : garde une quête lisible.");
         return;
       }
-      var derniere = brouillon[brouillon.length - 1];
+      lireJalons(corps);
       brouillon.push({
-        nom: "Nouvelle étape",
-        objectif: Math.min(BORNES.objectif.max, derniere ? derniere.objectif * 2 : 15),
-        progres: 0,
-        bonusXp: Math.min(BORNES.bonusXp.max, derniere ? derniere.bonusXp * 2 : 200)
+        nom: "Nouveau jalon",
+        critere: "",
+        atteint: false,
+        dateAtteint: null
       });
-      rendreEtapes(corps);
+      rendreJalons(corps);
     });
 
     form.querySelector('[data-role="annuler"]').addEventListener("click", fermer);
@@ -120,74 +119,53 @@ var EditeurPrincipale = (function () {
         erreur.hidden = false;
         return;
       }
-      lireEtapes(corps);
+      lireJalons(corps);
 
       qp.titre = titre;
       qp.description = form.description.value.trim().slice(0, BORNES.description);
-      qp.etapes = brouillon;
-      // L'étape active ne peut pas pointer au-delà de la liste.
-      qp.etapeActive = Math.min(qp.etapeActive, qp.etapes.length);
-
-      // Objectifs réduits sous le progrès : l'étape se complète,
-      // bonus compris — le progrès n'est jamais volé.
-      Regles.rattraperQuetePrincipale(ctx.etat);
+      qp.jalons = brouillon;
+      // Ajouter un jalon après l'accomplissement rouvre la quête ;
+      // le palmarès, lui, garde la trace de ce qui a été accompli.
+      qp.terminee = qp.jalons.length > 0 &&
+        qp.jalons.every(function (jalon) { return jalon.atteint; });
 
       Etat.sauvegarder(ctx.etat);
       fermer();
     });
   }
 
-  function message(corps, texte) {
-    var el = corps.querySelector(".editeur-message");
-    el.textContent = texte;
-    el.hidden = false;
-  }
+  // --- Jalons : lignes éditables, atteints verrouillés ---
 
-  // --- Étapes : lignes éditables, accomplies verrouillées ---
-
-  function rendreEtapes(corps) {
+  function rendreJalons(corps) {
     var conteneur = corps.querySelector(".ep-etapes");
     conteneur.innerHTML = "";
-    var etapeActive = ctx.etat.quetePrincipale.etapeActive;
 
-    brouillon.forEach(function (etape, i) {
-      var accomplie = i < etapeActive;
+    brouillon.forEach(function (jalon, i) {
       var ligne = document.createElement("div");
-      ligne.className = "editeur-ligne ep-etape" + (accomplie ? " ep-accomplie" : "");
+      ligne.className = "editeur-ligne ep-etape" + (jalon.atteint ? " ep-accomplie" : "");
 
-      if (accomplie) {
-        // Verrouillée : grisée, ni éditable ni supprimable.
+      if (jalon.atteint) {
+        // Verrouillé : grisé, ni éditable ni supprimable.
         ligne.innerHTML =
           '<div class="editeur-ligne-infos">' +
             '<p class="editeur-ligne-nom"></p>' +
-            '<p class="editeur-ligne-meta">Accomplie · +' + etape.bonusXp + " XP acquis</p>" +
+            '<p class="editeur-ligne-meta">Jalon atteint — verrouillé</p>' +
           "</div>";
-        ligne.querySelector(".editeur-ligne-nom").textContent = etape.nom;
+        ligne.querySelector(".editeur-ligne-nom").textContent = jalon.nom;
       } else {
         ligne.innerHTML =
           '<div class="ep-etape-champs">' +
-            '<input class="editeur-entree ep-nom" type="text" maxlength="' + BORNES.nomEtape + '" ' +
-              'autocomplete="off" aria-label="Nom de l\'étape">' +
-            '<div class="ep-etape-nombres">' +
-              '<label class="editeur-champ">' +
-                '<span class="etiquette">Objectif (quêtes)</span>' +
-                '<input class="editeur-entree ep-objectif" type="number" inputmode="numeric" ' +
-                  'min="' + BORNES.objectif.min + '" max="' + BORNES.objectif.max + '">' +
-              "</label>" +
-              '<label class="editeur-champ">' +
-                '<span class="etiquette">Bonus XP</span>' +
-                '<input class="editeur-entree ep-bonus" type="number" inputmode="numeric" ' +
-                  'min="' + BORNES.bonusXp.min + '" max="' + BORNES.bonusXp.max + '">' +
-              "</label>" +
-            "</div>" +
-            (etape.progres > 0 ? '<p class="editeur-ligne-meta ep-progres">Progrès en cours : ' + etape.progres + "</p>" : "") +
+            '<input class="editeur-entree ep-nom" type="text" maxlength="' + BORNES.nomJalon + '" ' +
+              'autocomplete="off" aria-label="Nom du jalon" placeholder="Nom du jalon">' +
+            '<input class="editeur-entree ep-critere" type="text" maxlength="' + BORNES.critere + '" ' +
+              'autocomplete="off" aria-label="Critère du jalon" ' +
+              'placeholder="Ce qui doit être vrai (ex. Ta boutique est en ligne)">' +
           "</div>" +
-          '<button class="editeur-supprimer" type="button" aria-label="Supprimer l\'étape">' +
+          '<button class="editeur-supprimer" type="button" aria-label="Supprimer le jalon">' +
             SVG_CORBEILLE + "</button>";
 
-        ligne.querySelector(".ep-nom").value = etape.nom;
-        ligne.querySelector(".ep-objectif").value = etape.objectif;
-        ligne.querySelector(".ep-bonus").value = etape.bonusXp;
+        ligne.querySelector(".ep-nom").value = jalon.nom;
+        ligne.querySelector(".ep-critere").value = jalon.critere;
 
         ligne.querySelector(".editeur-supprimer").addEventListener("click", function () {
           demanderSuppression(corps, ligne, i);
@@ -198,39 +176,37 @@ var EditeurPrincipale = (function () {
     });
   }
 
-  // Relit les champs des étapes non verrouillées dans le brouillon.
-  function lireEtapes(corps) {
+  // Relit les champs des jalons non verrouillés dans le brouillon.
+  function lireJalons(corps) {
     var lignes = corps.querySelectorAll(".ep-etape");
     lignes.forEach(function (ligne, i) {
       if (ligne.classList.contains("ep-accomplie")) return;
       // Ligne remplacée par une confirmation de suppression : rien à lire.
       if (!ligne.querySelector(".ep-nom")) return;
-      var etape = brouillon[i];
-      etape.nom = ligne.querySelector(".ep-nom").value.trim().slice(0, BORNES.nomEtape) || etape.nom;
-      etape.objectif = borner(ligne.querySelector(".ep-objectif").value, BORNES.objectif);
-      etape.bonusXp = borner(ligne.querySelector(".ep-bonus").value, BORNES.bonusXp);
+      var jalon = brouillon[i];
+      jalon.nom = ligne.querySelector(".ep-nom").value.trim().slice(0, BORNES.nomJalon) || jalon.nom;
+      jalon.critere = ligne.querySelector(".ep-critere").value.trim().slice(0, BORNES.critere);
     });
   }
 
   function demanderSuppression(corps, ligne, index) {
     if (brouillon.length <= 1) {
-      message(corps, "Garde au moins une étape.");
+      message(corps, "Garde au moins un jalon.");
       return;
     }
-    // Les saisies en cours sont conservées avant le re-rendu.
-    lireEtapes(corps);
+    lireJalons(corps);
     ligne.innerHTML =
-      '<p class="editeur-ligne-question">Supprimer cette étape ?</p>' +
+      '<p class="editeur-ligne-question">Supprimer ce jalon ?</p>' +
       '<div class="editeur-ligne-boutons">' +
         '<button class="session-lien" type="button" data-role="confirmer">Supprimer</button>' +
         '<button class="session-lien accent" type="button" data-role="annuler">Annuler</button>' +
       "</div>";
     ligne.querySelector('[data-role="confirmer"]').addEventListener("click", function () {
       brouillon.splice(index, 1);
-      rendreEtapes(corps);
+      rendreJalons(corps);
     });
     ligne.querySelector('[data-role="annuler"]').addEventListener("click", function () {
-      rendreEtapes(corps);
+      rendreJalons(corps);
     });
   }
 
@@ -322,6 +298,7 @@ var EditeurPrincipale = (function () {
     var etat = ctx.etat;
     etat.quetePrincipale = Templates.quetePrincipaleDe(template);
     etat.classe = template.classe;
+    etat.objectifTexte = template.quetePrincipale.titre;
     if (remplacerQuetes) {
       etat.quetes = Templates.quetesDe(template);
       etat.hebdo = Templates.hebdoDe(template);

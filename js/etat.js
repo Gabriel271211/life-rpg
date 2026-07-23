@@ -75,13 +75,16 @@ var Etat = (function () {
     quetePrincipale: {
       titre: "Transformation physique",
       description: "Devenir la meilleure version de toi-même, séance après séance.",
-      etapeActive: 0,
-      etapes: [
-        { nom: "Fondations", objectif: 15, progres: 0, bonusXp: 200 },
-        { nom: "Régularité", objectif: 40, progres: 0, bonusXp: 400 },
-        { nom: "Dépassement", objectif: 80, progres: 0, bonusXp: 800 }
+      niveau: 1,
+      bonusXpParJalon: 150,
+      terminee: false,
+      jalons: [
+        { nom: "Rythme installé", critere: "Deux semaines d'entraînement sans jour manqué", atteint: false, dateAtteint: null },
+        { nom: "20 pompes d'affilée", critere: "Tu enchaînes 20 pompes strictes, sans pause ni genoux posés", atteint: false, dateAtteint: null },
+        { nom: "Corps transformé", critere: "Deux mois de séances tenus — les progrès se voient et se mesurent", atteint: false, dateAtteint: null }
       ]
     },
+    quetesAccomplies: [],
     compteurs: {
       quetesValidees: 0,   // total historique de quêtes quotidiennes validées
       critiques: 0,        // total de coups critiques obtenus
@@ -112,6 +115,44 @@ var Etat = (function () {
     }
     if (!etat.quetePrincipale) {
       etat.quetePrincipale = JSON.parse(JSON.stringify(DEFAUT.quetePrincipale));
+      modifie = true;
+    }
+    // Quête principale 2.0 : les étapes-compteurs deviennent des
+    // jalons auto-déclarés. Les étapes accomplies sont des jalons
+    // atteints, le progrès de l'étape en cours est conservé en note
+    // dans le critère — rien n'est perdu, l'XP acquis ne bouge pas.
+    if (etat.quetePrincipale && Array.isArray(etat.quetePrincipale.etapes)) {
+      var ancienneQp = etat.quetePrincipale;
+      var etapeActive = ancienneQp.etapeActive || 0;
+      var jalons = ancienneQp.etapes.map(function (etape, i) {
+        var atteint = i < etapeActive;
+        // Les étapes issues de l'IA (chantier 2) portent déjà un
+        // critère ; les étapes-compteurs en reçoivent un décrivant
+        // l'ancien objectif.
+        var critere = etape.critere || ("Valider " + etape.objectif + " quêtes quotidiennes");
+        if (!atteint && etape.progres > 0) {
+          critere += " — progrès repris : " + etape.progres + " / " + etape.objectif;
+        }
+        return {
+          nom: etape.critere ? etape.nom : "Étape : " + etape.nom,
+          critere: critere,
+          atteint: atteint,
+          dateAtteint: null
+        };
+      });
+      etat.quetePrincipale = {
+        titre: ancienneQp.titre,
+        description: ancienneQp.description || "",
+        niveau: 1,
+        bonusXpParJalon: 150,
+        terminee: jalons.length > 0 && jalons.every(function (j) { return j.atteint; }),
+        jalons: jalons
+      };
+      modifie = true;
+    }
+    // Palmarès des quêtes principales accomplies.
+    if (!Array.isArray(etat.quetesAccomplies)) {
+      etat.quetesAccomplies = [];
       modifie = true;
     }
     if (!etat.compteurs) {

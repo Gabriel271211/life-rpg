@@ -8,11 +8,12 @@
 
 var Templates = (function () {
 
-  // Étapes génériques, partagées par l'objectif personnalisé.
-  var ETAPES_GENERIQUES = [
-    { nom: "Fondations", objectif: 15, bonusXp: 200 },
-    { nom: "Régularité", objectif: 40, bonusXp: 400 },
-    { nom: "Dépassement", objectif: 80, bonusXp: 800 }
+  // Jalons génériques, partagés par l'objectif personnalisé : des
+  // accomplissements concrets et auto-vérifiables, sans compteur.
+  var JALONS_GENERIQUES = [
+    { nom: "Fondations", critere: "Le premier pas concret vers ton objectif est accompli" },
+    { nom: "Régularité", critere: "Deux semaines d'actions quotidiennes sans abandonner" },
+    { nom: "Dépassement", critere: "Un résultat visible que tu ne pouvais pas atteindre au départ" }
   ];
 
   // La séance guidée du template Sport, partagée entre la quête
@@ -45,10 +46,11 @@ var Templates = (function () {
       quetePrincipale: {
         titre: "Transformation physique",
         description: "Devenir la meilleure version de toi-même, séance après séance.",
-        etapes: [
-          { nom: "Fondations", objectif: 15, bonusXp: 200 },
-          { nom: "Régularité", objectif: 40, bonusXp: 400 },
-          { nom: "Dépassement", objectif: 80, bonusXp: 800 }
+        jalons: [
+          { nom: "Rythme installé", critere: "Deux semaines d'entraînement sans jour manqué" },
+          { nom: "20 pompes d'affilée", critere: "Tu enchaînes 20 pompes strictes, sans pause ni genoux posés" },
+          { nom: "Endurance prouvée", critere: "Tu tiens 30 minutes d'effort continu sans t'arrêter" },
+          { nom: "Corps transformé", critere: "Deux mois de séances tenus — les progrès se voient et se mesurent" }
         ]
       },
       quetesQuotidiennes: [
@@ -79,10 +81,11 @@ var Templates = (function () {
       quetePrincipale: {
         titre: "L'ascension du savoir",
         description: "Bâtir une connaissance solide, une session de travail à la fois.",
-        etapes: [
-          { nom: "Premiers chapitres", objectif: 15, bonusXp: 200 },
-          { nom: "Rythme d'étude", objectif: 40, bonusXp: 400 },
-          { nom: "Maîtrise", objectif: 80, bonusXp: 800 }
+        jalons: [
+          { nom: "Système de travail posé", critere: "Ton planning de révision est écrit et ton espace de travail prêt" },
+          { nom: "Première matière maîtrisée", critere: "Un chapitre entier expliqué à voix haute, sans tes notes" },
+          { nom: "Régularité prouvée", critere: "Trois semaines de sessions de travail sans interruption" },
+          { nom: "Examen blanc réussi", critere: "Un test complet en conditions réelles, au score que tu visais" }
         ]
       },
       quetesQuotidiennes: [
@@ -112,10 +115,11 @@ var Templates = (function () {
       quetePrincipale: {
         titre: "Bâtisseur d'empire",
         description: "Faire exister ton projet par des actions concrètes, jour après jour.",
-        etapes: [
-          { nom: "Mise en route", objectif: 15, bonusXp: 200 },
-          { nom: "Traction", objectif: 40, bonusXp: 400 },
-          { nom: "Expansion", objectif: 80, bonusXp: 800 }
+        jalons: [
+          { nom: "Offre définie", critere: "Ton produit ou service est décrit en une page claire" },
+          { nom: "Vitrine en ligne", critere: "Ta boutique, ton site ou ton profil pro est publié" },
+          { nom: "Premiers contacts", critere: "Dix prospects contactés, au moins une vraie discussion engagée" },
+          { nom: "Premier revenu", critere: "Ton premier paiement client est encaissé" }
         ]
       },
       quetesQuotidiennes: [
@@ -148,10 +152,10 @@ var Templates = (function () {
       quetePrincipale: {
         titre: "La voie du sage",
         description: "Lire chaque jour, et laisser les livres t'élever.",
-        etapes: [
-          { nom: "Premières pages", objectif: 15, bonusXp: 200 },
-          { nom: "Lecteur assidu", objectif: 40, bonusXp: 400 },
-          { nom: "Bibliothèque vivante", objectif: 80, bonusXp: 800 }
+        jalons: [
+          { nom: "Premier livre achevé", critere: "Un livre terminé, trois idées notées" },
+          { nom: "Rituel installé", critere: "Deux semaines de lecture quotidienne sans exception" },
+          { nom: "Bibliothèque vivante", critere: "Cinq livres terminés, chacun résumé en quelques lignes" }
         ]
       },
       quetesQuotidiennes: [
@@ -177,10 +181,10 @@ var Templates = (function () {
       quetePrincipale: {
         titre: "Maître de tes journées",
         description: "L'ordre d'abord : lever, espace net, journée planifiée.",
-        etapes: [
-          { nom: "Reprise en main", objectif: 15, bonusXp: 200 },
-          { nom: "Routine tenue", objectif: 40, bonusXp: 400 },
-          { nom: "Contrôle total", objectif: 80, bonusXp: 800 }
+        jalons: [
+          { nom: "Matins conquis", critere: "Une semaine entière levé à l'heure prévue, sans repousser le réveil" },
+          { nom: "Espace en ordre", critere: "Ton espace de vie rangé, et maintenu ainsi deux semaines" },
+          { nom: "Journées pilotées", critere: "Trois semaines où chaque journée a été planifiée la veille" }
         ]
       },
       quetesQuotidiennes: [
@@ -212,10 +216,10 @@ var Templates = (function () {
       quetePrincipale: {
         titre: "L'œuvre en devenir",
         description: "Créer chaque jour, et laisser l'œuvre prendre forme.",
-        etapes: [
-          { nom: "Esquisses", objectif: 15, bonusXp: 200 },
-          { nom: "Atelier régulier", objectif: 40, bonusXp: 400 },
-          { nom: "Œuvre accomplie", objectif: 80, bonusXp: 800 }
+        jalons: [
+          { nom: "Atelier ouvert", critere: "Ton espace et tes outils de création sont prêts à l'emploi" },
+          { nom: "Première œuvre achevée", critere: "Une création terminée de bout en bout, montrable" },
+          { nom: "Œuvre partagée", critere: "Ta création publiée ou montrée à de vraies personnes" }
         ]
       },
       quetesQuotidiennes: [
@@ -266,7 +270,7 @@ var Templates = (function () {
       quetePrincipale: {
         titre: objectif,
         description: "Ta quête, tes règles : avance un peu chaque jour.",
-        etapes: copier(ETAPES_GENERIQUES)
+        jalons: copier(JALONS_GENERIQUES)
       },
       quetesQuotidiennes: [
         {
@@ -293,11 +297,20 @@ var Templates = (function () {
 
   // ----- Copies prêtes à poser dans l'état -----
 
+  // Quête principale prête à poser dans l'état : jalons vierges,
+  // niveau 1 (ou celui du template — la suite IA en fournit un).
   function quetePrincipaleDe(template) {
     var qp = copier(template.quetePrincipale);
-    qp.etapeActive = 0;
-    qp.etapes.forEach(function (etape) { etape.progres = 0; });
-    return qp;
+    return {
+      titre: qp.titre,
+      description: qp.description || "",
+      niveau: qp.niveau || 1,
+      bonusXpParJalon: qp.bonusXpParJalon || 150,
+      terminee: false,
+      jalons: (qp.jalons || []).map(function (jalon) {
+        return { nom: jalon.nom, critere: jalon.critere || "", atteint: false, dateAtteint: null };
+      })
+    };
   }
 
   function quetesDe(template) {
@@ -333,6 +346,7 @@ var Templates = (function () {
       quetes: quetesDe(template),
       hebdo: hebdoDe(template),
       quetePrincipale: quetePrincipaleDe(template),
+      quetesAccomplies: [],
       compteurs: {
         quetesValidees: 0,
         critiques: 0,

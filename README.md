@@ -21,8 +21,13 @@ une classe, un rang et des stats qui montent grâce à tes actions réelles
   14 derniers jours (XP par jour, SVG pur), bilan, streak, export / import.
 - **Collection** (`collection.html`) — les cartes-trophées débloquées par de
   vrais accomplissements (communes → légendaires, certaines cachées).
-- **Quête principale** (`quete.html`) — le chemin d'étapes de l'objectif,
-  éditable (titre, description, étapes) et remplaçable (« changer
+- **Quête principale** (`quete.html`) — le chemin de JALONS de l'objectif :
+  des accomplissements concrets de la vraie vie, auto-déclarés dans l'ordre
+  (bouton « Jalon atteint », confirmation inline, bonus XP). Dernier jalon
+  atteint → écran épique « Quête accomplie », puis le Système forge la
+  suite (niveau N+1, jalons plus ambitieux — accepter / régénérer /
+  décider plus tard). Palmarès des quêtes accomplies en bas d'écran.
+  Éditable (titre, description, jalons) et remplaçable (« changer
   d'objectif » : le personnage est conservé, la quête est remplacée).
 
 ## Types de quêtes

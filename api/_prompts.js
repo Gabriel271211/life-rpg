@@ -56,5 +56,29 @@ module.exports = {
     "(ou :corps, :discipline) si ce sont les sessions minutées de cette " +
     "stat, null si le joueur doit cocher lui-même (action hors app).\n" +
     "- Français sobre, ton RPG discret, pas d'emojis, pas de majuscules " +
-    "criardes."
+    "criardes.",
+
+  // ----- suite-principale -----
+  // Entrée : l'objectif du joueur, le titre et les jalons accomplis de
+  // la quête qui vient d'être terminée, son niveau. Sortie : la quête
+  // principale suivante — même structure, plus ambitieuse.
+  "suite-principale": CADRE + "\n\n" +
+    "Le joueur vient d'ACCOMPLIR sa quête principale. Tu forges la " +
+    "suivante : le niveau d'après de la même aventure.\n\n" +
+    "Schéma JSON attendu :\n" +
+    '{ "titre": "...", "description": "...", "niveau": 2,\n' +
+    '  "jalons": [ { "nom": "...", "critere": "..." } ] }\n\n' +
+    "Règles strictes :\n" +
+    "- PROPOSE UNE PROGRESSION, JAMAIS UNE RÉPÉTITION : les jalons déjà " +
+    "accomplis te sont donnés — aucun nouveau jalon ne doit les redire ni " +
+    "les reformuler. La nouvelle quête part de là où le joueur est arrivé " +
+    "et vise plus haut, plus loin, plus profond.\n" +
+    "- titre : évolution du titre précédent, max 60 caractères (ex. " +
+    "\"Empire — Niveau 2\" ou un titre nouveau qui prolonge l'histoire).\n" +
+    "- description : une phrase, max 120 caractères.\n" +
+    "- jalons : 3 à 4 accomplissements CONCRETS et AUTO-VÉRIFIABLES de la " +
+    "vraie vie, ordonnés du plus accessible au plus ambitieux, clairement " +
+    "plus exigeants que ceux déjà accomplis. Le critere décrit précisément " +
+    "ce qui doit être vrai, mesurable par le joueur lui-même.\n" +
+    "- Français sobre, ton RPG discret, pas d'emojis."
 };

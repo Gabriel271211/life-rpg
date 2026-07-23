@@ -218,19 +218,8 @@
   }
 
   // La proposition acceptée devient un template prêt pour etatNeuf :
-  // les jalons deviennent les étapes de la quête principale (objectifs
-  // et bonus croissants — le critère reste porté par l'étape).
+  // les jalons de l'IA sont déjà au bon format (nom + critère).
   function templateDepuisProposition() {
-    var OBJECTIFS = [15, 40, 80, 150];
-    var BONUS = [200, 400, 800, 1200];
-    var etapesQp = proposition.quetePrincipale.jalons.map(function (jalon, i) {
-      return {
-        nom: jalon.nom,
-        critere: jalon.critere,
-        objectif: OBJECTIFS[i] || 150,
-        bonusXp: BONUS[i] || 1200
-      };
-    });
     var quetes = quetesProposees.map(function (quete, i) {
       var copie = JSON.parse(JSON.stringify(quete));
       copie.id = "ia-" + Date.now() + "-" + i;
@@ -244,7 +233,7 @@
       quetePrincipale: {
         titre: proposition.quetePrincipale.titre,
         description: proposition.quetePrincipale.description,
-        etapes: etapesQp
+        jalons: JSON.parse(JSON.stringify(proposition.quetePrincipale.jalons))
       },
       quetesQuotidiennes: quetes,
       hebdo: hebdo

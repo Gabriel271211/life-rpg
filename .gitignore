@@ -5,6 +5,8 @@
 # Secrets locaux (GROQ_API_KEY pour `vercel dev`) — jamais commités
 .env
 .env.local
+api/GROQ_API_KEY.txt
+*.key
 
 # Dépendances éventuelles
 node_modules/

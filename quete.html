@@ -24,13 +24,15 @@
   <link rel="stylesheet" href="css/session.css">
   <link rel="stylesheet" href="css/editeur.css">
   <link rel="stylesheet" href="css/objectif.css">
+  <link rel="stylesheet" href="css/cartes.css">
+  <link rel="stylesheet" href="css/revelation.css">
 </head>
 <body data-page="quete">
 
   <main class="ecran">
 
     <header class="quete-entete">
-      <p class="etiquette">Quête principale</p>
+      <p class="etiquette" id="qp-etiquette">Quête principale</p>
       <div class="quete-entete-ligne">
         <h1 class="qp-titre" id="qp-titre"></h1>
         <button class="editeur-ouvrir" id="qp-editer" type="button" aria-label="Modifier ta quête principale">
@@ -45,7 +47,17 @@
 
     <ol class="etapes" id="etapes"></ol>
 
-    <p class="qp-accomplie" id="qp-accomplie" hidden>Quête principale accomplie</p>
+    <section class="entre-quetes" id="entre-quetes" hidden aria-label="Entre deux quêtes">
+      <p class="etiquette">Entre deux quêtes</p>
+      <p class="entre-quetes-texte">Ta quête est accomplie. La suite reste à écrire.</p>
+      <button class="session-bouton" id="forger-suite" type="button">Forger la suite</button>
+      <p class="entre-quetes-message" id="entre-quetes-message" hidden></p>
+    </section>
+
+    <section class="palmares" id="palmares" hidden aria-label="Quêtes accomplies">
+      <p class="etiquette">Palmarès</p>
+      <ol class="palmares-liste" id="palmares-liste"></ol>
+    </section>
 
   </main>
 
@@ -87,8 +99,10 @@
   <script src="js/cartes.js"></script>
   <script src="js/etat.js"></script>
   <script src="js/juice.js"></script>
+  <script src="js/revelation.js"></script>
   <script src="js/templates.js"></script>
   <script src="js/objectif.js"></script>
+  <script src="js/ia.js"></script>
   <script src="js/editeur-principale.js"></script>
   <script src="js/quete.js"></script>
   <script src="js/nav.js"></script>

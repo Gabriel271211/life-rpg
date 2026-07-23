@@ -43,6 +43,19 @@ var STATS = ["corps", "esprit", "discipline"];
 var CLASSES = ["Athlète", "Érudit", "Entrepreneur", "Sage", "Stratège", "Créateur", "Aventurier"];
 var LIENS = ["seance", "minuterie:corps", "minuterie:esprit", "minuterie:discipline", "journee", "quete"];
 
+// Des jalons générés : liste bornée, nom exigé, textes tronqués.
+// Retourne la liste propre, ou null si trop peu de jalons valides.
+function validerJalons(liste, min, max) {
+  if (!Array.isArray(liste)) return null;
+  var jalons = [];
+  liste.slice(0, max).forEach(function (j) {
+    if (!j || typeof j !== "object") return;
+    var nom = texte(j.nom, 40);
+    if (nom) jalons.push({ nom: nom, critere: texte(j.critere, 120) });
+  });
+  return jalons.length >= min ? jalons : null;
+}
+
 // Une quête quotidienne générée : structure exigée, bornes clampées
 // (XP 5-50, durée 20-7200 s, séries 1-10, repos 10-300).
 function validerQueteQuotidienne(q) {
@@ -91,14 +104,9 @@ var TYPES = {
       if (!o || typeof o !== "object") return null;
 
       var qp = o.quetePrincipale;
-      if (!qp || typeof qp !== "object" || !Array.isArray(qp.jalons)) return null;
-      var jalons = [];
-      qp.jalons.slice(0, 4).forEach(function (j) {
-        if (!j || typeof j !== "object") return;
-        var nom = texte(j.nom, 40);
-        if (nom) jalons.push({ nom: nom, critere: texte(j.critere, 120) });
-      });
-      if (jalons.length < 3) return null;
+      if (!qp || typeof qp !== "object") return null;
+      var jalons = validerJalons(qp.jalons, 3, 4);
+      if (!jalons) return null;
 
       if (!Array.isArray(o.quetesQuotidiennes)) return null;
       var quetes = [];
@@ -127,6 +135,42 @@ var TYPES = {
           objectif: entier(h.objectif, 1, 7, 5),
           lien: LIENS.indexOf(h.lien) !== -1 ? h.lien : null
         }
+      };
+    }
+  },
+
+  "suite-principale": {
+    json: true,
+    // Entrée : { objectif, titre, niveau, jalonsAccomplis } — le strict
+    // nécessaire pour proposer la suite, rien d'autre.
+    message: function (d) {
+      if (!d || typeof d !== "object") return null;
+      var titre = texte(d.titre, 60);
+      if (!titre) return null;
+      var jalons = Array.isArray(d.jalonsAccomplis)
+        ? d.jalonsAccomplis.slice(0, 8).map(function (nom) { return texte(nom, 60); })
+            .filter(function (nom) { return nom; })
+        : [];
+      return "Objectif de fond du joueur : " + (texte(d.objectif, 500).slice(0, 80) || titre) +
+        "\nQuête qui vient d'être accomplie : " + titre +
+        " (niveau " + entier(d.niveau, 1, 98, 1) + ")" +
+        "\nJalons déjà accomplis (à ne JAMAIS répéter) :\n- " +
+        (jalons.length ? jalons.join("\n- ") : "aucun détail conservé") +
+        "\nForge la quête suivante, niveau " + (entier(d.niveau, 1, 98, 1) + 1) + ".";
+    },
+    // Sortie : { titre, description, niveau, jalons } — le niveau est
+    // FORCÉ à N+1 côté serveur, quoi que réponde le modèle.
+    valider: function (o, donnees) {
+      if (!o || typeof o !== "object") return null;
+      var titre = texte(o.titre, 60);
+      if (!titre) return null;
+      var jalons = validerJalons(o.jalons, 3, 4);
+      if (!jalons) return null;
+      return {
+        titre: titre,
+        description: texte(o.description, 120),
+        niveau: entier(donnees && donnees.niveau, 1, 98, 1) + 1,
+        jalons: jalons
       };
     }
   }
@@ -224,7 +268,7 @@ module.exports = async function (req, res) {
     return repondre(res, 502, { erreur: "Réponse amont invalide" });
   }
 
-  var valide = type.valider(objet);
+  var valide = type.valider(objet, corps.donnees);
   if (valide === null) {
     return repondre(res, 502, { erreur: "Réponse amont invalide" });
   }

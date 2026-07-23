@@ -162,17 +162,268 @@
   color: var(--texte-second);
 }
 
-/* ----- Quête accomplie ----- */
-.qp-accomplie {
-  margin-top: 40px;
-  text-align: center;
-  font-size: 0.72rem;
+/* ----- Jalons : critère, date, auto-déclaration ----- */
+.etape-critere {
+  margin-top: 6px;
+  font-size: 0.78rem;
   font-weight: 300;
-  letter-spacing: 0.3em;
+  line-height: 1.5;
+  color: var(--texte-second);
+}
+
+.etape-date {
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  color: var(--texte-second);
+  white-space: nowrap;
+}
+
+.jalon-atteindre {
+  margin-top: 14px;
+  padding: 11px 26px;
+  font-size: 0.72rem;
+}
+
+.jalon-atteindre[hidden] {
+  display: none;
+}
+
+/* Confirmation inline : l'app fait confiance, mais demande une fois */
+.jalon-confirmation {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--bordure);
+  border-radius: 11px;
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: var(--texte-second);
+}
+
+.jalon-confirmation[hidden] {
+  display: none;
+}
+
+.jalon-confirmation-boutons {
+  display: flex;
+  gap: 16px;
+  white-space: nowrap;
+}
+
+/* ----- Quête accomplie : l'écran épique ----- */
+.qa-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 22px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 120% 55% at 50% 30%, rgba(var(--accent-rgb), 0.14), transparent 70%),
+    #0a0a0f;
+  animation: qa-entree 0.5s ease;
+}
+
+.qa-overlay.qa-sortie {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+@keyframes qa-entree {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.qa-etiquette {
+  letter-spacing: 0.34em;
+  color: var(--accent);
+  animation: qa-apparition 0.9s ease 0.2s backwards;
+}
+
+.qa-titre {
+  max-width: 320px;
+  font-size: clamp(2rem, 10vw, 2.7rem);
+  font-weight: 900;
+  line-height: 1.1;
+  background: linear-gradient(180deg, #eef2f7 0%, var(--accent-clair) 55%, var(--accent) 135%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter:
+    drop-shadow(0 0 22px var(--accent-lueur))
+    drop-shadow(0 0 70px var(--accent-doux));
+  animation: qa-pose 2s ease-out;
+}
+
+@keyframes qa-pose {
+  from { transform: scale(1.06); }
+  to { transform: scale(1); }
+}
+
+.qa-niveau {
+  animation: qa-apparition 0.9s ease 1s backwards;
+}
+
+.qa-continuer {
+  margin-top: 18px;
+  animation: qa-apparition 0.6s ease 1.8s backwards;
+}
+
+@keyframes qa-apparition {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ----- Attente : le Système prépare la suite ----- */
+.suite-attente {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  background: rgba(10, 10, 15, 0.98);
+  animation: qa-entree 0.3s ease;
+}
+
+.suite-anneau {
+  width: min(46vw, 190px);
+}
+
+.suite-anneau svg {
+  animation-duration: 3.2s;
+}
+
+.suite-attente-texte {
+  letter-spacing: 0.3em;
+  animation: onb-respiration 2.4s ease-in-out infinite;
+}
+
+@keyframes onb-respiration {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* ----- Proposition de suite (chrome éditeur) ----- */
+.suite-niveau {
   color: var(--accent);
 }
 
-.qp-accomplie[hidden] {
+.suite-titre {
+  margin-top: 8px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.suite-description {
+  margin-top: 8px;
+  font-size: 0.88rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--texte-second);
+}
+
+.suite-jalons {
+  margin-top: 22px;
+}
+
+.suite-boutons {
+  margin-top: 34px;
+}
+
+.suite-corps-attente {
+  padding: 60px 0;
+  text-align: center;
+}
+
+/* ----- Entre deux quêtes ----- */
+.entre-quetes {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 26px 18px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid rgba(var(--accent-rgb), 0.22);
+  border-radius: 16px;
+}
+
+.entre-quetes[hidden] {
   display: none;
+}
+
+.entre-quetes-texte {
+  font-size: 0.88rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--texte-second);
+}
+
+.entre-quetes-message {
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--texte-second);
+}
+
+.entre-quetes-message[hidden] {
+  display: none;
+}
+
+/* ----- Palmarès : la saga accomplie, sobrement ----- */
+.palmares {
+  margin-top: 44px;
+  padding-top: 22px;
+  border-top: 1px solid var(--bordure);
+}
+
+.palmares[hidden] {
+  display: none;
+}
+
+.palmares-liste {
+  margin-top: 12px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.palmares-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.palmares-titre {
+  font-size: 0.88rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palmares-meta {
+  font-size: 0.64rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  white-space: nowrap;
 }
