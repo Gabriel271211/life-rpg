@@ -97,6 +97,16 @@ var Jour = (function () {
       delete quete.hebdoCompte;
     });
 
+    // Quêtes secondaires : celles dont la date d'expiration est passée
+    // disparaissent, sans pénalité. L'XP déjà gagné (si validée) reste
+    // acquis ; une carte débloquée le reste aussi. Une secondaire ne se
+    // décoche PAS au changement de jour — elle vit jusqu'à son terme.
+    if (Array.isArray(etat.quetesSecondaires)) {
+      etat.quetesSecondaires = etat.quetesSecondaires.filter(function (q) {
+        return typeof q.expire === "string" && joursEcoules(aujourdhui, q.expire) >= 0;
+      });
+    }
+
     // L'historique de progression ne garde que les 90 derniers jours.
     if (etat.historique) {
       Object.keys(etat.historique).forEach(function (date) {

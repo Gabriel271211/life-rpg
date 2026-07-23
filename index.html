@@ -113,6 +113,37 @@
       </article>
     </section>
 
+    <section class="secondaires" aria-label="Quêtes secondaires">
+      <p class="etiquette">Quêtes secondaires</p>
+      <div class="secondaires-liste" id="secondaires-liste"></div>
+      <button class="secondaires-demander" id="secondaires-demander" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <span>Demander une quête secondaire</span>
+      </button>
+      <div class="secondaires-proposition" id="secondaires-proposition" hidden>
+        <p class="etiquette">Le Système propose</p>
+        <p class="secondaires-prop-nom" id="secondaires-prop-nom"></p>
+        <p class="secondaires-prop-desc" id="secondaires-prop-desc"></p>
+        <p class="secondaires-prop-meta" id="secondaires-prop-meta"></p>
+        <div class="secondaires-prop-boutons">
+          <button class="session-bouton" id="secondaires-prop-accepter" type="button">Accepter</button>
+          <button class="session-lien" id="secondaires-prop-refuser" type="button">Refuser</button>
+        </div>
+      </div>
+      <div class="secondaires-attente" id="secondaires-attente" hidden>
+        <div class="anneau rotatif secondaires-anneau" aria-hidden="true">
+          <svg viewBox="0 0 200 200">
+            <circle class="anneau-piste" cx="100" cy="100" r="90"/>
+            <circle class="anneau-progression" cx="100" cy="100" r="90" stroke-dasharray="141 565.5" stroke-dashoffset="0"/>
+          </svg>
+        </div>
+        <p class="etiquette secondaires-attente-texte">Le Système cherche un défi…</p>
+      </div>
+      <p class="secondaires-message" id="secondaires-message" hidden></p>
+    </section>
+
   </main>
 
   <nav class="nav-bas" aria-label="Navigation principale">

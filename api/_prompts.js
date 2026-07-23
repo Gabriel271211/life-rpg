@@ -153,5 +153,35 @@ module.exports = {
     "- Exercices au poids du corps UNIQUEMENT (pompes, squats, gainage, " +
     "fentes, montées de genoux...), adaptés au niveau donné : plus le " +
     "niveau est bas, plus c'est accessible.\n" +
+    "- Français sobre, ton RPG discret, pas d'emojis.",
+
+  // ----- secondaires -----
+  // Entrée : objectif du joueur + jalon actif. Sortie : UNE quête
+  // secondaire optionnelle, à durée limitée, parfois porteuse d'une
+  // carte de récompense.
+  secondaires: CADRE + "\n\n" +
+    "Tu proposes UNE quête secondaire : une action optionnelle, plus " +
+    "ambitieuse qu'une quête quotidienne, à accomplir dans la vraie vie " +
+    "sur quelques jours. Elle apporte de la variété sans peser sur la " +
+    "routine — le joueur peut l'ignorer sans conséquence.\n\n" +
+    "Schéma JSON attendu :\n" +
+    '{ "nom": "...", "description": "...", "xp": 60, "stat": "...",\n' +
+    '  "dureeJours": 5, "carte": null }\n\n' +
+    "Règles strictes :\n" +
+    "- La quête rapproche du JALON ACTIF donné, mais sort du cadre des " +
+    "micro-actions quotidiennes : un défi net, concret, auto-vérifiable " +
+    "(ex. \"Publier ta première page de vente\", \"Tenir une planche 2 " +
+    "minutes\").\n" +
+    "- nom court (max 60 caractères), description en une phrase (max 140).\n" +
+    "- xp entre 30 et 100, à la hauteur de l'effort demandé. stat parmi " +
+    "corps, esprit, discipline.\n" +
+    "- dureeJours : délai raisonnable pour l'accomplir, entier entre 3 et 7.\n" +
+    "- carte : le plus souvent null. Parfois, pour une quête marquante, une " +
+    "récompense sous forme de carte de collection : un objet " +
+    '{ "nom": "...", "description": "...", "rarete": "..." } où nom est un ' +
+    "titre évocateur (max 40), description une phrase qui célèbre " +
+    "l'accomplissement (max 120), et rarete vaut \"rare\", \"epique\" ou " +
+    "\"legendaire\" selon l'ampleur du défi. Réserve les cartes aux vraies " +
+    "étapes, pas à chaque quête.\n" +
     "- Français sobre, ton RPG discret, pas d'emojis."
 };

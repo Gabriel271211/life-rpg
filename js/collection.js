@@ -54,16 +54,46 @@
     return el;
   }
 
+  // Carte d'objectif (débloquée par une quête secondaire) : dynamique,
+  // toujours obtenue, sans condition ni emblème dédié.
+  function creerCarteObjectif(carte) {
+    var el = document.createElement("article");
+    el.className = "carte debloquee " + carte.rarete;
+    el.innerHTML =
+      '<span class="carte-rarete"></span>' +
+      '<div class="carte-ornement">' + Cartes.EMBLEME_DEFAUT + "</div>" +
+      '<h2 class="carte-nom"></h2>' +
+      '<p class="carte-texte"></p>';
+    el.querySelector(".carte-rarete").textContent = Cartes.NOMS_RARETES[carte.rarete] || "";
+    el.querySelector(".carte-nom").textContent = carte.nom;
+    el.querySelector(".carte-texte").textContent = carte.description;
+    return el;
+  }
+
   var grille = document.getElementById("grille");
-  Cartes.liste().forEach(function (carte, i) {
+  var index = 0;
+
+  Cartes.liste().forEach(function (carte) {
     var el = creerCarte(carte);
     // apparition en cascade
     el.classList.add("entree");
-    el.style.animationDelay = (i * 50) + "ms";
+    el.style.animationDelay = (index++ * 50) + "ms";
     grille.appendChild(el);
   });
 
-  document.getElementById("compte-debloquees").textContent = debloquees.length;
-  document.getElementById("compte-total").textContent = Cartes.liste().length;
+  // Les cartes d'objectif suivent les cartes fixes, les plus récentes
+  // en tête (une saga qui s'écrit).
+  var cartesObjectif = (etat.cartesObjectif || []).slice().reverse();
+  cartesObjectif.forEach(function (carte) {
+    var el = creerCarteObjectif(carte);
+    el.classList.add("entree");
+    el.style.animationDelay = (index++ * 50) + "ms";
+    grille.appendChild(el);
+  });
+
+  document.getElementById("compte-debloquees").textContent =
+    debloquees.length + cartesObjectif.length;
+  document.getElementById("compte-total").textContent =
+    Cartes.liste().length + cartesObjectif.length;
 
 })();

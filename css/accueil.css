@@ -417,3 +417,223 @@
   font-weight: 300;
   color: var(--texte-second);
 }
+
+/* ----- Quêtes secondaires ----- */
+.secondaires {
+  margin-top: 28px;
+}
+
+.secondaires-liste {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.secondaires-liste:empty {
+  margin-top: 0;
+}
+
+/* Carte secondaire : bordure en pointillés fins, hors du socle plein */
+.secondaire {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+}
+
+.secondaire-infos {
+  flex: 1;
+  min-width: 0;
+}
+
+.secondaire-haut {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.secondaire-nom {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.secondaire-expire {
+  flex-shrink: 0;
+  font-size: 0.58rem;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  white-space: nowrap;
+}
+
+.secondaire-desc {
+  margin-top: 5px;
+  font-size: 0.8rem;
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--texte-second);
+}
+
+.secondaire .quete-meta {
+  margin-top: 9px;
+}
+
+/* Récompense de carte : petit badge accent */
+.secondaire-recompense {
+  padding: 3px 9px;
+  font-size: 0.55rem;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  border-radius: 999px;
+}
+
+/* Validée : même langage que les quêtes du jour */
+.secondaire.faite .quete-cercle {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-lueur);
+}
+
+.secondaire.faite .quete-cercle svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.secondaire.faite .secondaire-infos {
+  opacity: 0.45;
+}
+
+/* Bouton "Demander une quête secondaire" : discret, pointillés */
+.secondaires-demander {
+  margin-top: 12px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 16px;
+  background: transparent;
+  border: 1px dashed rgba(var(--accent-rgb), 0.35);
+  border-radius: 14px;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.secondaires-demander[hidden] {
+  display: none;
+}
+
+.secondaires-demander svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Proposition de quête secondaire */
+.secondaires-proposition {
+  margin-top: 12px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid rgba(var(--accent-rgb), 0.28);
+  border-radius: 16px;
+  animation: entree-elt 0.4s ease backwards;
+}
+
+.secondaires-proposition[hidden] {
+  display: none;
+}
+
+.secondaires-prop-nom {
+  margin-top: 8px;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.secondaires-prop-desc {
+  margin-top: 5px;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--texte-second);
+}
+
+.secondaires-prop-meta {
+  margin-top: 8px;
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.secondaires-prop-boutons {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.secondaires-prop-boutons .session-bouton {
+  padding: 11px 26px;
+  font-size: 0.72rem;
+}
+
+/* Attente et message */
+.secondaires-attente {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 30px 0;
+}
+
+.secondaires-attente[hidden] {
+  display: none;
+}
+
+.secondaires-anneau {
+  width: min(34vw, 130px);
+}
+
+.secondaires-anneau svg {
+  animation-duration: 3.2s;
+}
+
+.secondaires-attente-texte {
+  letter-spacing: 0.24em;
+  animation: onb-respiration 2.4s ease-in-out infinite;
+}
+
+@keyframes onb-respiration {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.secondaires-message {
+  margin-top: 12px;
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--texte-second);
+  text-align: center;
+}
+
+.secondaires-message[hidden] {
+  display: none;
+}

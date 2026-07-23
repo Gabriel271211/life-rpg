@@ -531,10 +531,185 @@
     hebdoProposition.hidden = true;
   });
 
+  // --- Quêtes secondaires : la variété à durée limitée ---
+  // Optionnelles, hors socle : elles ne touchent NI au streak NI aux
+  // compteurs du jour. Validation par tap simple (actions hors app),
+  // deux actives au maximum, disparition sans pénalité à l'expiration.
+
+  var MAX_SECONDAIRES = 2;
+
+  var secondairesListe = document.getElementById("secondaires-liste");
+  var secondairesDemander = document.getElementById("secondaires-demander");
+  var secondairesProposition = document.getElementById("secondaires-proposition");
+  var secondairesAttente = document.getElementById("secondaires-attente");
+  var secondairesMessage = document.getElementById("secondaires-message");
+  var secondairesAccepter = document.getElementById("secondaires-prop-accepter");
+  var secondairesRefuser = document.getElementById("secondaires-prop-refuser");
+  var propositionSecondaire = null;
+
+  function texteExpiration(expire) {
+    var restant = Jour.joursEcoules(etat.dernierJour, expire);
+    if (restant <= 0) return "dernier jour";
+    if (restant === 1) return "1 j restant";
+    return restant + " j restants";
+  }
+
+  function creerCarteSecondaire(q) {
+    var carte = document.createElement("article");
+    carte.className = "secondaire" + (q.faite ? " faite" : "");
+    carte.innerHTML =
+      '<div class="secondaire-infos">' +
+        '<div class="secondaire-haut">' +
+          '<p class="secondaire-nom"></p>' +
+          '<span class="secondaire-expire"></span>' +
+        "</div>" +
+        '<p class="secondaire-desc"></p>' +
+        '<div class="quete-meta">' +
+          '<span class="quete-xp">+' + q.xp + " XP</span>" +
+          '<span class="quete-tag"></span>' +
+          (q.carteLiee ? '<span class="secondaire-recompense">Carte à la clé</span>' : "") +
+        "</div>" +
+      "</div>" +
+      '<button class="quete-cercle" type="button" aria-pressed="' + q.faite + '" ' +
+        'aria-label="Valider la quête secondaire">' + SVG_COCHE + "</button>";
+
+    carte.querySelector(".secondaire-nom").textContent = q.nom;
+    carte.querySelector(".secondaire-expire").textContent = texteExpiration(q.expire);
+    carte.querySelector(".secondaire-desc").textContent = q.description;
+    carte.querySelector(".quete-tag").textContent = etiquetteStat(q.stat);
+
+    carte.querySelector(".quete-cercle").addEventListener("click", function (e) {
+      e.stopPropagation();
+      basculerSecondaire(q);
+    });
+    return carte;
+  }
+
+  function rendreSecondaires() {
+    secondairesListe.innerHTML = "";
+    etat.quetesSecondaires.forEach(function (q) {
+      secondairesListe.appendChild(creerCarteSecondaire(q));
+    });
+    // Le bouton "Demander" n'apparaît que s'il reste une place, et
+    // pas pendant une proposition ou une attente en cours.
+    var placeLibre = etat.quetesSecondaires.length < MAX_SECONDAIRES;
+    var occupe = !secondairesProposition.hidden || !secondairesAttente.hidden;
+    secondairesDemander.hidden = !placeLibre || occupe;
+  }
+
+  // Validation / dévalidation par tap. Les secondaires ne comptent pas
+  // dans le socle : pas de streak, pas de compteurs, pas de critique.
+  // Une carte débloquée ne se re-verrouille jamais.
+  function basculerSecondaire(q) {
+    var niveauAvant = etat.niveau;
+    if (!q.faite) {
+      q.faite = true;
+      Regles.gagnerXp(etat, q.xp, q.stat);
+      var nouvellesCartes = Cartes.verifier(etat);
+      var carteObjectif = q.carteLiee ? debloquerCarteObjectif(q) : null;
+      Etat.sauvegarder(etat);
+      rendreSecondaires();
+      majPuces();
+      Juice.vibrer(carteObjectif ? 70 : 40);
+      afficherBandeaux(niveauAvant, nouvellesCartes);
+      if (carteObjectif) Revelation.montrer([carteObjectif]);
+    } else {
+      q.faite = false;
+      Regles.retirerXp(etat, q.xp, q.stat);
+      Etat.sauvegarder(etat);
+      rendreSecondaires();
+      majPuces();
+      majAuraSansCeremonie(niveauAvant);
+    }
+  }
+
+  // Crée la carte d'objectif portée par la quête et la range dans la
+  // collection (cartesObjectif). Retourne l'objet prêt pour la
+  // révélation. Une carte déjà obtenue (re-validation) n'est pas recréée.
+  function debloquerCarteObjectif(q) {
+    if (q.carteObtenueId) return null;
+    var def = q.carteLiee;
+    var carte = {
+      id: "obj-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
+      nom: def.nom,
+      description: def.description,
+      rarete: def.rarete || "rare",
+      dateObtenue: etat.dernierJour || null
+    };
+    etat.cartesObjectif.push(carte);
+    q.carteObtenueId = carte.id;
+    return carte;
+  }
+
+  // --- Génération d'une quête secondaire ---
+
+  function majEtatSection() {
+    rendreSecondaires();
+  }
+
+  secondairesDemander.addEventListener("click", function () {
+    if (etat.quetesSecondaires.length >= MAX_SECONDAIRES) return;
+    secondairesMessage.hidden = true;
+    secondairesDemander.hidden = true;
+    secondairesAttente.hidden = false;
+
+    var actif = Regles.jalonActif(etat.quetePrincipale);
+    IA.appeler("secondaires", {
+      objectif: etat.objectifTexte || etat.quetePrincipale.titre,
+      jalon: actif ? { nom: actif.jalon.nom, critere: actif.jalon.critere } : null
+    }, { forcer: true }).then(function (resultat) {
+      secondairesAttente.hidden = true;
+      if (resultat) {
+        propositionSecondaire = resultat;
+        afficherPropositionSecondaire(resultat);
+      } else {
+        secondairesMessage.textContent = IA.MESSAGE_SILENCE;
+        secondairesMessage.hidden = false;
+        majEtatSection();
+      }
+    });
+  });
+
+  function afficherPropositionSecondaire(p) {
+    document.getElementById("secondaires-prop-nom").textContent = p.nom;
+    document.getElementById("secondaires-prop-desc").textContent = p.description;
+    document.getElementById("secondaires-prop-meta").textContent =
+      "+" + p.xp + " XP · " + etiquetteStat(p.stat) + " · " + p.dureeJours + " jours" +
+      (p.carte ? " · carte " + p.carte.rarete : "");
+    secondairesProposition.hidden = false;
+    majEtatSection();
+  }
+
+  secondairesAccepter.addEventListener("click", function () {
+    if (!propositionSecondaire) return;
+    var p = propositionSecondaire;
+    etat.quetesSecondaires.push({
+      id: "sec-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
+      nom: p.nom,
+      description: p.description,
+      xp: p.xp,
+      stat: p.stat,
+      expire: Jour.decalerDate(etat.dernierJour, p.dureeJours),
+      faite: false,
+      carteLiee: p.carte || null
+    });
+    propositionSecondaire = null;
+    secondairesProposition.hidden = true;
+    Etat.sauvegarder(etat);
+    rendreSecondaires();
+  });
+
+  secondairesRefuser.addEventListener("click", function () {
+    propositionSecondaire = null;
+    secondairesProposition.hidden = true;
+    majEtatSection();
+  });
+
   majPuces();
   majQuetePrincipale();
   rendreHebdo();
   majJourAccompli();
   proposerHebdoSiBesoin();
+  rendreSecondaires();
 
 })();

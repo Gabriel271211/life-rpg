@@ -42,6 +42,7 @@ function parmi(valeur, liste, defaut) {
 var STATS = ["corps", "esprit", "discipline"];
 var CLASSES = ["Athlète", "Érudit", "Entrepreneur", "Sage", "Stratège", "Créateur", "Aventurier"];
 var LIENS = ["seance", "minuterie:corps", "minuterie:esprit", "minuterie:discipline", "journee", "quete"];
+var RARETES = ["commune", "rare", "epique", "legendaire"];
 
 // Des jalons générés : liste bornée, nom exigé, textes tronqués.
 // Retourne la liste propre, ou null si trop peu de jalons valides.
@@ -306,6 +307,48 @@ var TYPES = {
       var blocs = validerBlocsSeance(o.blocs);
       if (!blocs) return null;
       return { blocs: blocs };
+    }
+  },
+
+  secondaires: {
+    json: true,
+    // Entrée : { objectif, jalon{nom,critere} }.
+    message: function (d) {
+      if (!d || typeof d !== "object") return null;
+      var objectif = texte(d.objectif, 500).slice(0, 80);
+      if (!objectif) return null;
+      var jalon = d.jalon && typeof d.jalon === "object"
+        ? texte(d.jalon.nom, 60) + (d.jalon.critere ? " — " + texte(d.jalon.critere, 120) : "")
+        : "aucun jalon en cours";
+      return "Objectif de fond du joueur : " + objectif +
+        "\nJalon actif à faire avancer : " + jalon;
+    },
+    // Sortie : { nom, description, xp, stat, dureeJours, carte } — la
+    // carte est nettoyée si présente, sinon null. L'expiration est
+    // calculée côté client à partir de dureeJours.
+    valider: function (o) {
+      if (!o || typeof o !== "object") return null;
+      var nom = texte(o.nom, 60);
+      if (!nom) return null;
+      var carte = null;
+      if (o.carte && typeof o.carte === "object") {
+        var cnom = texte(o.carte.nom, 40);
+        if (cnom) {
+          carte = {
+            nom: cnom,
+            description: texte(o.carte.description, 120),
+            rarete: parmi(o.carte.rarete, RARETES, "rare")
+          };
+        }
+      }
+      return {
+        nom: nom,
+        description: texte(o.description, 140),
+        xp: entier(o.xp, 30, 100, 50),
+        stat: parmi(o.stat, STATS, "discipline"),
+        dureeJours: entier(o.dureeJours, 3, 7, 5),
+        carte: carte
+      };
     }
   }
 };

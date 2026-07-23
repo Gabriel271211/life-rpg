@@ -92,6 +92,8 @@ var Etat = (function () {
       meilleurStreak: 0    // record de streak atteint (ne redescend jamais)
     },
     cartesDebloquees: [],
+    cartesObjectif: [],
+    quetesSecondaires: [],
     historique: {},
     onboardingFait: true
   };
@@ -153,6 +155,16 @@ var Etat = (function () {
     // Palmarès des quêtes principales accomplies.
     if (!Array.isArray(etat.quetesAccomplies)) {
       etat.quetesAccomplies = [];
+      modifie = true;
+    }
+    // Quêtes secondaires (chantier 5) et cartes d'objectif qu'elles
+    // débloquent : un état existant démarre à vide.
+    if (!Array.isArray(etat.quetesSecondaires)) {
+      etat.quetesSecondaires = [];
+      modifie = true;
+    }
+    if (!Array.isArray(etat.cartesObjectif)) {
+      etat.cartesObjectif = [];
       modifie = true;
     }
     // Proposition d'hebdo hebdomadaire (chantier 4) : l'hebdo qui vient

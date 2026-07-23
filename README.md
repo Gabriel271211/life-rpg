@@ -20,7 +20,8 @@ une classe, un rang et des stats qui montent grâce à tes actions réelles
   niveau, barre d'XP, stats (Corps, Esprit, Discipline), graphique des
   14 derniers jours (XP par jour, SVG pur), bilan, streak, export / import.
 - **Collection** (`collection.html`) — les cartes-trophées débloquées par de
-  vrais accomplissements (communes → légendaires, certaines cachées).
+  vrais accomplissements (communes → légendaires, certaines cachées), plus
+  les cartes d'objectif obtenues via les quêtes secondaires.
 - **Quête principale** (`quete.html`) — le chemin de JALONS de l'objectif :
   des accomplissements concrets de la vraie vie, auto-déclarés dans l'ordre
   (bouton « Jalon atteint », confirmation inline, bonus XP). Dernier jalon
@@ -108,8 +109,8 @@ La clé API n'est JAMAIS dans le front. Tout passe par `api/ia.js`, une
 fonction serverless Vercel :
 
 - `POST /api/ia` avec `{ type, donnees }` — types routés un par un
-  (`onboarding`, `suite-principale`, `quetes`, `hebdo`, `seance` ;
-  `secondaires`, `chat` viendront)
+  (`onboarding`, `suite-principale`, `quetes`, `hebdo`, `seance`,
+  `secondaires` ; `chat` viendra)
 - clé dans la variable d'environnement `GROQ_API_KEY` (dashboard Vercel →
   Settings → Environment Variables ; en local : fichier `.env.local`,
   ignoré par git)
