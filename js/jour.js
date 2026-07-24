@@ -81,14 +81,31 @@ var Jour = (function () {
       etat.streak = 0;
     }
 
+    // Le jour qui se ferme était-il PARFAIT (toutes les quêtes du jour
+    // validées) ? Il prolonge le streak parfait — mais seulement si le
+    // jour suivant est le lendemain direct (aucun jour sauté). Sinon la
+    // chaîne se brise. Sert aux cartes brillantes.
+    var jourParfait = etat.quetes.length > 0 &&
+      etat.quetes.every(function (q) { return q.faite; });
+
     // Hebdo liée à la journée accomplie : la journée qui se ferme
     // compte (+1, une seule fois) si toutes ses quêtes étaient
     // validées — avant le reset, l'XP éventuel crédité à ce jour-là.
     // Regles est chargé avant jour.js sur tous les écrans.
-    if (etat.hebdo && etat.hebdo.lien === "journee" &&
-        etat.quetes.length > 0 &&
-        etat.quetes.every(function (q) { return q.faite; })) {
+    if (etat.hebdo && etat.hebdo.lien === "journee" && jourParfait) {
       Regles.progresserHebdo(etat);
+    }
+
+    if (etat.compteurs) {
+      if (jourParfait && ecart === 1) {
+        etat.compteurs.streakParfait = (etat.compteurs.streakParfait || 0) + 1;
+      } else {
+        etat.compteurs.streakParfait = 0;
+      }
+      etat.compteurs.meilleurStreakParfait = Math.max(
+        etat.compteurs.meilleurStreakParfait || 0,
+        etat.compteurs.streakParfait
+      );
     }
 
     etat.quetes.forEach(function (quete) {

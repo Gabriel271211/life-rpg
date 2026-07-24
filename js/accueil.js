@@ -59,15 +59,30 @@
     majPuce(puceNiveau, etat.niveau);
   }
 
-  // Feedback après un gain : bandeau de montée de niveau, révélation
-  // plein écran pour les cartes, et la montée de rang — le moment
-  // fort — par-dessus tout.
-  function afficherBandeaux(niveauAvant, nouvellesCartes) {
+  // Feedback après un gain : bandeaux enchaînés (niveau, cartes élevées,
+  // cartes devenues brillantes), révélation plein écran des nouvelles
+  // cartes, et la montée de rang — le moment fort — par-dessus tout.
+  // evoCartes est le retour de Cartes.verifier : { nouvelles, montees,
+  // brillantes }.
+  function afficherBandeaux(niveauAvant, evoCartes) {
+    var bandeaux = [];
     if (etat.niveau > niveauAvant) {
-      Juice.bandeau("Niveau", etat.niveau);
+      bandeaux.push(["Niveau", etat.niveau]);
     }
-    if (nouvellesCartes && nouvellesCartes.length > 0) {
-      Revelation.montrer(nouvellesCartes);
+    if (evoCartes) {
+      evoCartes.montees.forEach(function (m) {
+        bandeaux.push(["Carte élevée", m.carte.nom + " " + Cartes.romain(m.niveau)]);
+      });
+      evoCartes.brillantes.forEach(function (c) {
+        bandeaux.push(["Carte brillante", c.nom]);
+      });
+    }
+    bandeaux.forEach(function (b, i) {
+      setTimeout(function () { Juice.bandeau(b[0], b[1]); }, i * 2700);
+    });
+
+    if (evoCartes && evoCartes.nouvelles.length > 0) {
+      Revelation.montrer(evoCartes.nouvelles);
     }
 
     var rangAvant = Regles.rang(niveauAvant).actuel.lettre;
@@ -111,14 +126,14 @@
       if (hebdoProgres) quete.hebdoCompte = true;
     }
 
-    var nouvellesCartes = Cartes.verifier(etat);
+    var evoCartes = Cartes.verifier(etat);
     Etat.sauvegarder(etat);
 
     return {
       critique: critique,
       xpDonne: quete.xpDonne,
       niveauAvant: niveauAvant,
-      nouvellesCartes: nouvellesCartes,
+      evoCartes: evoCartes,
       hebdoProgres: hebdoProgres
     };
   }
@@ -207,7 +222,7 @@
       hebdoAvancee = res.hebdoProgres;
       majCarte(quete);
       majApresChangement();
-      afficherBandeaux(res.niveauAvant, res.nouvellesCartes);
+      afficherBandeaux(res.niveauAvant, res.evoCartes);
       return res;
     }, function () {
       if (quete.faite) {
@@ -345,15 +360,15 @@
     if (!res) return;
 
     if (res.accomplie) {
-      var nouvellesCartes = Cartes.verifier(etat);
+      var evoCartes = Cartes.verifier(etat);
       Etat.sauvegarder(etat);
       Juice.xpFlottant(
         hebdoBouton,
         (res.critique ? "CRITIQUE ! +" : "+") + etat.hebdo.xpDonne + " XP",
         res.critique
       );
-      Juice.vibrer(nouvellesCartes.length > 0 ? 70 : 40);
-      afficherBandeaux(niveauAvant, nouvellesCartes);
+      Juice.vibrer(evoCartes.nouvelles.length > 0 ? 70 : 40);
+      afficherBandeaux(niveauAvant, evoCartes);
     } else {
       Etat.sauvegarder(etat);
       Juice.xpFlottant(hebdoBouton, "+1", false);
@@ -394,13 +409,13 @@
       uniteValidee = true;
       var niveauAvant = etat.niveau;
       var res = Regles.progresserHebdo(etat);
-      var nouvellesCartes = Cartes.verifier(etat);
+      var evoCartes = Cartes.verifier(etat);
       Etat.sauvegarder(etat);
       rendreHebdo();
       majPuces();
 
       if (res && res.accomplie) {
-        afficherBandeaux(niveauAvant, nouvellesCartes);
+        afficherBandeaux(niveauAvant, evoCartes);
         return {
           critique: res.critique,
           xpDonne: etat.hebdo.xpDonne,
@@ -605,13 +620,13 @@
     if (!q.faite) {
       q.faite = true;
       Regles.gagnerXp(etat, q.xp, q.stat);
-      var nouvellesCartes = Cartes.verifier(etat);
+      var evoCartes = Cartes.verifier(etat);
       var carteObjectif = q.carteLiee ? debloquerCarteObjectif(q) : null;
       Etat.sauvegarder(etat);
       rendreSecondaires();
       majPuces();
       Juice.vibrer(carteObjectif ? 70 : 40);
-      afficherBandeaux(niveauAvant, nouvellesCartes);
+      afficherBandeaux(niveauAvant, evoCartes);
       if (carteObjectif) Revelation.montrer([carteObjectif]);
     } else {
       q.faite = false;
@@ -634,7 +649,11 @@
       nom: def.nom,
       description: def.description,
       rarete: def.rarete || "rare",
-      dateObtenue: etat.dernierJour || null
+      dateObtenue: etat.dernierJour || null,
+      // Rattachée à l'aventure en cours : sert au regroupement en
+      // sections dans la collection.
+      origine: "objectif",
+      origineTitre: etat.quetePrincipale.titre
     };
     etat.cartesObjectif.push(carte);
     q.carteObtenueId = carte.id;

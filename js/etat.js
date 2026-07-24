@@ -86,10 +86,12 @@ var Etat = (function () {
     },
     quetesAccomplies: [],
     compteurs: {
-      quetesValidees: 0,   // total historique de quêtes quotidiennes validées
-      critiques: 0,        // total de coups critiques obtenus
-      hebdosAccomplies: 0, // total de quêtes hebdo terminées
-      meilleurStreak: 0    // record de streak atteint (ne redescend jamais)
+      quetesValidees: 0,       // total historique de quêtes quotidiennes validées
+      critiques: 0,            // total de coups critiques obtenus
+      hebdosAccomplies: 0,     // total de quêtes hebdo terminées
+      meilleurStreak: 0,       // record de streak atteint (ne redescend jamais)
+      streakParfait: 0,        // jours parfaits (toutes quêtes validées) consécutifs
+      meilleurStreakParfait: 0 // record de streak parfait (pour les cartes brillantes)
     },
     cartesDebloquees: [],
     cartesObjectif: [],
@@ -167,6 +169,16 @@ var Etat = (function () {
       etat.cartesObjectif = [];
       modifie = true;
     }
+    // Cartes 2.0 : les cartes d'objectif portent leur origine et le
+    // titre de la quête principale qui les a fait naître, pour se
+    // regrouper en sections dans la collection.
+    etat.cartesObjectif.forEach(function (carte) {
+      if (carte.origine !== "objectif") { carte.origine = "objectif"; modifie = true; }
+      if (typeof carte.origineTitre !== "string") {
+        carte.origineTitre = (etat.quetePrincipale && etat.quetePrincipale.titre) || "Ton aventure";
+        modifie = true;
+      }
+    });
     // Proposition d'hebdo hebdomadaire (chantier 4) : l'hebdo qui vient
     // de se clore et le drapeau qui déclenche la proposition sur
     // l'accueil. Un état existant n'a rien en attente.
@@ -188,8 +200,43 @@ var Etat = (function () {
       };
       modifie = true;
     }
+    // Streak parfait (chantier 6) : jours parfaits consécutifs, pour la
+    // version brillante des cartes. Un état existant démarre à zéro : on
+    // ne peut pas reconstituer l'historique de perfection.
+    if (typeof etat.compteurs.streakParfait !== "number") {
+      etat.compteurs.streakParfait = 0;
+      modifie = true;
+    }
+    if (typeof etat.compteurs.meilleurStreakParfait !== "number") {
+      etat.compteurs.meilleurStreakParfait = 0;
+      modifie = true;
+    }
     if (!Array.isArray(etat.cartesDebloquees)) {
       etat.cartesDebloquees = [];
+      modifie = true;
+    }
+    // Cartes 2.0 : cartesDebloquees passe d'une liste d'ids (strings) à
+    // une liste de { id, niveau, brillante }. "Marathonien" (streak 30)
+    // devient le palier 2 de "Semaine de fer" : un joueur qui l'avait
+    // garde son niveau. verifier() recalculera ensuite les niveaux réels
+    // d'après les compteurs.
+    if (etat.cartesDebloquees.length && typeof etat.cartesDebloquees[0] === "string") {
+      var avaitMarathonien = etat.cartesDebloquees.indexOf("marathonien") !== -1;
+      var converties = [];
+      etat.cartesDebloquees.forEach(function (id) {
+        if (id === "marathonien") return; // fusionnée
+        converties.push({ id: id, niveau: 1, brillante: false });
+      });
+      if (avaitMarathonien) {
+        var sf = null;
+        converties.forEach(function (c) { if (c.id === "semaine-de-fer") sf = c; });
+        if (!sf) {
+          sf = { id: "semaine-de-fer", niveau: 1, brillante: false };
+          converties.push(sf);
+        }
+        sf.niveau = Math.max(sf.niveau, 2);
+      }
+      etat.cartesDebloquees = converties;
       modifie = true;
     }
     // Les états d'avant l'onboarding sont considérés comme l'ayant
@@ -341,10 +388,12 @@ var Etat = (function () {
     var aujourdhui = Jour.dateDuJour();
     var nouveauJour = Jour.appliquerNouveauJour(etat, aujourdhui);
     var nouvelleSemaine = Jour.appliquerNouvelleSemaine(etat, aujourdhui);
-    // Cartes dont la condition est déjà vraie au chargement
-    // (migration, progression sur un autre appareil...).
-    var nouvellesCartes = Cartes.verifier(etat);
-    if (aMigre || nouveauJour || nouvelleSemaine || nouvellesCartes.length > 0) {
+    // Cartes dont la condition est déjà vraie au chargement (migration,
+    // niveaux à recalculer, progression sur un autre appareil...).
+    // Au chargement on ne révèle rien : on persiste seulement l'évolution.
+    var evo = Cartes.verifier(etat);
+    var aEvolue = evo.nouvelles.length > 0 || evo.montees.length > 0 || evo.brillantes.length > 0;
+    if (aMigre || nouveauJour || nouvelleSemaine || aEvolue) {
       sauvegarder(etat);
     }
     return etat;
@@ -417,12 +466,21 @@ var LifeRpgDebug = {
     if (!info.suivant) ancienne = "A";
     Aura.monterRang(ancienne, nouvelle);
   },
-  // Débloque toutes les cartes pour vérifier le rendu des raretés.
+  // Débloque toutes les cartes à leur niveau maximum, la première
+  // brillante, pour vérifier le rendu des raretés, niveaux et reflets.
   debloquerToutesLesCartes: function () {
     var etat = Etat.charger();
     Cartes.liste().forEach(function (carte) {
-      if (etat.cartesDebloquees.indexOf(carte.id) === -1) {
-        etat.cartesDebloquees.push(carte.id);
+      var ent = Cartes.entree(etat, carte.id);
+      var niveauMax = Cartes.nbPaliers(carte);
+      if (!ent) {
+        etat.cartesDebloquees.push({
+          id: carte.id, niveau: niveauMax,
+          brillante: Boolean(carte.brillante)
+        });
+      } else {
+        ent.niveau = niveauMax;
+        if (carte.brillante) ent.brillante = true;
       }
     });
     Etat.sauvegarder(etat);

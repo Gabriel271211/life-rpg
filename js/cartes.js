@@ -1,8 +1,12 @@
 // ============================================
 // LIFE RPG — cartes.js
 // Les cartes : trophées débloqués par des
-// accomplissements réels. Définitions pures —
-// aucun accès au DOM ni au localStorage ici.
+// accomplissements réels. Cartes 2.0 : chaque
+// carte a des PALIERS (niveau 1 à 3) et parfois
+// une condition BRILLANTE (version d'exception).
+// Définitions pures — aucun accès au DOM ni au
+// localStorage. verifier() mute cartesDebloquees,
+// désormais une liste de { id, niveau, brillante }.
 // ============================================
 
 var Cartes = (function () {
@@ -21,11 +25,18 @@ var Cartes = (function () {
     '<path d="M12 2.5l7 9.5-7 9.5L5 12z"/>' +
     '<path d="M12 7l3.7 5-3.7 5-3.7-5z"/></svg>';
 
+  // Losange fin de niveau, pour la rangée de crans sous le nom.
+  var LOSANGE =
+    '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0.4l4.6 4.6L5 9.6 0.4 5z"/></svg>';
+
   function embleme(dessins) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" ' +
       'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + dessins + "</svg>";
   }
 
+  // Chaque carte : paliers ordonnés (croissants), condition brillante
+  // optionnelle. "Marathonien" (streak 30) a été absorbée en palier 2
+  // de "Semaine de fer" — la migration convertit les états existants.
   var TOUTES = [
     {
       id: "premier-pas",
@@ -34,8 +45,9 @@ var Cartes = (function () {
       rarete: "commune",
       cachee: false,
       description: "Toute légende commence par une seule quête.",
-      objectif: "Valide ta première quête",
-      condition: function (e) { return e.compteurs.quetesValidees >= 1; }
+      paliers: [
+        { objectif: "Valide ta première quête", atteint: function (e) { return e.compteurs.quetesValidees >= 1; } }
+      ]
     },
     {
       id: "lame-affutee",
@@ -44,8 +56,11 @@ var Cartes = (function () {
       rarete: "commune",
       cachee: false,
       description: "La répétition forge le tranchant.",
-      objectif: "Valide 25 quêtes",
-      condition: function (e) { return e.compteurs.quetesValidees >= 25; }
+      paliers: [
+        { objectif: "Valide 25 quêtes", atteint: function (e) { return e.compteurs.quetesValidees >= 25; } },
+        { objectif: "Valide 100 quêtes", atteint: function (e) { return e.compteurs.quetesValidees >= 100; } },
+        { objectif: "Valide 300 quêtes", atteint: function (e) { return e.compteurs.quetesValidees >= 300; } }
+      ]
     },
     {
       id: "semaine-de-fer",
@@ -53,19 +68,15 @@ var Cartes = (function () {
       nom: "Semaine de fer",
       rarete: "rare",
       cachee: false,
-      description: "Sept jours sans faillir.",
-      objectif: "Atteins un streak de 7 jours",
-      condition: function (e) { return e.compteurs.meilleurStreak >= 7; }
-    },
-    {
-      id: "marathonien",
-      embleme: embleme('<path d="M12 3.5c.5 2.5-.6 4-2 5.6-1.1 1.3-1.9 2.6-1.9 4.4a5.9 5.9 0 0 0 11.8 0c0-2-.9-3.9-2.3-5.5-.2 1-.7 1.9-1.5 2.5.1-2.6-1.5-5-4.1-7z"/>'),
-      nom: "Marathonien",
-      rarete: "epique",
-      cachee: false,
-      description: "Trente jours. La discipline est devenue une seconde nature.",
-      objectif: "Atteins un streak de 30 jours",
-      condition: function (e) { return e.compteurs.meilleurStreak >= 30; }
+      description: "Les jours s'enchaînent, la volonté ne cède pas.",
+      paliers: [
+        { objectif: "Atteins un streak de 7 jours", atteint: function (e) { return e.compteurs.meilleurStreak >= 7; } },
+        { objectif: "Atteins un streak de 30 jours", atteint: function (e) { return e.compteurs.meilleurStreak >= 30; } },
+        { objectif: "Atteins un streak de 90 jours", atteint: function (e) { return e.compteurs.meilleurStreak >= 90; } }
+      ],
+      // Version d'exception : sept jours parfaits d'affilée (toutes les
+      // quêtes du jour validées, chaque jour).
+      brillante: function (e) { return (e.compteurs.meilleurStreakParfait || 0) >= 7; }
     },
     {
       id: "main-du-destin",
@@ -74,8 +85,11 @@ var Cartes = (function () {
       rarete: "rare",
       cachee: false,
       description: "La chance sourit à ceux qui frappent sans relâche.",
-      objectif: "Obtiens 10 coups critiques",
-      condition: function (e) { return e.compteurs.critiques >= 10; }
+      paliers: [
+        { objectif: "Obtiens 10 coups critiques", atteint: function (e) { return e.compteurs.critiques >= 10; } },
+        { objectif: "Obtiens 40 coups critiques", atteint: function (e) { return e.compteurs.critiques >= 40; } },
+        { objectif: "Obtiens 100 coups critiques", atteint: function (e) { return e.compteurs.critiques >= 100; } }
+      ]
     },
     {
       id: "conquerant",
@@ -84,8 +98,11 @@ var Cartes = (function () {
       rarete: "rare",
       cachee: false,
       description: "Semaine après semaine, le territoire s'étend.",
-      objectif: "Accomplis 5 quêtes hebdomadaires",
-      condition: function (e) { return e.compteurs.hebdosAccomplies >= 5; }
+      paliers: [
+        { objectif: "Accomplis 5 quêtes hebdomadaires", atteint: function (e) { return e.compteurs.hebdosAccomplies >= 5; } },
+        { objectif: "Accomplis 20 quêtes hebdomadaires", atteint: function (e) { return e.compteurs.hebdosAccomplies >= 20; } },
+        { objectif: "Accomplis 50 quêtes hebdomadaires", atteint: function (e) { return e.compteurs.hebdosAccomplies >= 50; } }
+      ]
     },
     {
       id: "eveil",
@@ -94,8 +111,9 @@ var Cartes = (function () {
       rarete: "epique",
       cachee: true,
       description: "Le rang C franchi, la véritable ascension commence.",
-      objectif: "Atteins le rang C",
-      condition: function (e) { return e.niveau >= 20; }
+      paliers: [
+        { objectif: "Atteins le rang C", atteint: function (e) { return e.niveau >= 20; } }
+      ]
     },
     {
       id: "transcendance",
@@ -104,8 +122,9 @@ var Cartes = (function () {
       rarete: "legendaire",
       cachee: true,
       description: "Au sommet du rang S, il ne reste que toi.",
-      objectif: "Atteins le rang S",
-      condition: function (e) { return e.niveau >= 80; }
+      paliers: [
+        { objectif: "Atteins le rang S", atteint: function (e) { return e.niveau >= 80; } }
+      ]
     }
   ];
 
@@ -120,19 +139,92 @@ var Cartes = (function () {
     return null;
   }
 
-  // Débloque les cartes dont la condition vient de devenir vraie.
-  // Retourne la liste des cartes nouvellement débloquées.
-  // Une carte débloquée ne se re-verrouille JAMAIS, même si les
-  // compteurs redescendent : on n'enlève jamais rien de cartesDebloquees.
+  function nbPaliers(carte) {
+    return carte.paliers.length;
+  }
+
+  // Niveau atteint pour l'état : le plus haut palier dont la condition
+  // est vraie (0 = pas encore débloquée). Paliers monotones croissants.
+  function niveauPourEtat(carte, etat) {
+    var n = 0;
+    for (var i = 0; i < carte.paliers.length; i++) {
+      if (carte.paliers[i].atteint(etat)) n = i + 1;
+    }
+    return n;
+  }
+
+  // Entrée { id, niveau, brillante } dans cartesDebloquees, ou null.
+  function entree(etat, id) {
+    var d = etat.cartesDebloquees;
+    for (var i = 0; i < d.length; i++) {
+      if (d[i] && d[i].id === id) return d[i];
+    }
+    return null;
+  }
+
+  // Vue aplatie d'une carte à un niveau donné, pour l'affichage
+  // (collection, révélation, bandeaux). Combine définition + état.
+  function vue(carte, niveau, brillante) {
+    return {
+      id: carte.id,
+      embleme: carte.embleme,
+      nom: carte.nom,
+      rarete: carte.rarete,
+      description: carte.description,
+      niveau: niveau,
+      paliers: carte.paliers.length,
+      brillante: brillante
+    };
+  }
+
+  // Vue d'une carte débloquée d'après son entrée d'état, ou null.
+  function vueDebloquee(etat, carte) {
+    var ent = entree(etat, carte.id);
+    if (!ent) return null;
+    return vue(carte, ent.niveau, ent.brillante);
+  }
+
+  // Rangée de crans de niveau : `paliers` losanges, `niveau` remplis.
+  function losanges(niveau, paliers) {
+    var html = "";
+    for (var i = 0; i < paliers; i++) {
+      html += '<span class="carte-cran' + (i < niveau ? " actif" : "") + '">' + LOSANGE + "</span>";
+    }
+    return html;
+  }
+
+  // Chiffre romain du niveau (I, II, III) pour les bandeaux.
+  function romain(n) {
+    return ["", "I", "II", "III"][n] || String(n);
+  }
+
+  // Débloque, élève et fait briller les cartes selon l'état. Une carte
+  // débloquée ne se re-verrouille ni ne redescend JAMAIS de niveau,
+  // même si les compteurs baissent. Retourne les trois flux de feedback :
+  // { nouvelles: [vue], montees: [{ carte:vue, niveau }], brillantes: [vue] }.
   function verifier(etat) {
-    var nouvelles = [];
+    var nouvelles = [], montees = [], brillantes = [];
     TOUTES.forEach(function (carte) {
-      if (etat.cartesDebloquees.indexOf(carte.id) === -1 && carte.condition(etat)) {
-        etat.cartesDebloquees.push(carte.id);
-        nouvelles.push(carte);
+      var niveauCible = niveauPourEtat(carte, etat);
+      if (niveauCible === 0) return;
+
+      var ent = entree(etat, carte.id);
+      if (!ent) {
+        var brille = carte.brillante ? Boolean(carte.brillante(etat)) : false;
+        etat.cartesDebloquees.push({ id: carte.id, niveau: niveauCible, brillante: brille });
+        nouvelles.push(vue(carte, niveauCible, brille));
+        return;
+      }
+      if (niveauCible > ent.niveau) {
+        ent.niveau = niveauCible;
+        montees.push({ carte: vue(carte, niveauCible, ent.brillante), niveau: niveauCible });
+      }
+      if (!ent.brillante && carte.brillante && carte.brillante(etat)) {
+        ent.brillante = true;
+        brillantes.push(vue(carte, ent.niveau, true));
       }
     });
-    return nouvelles;
+    return { nouvelles: nouvelles, montees: montees, brillantes: brillantes };
   }
 
   return {
@@ -140,6 +232,13 @@ var Cartes = (function () {
     EMBLEME_DEFAUT: EMBLEME_DEFAUT,
     liste: liste,
     parId: parId,
+    nbPaliers: nbPaliers,
+    niveauPourEtat: niveauPourEtat,
+    entree: entree,
+    vue: vue,
+    vueDebloquee: vueDebloquee,
+    losanges: losanges,
+    romain: romain,
     verifier: verifier
   };
 })();

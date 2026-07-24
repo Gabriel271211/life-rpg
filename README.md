@@ -19,9 +19,13 @@ une classe, un rang et des stats qui montent grâce à tes actions réelles
 - **Personnage** (`personnage.html`) — la fiche : rang (E → D → C → B → A → S),
   niveau, barre d'XP, stats (Corps, Esprit, Discipline), graphique des
   14 derniers jours (XP par jour, SVG pur), bilan, streak, export / import.
-- **Collection** (`collection.html`) — les cartes-trophées débloquées par de
-  vrais accomplissements (communes → légendaires, certaines cachées), plus
-  les cartes d'objectif obtenues via les quêtes secondaires.
+- **Collection** (`collection.html`) — deux familles de cartes en sections
+  avec compteur global et par section : les **trophées** (fixes, communes →
+  légendaires, certaines cachées) qui évoluent en NIVEAUX (1 à 3 paliers,
+  losanges sous le nom, liseré intensifié) et peuvent devenir BRILLANTES
+  (holographie CSS pure) via un accomplissement d'exception ; et les
+  **cartes d'objectif** obtenues par les quêtes secondaires, regroupées par
+  aventure. `cartesDebloquees` est une liste de `{ id, niveau, brillante }`.
 - **Quête principale** (`quete.html`) — le chemin de JALONS de l'objectif :
   des accomplissements concrets de la vraie vie, auto-déclarés dans l'ordre
   (bouton « Jalon atteint », confirmation inline, bonus XP). Dernier jalon

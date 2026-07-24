@@ -154,6 +154,74 @@
   text-shadow: 0 0 16px var(--or-lueur);
 }
 
+/* ----- Niveaux : crans de losanges sous le nom ----- */
+.carte-niveaux {
+  margin-top: 8px;
+  display: flex;
+  gap: 4px;
+}
+
+.carte-cran svg {
+  display: block;
+  width: 7px;
+  height: 7px;
+  fill: rgba(255, 255, 255, 0.16);
+  transition: fill 0.3s ease;
+}
+
+.carte-cran.actif svg {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 3px var(--accent-lueur));
+}
+
+.carte.legendaire .carte-cran.actif svg {
+  fill: var(--or);
+  filter: drop-shadow(0 0 3px var(--or-lueur));
+}
+
+/* Le liseré s'intensifie avec le niveau (par-dessus la rareté de base).
+   Ne concerne que les cartes à plusieurs paliers — jamais les épiques
+   ou légendaires, qui restent à un palier. */
+.carte.debloquee.niveau-2 {
+  border-color: rgba(var(--accent-rgb), 0.5);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.16);
+}
+
+.carte.debloquee.niveau-3 {
+  border-color: rgba(var(--accent-rgb), 0.78);
+  box-shadow:
+    0 0 26px rgba(var(--accent-rgb), 0.28),
+    inset 0 0 22px rgba(var(--accent-rgb), 0.06);
+}
+
+/* ----- Cartes brillantes : holographie CSS pure, rare et sobre ----- */
+.carte.brillante .carte-holo {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  pointer-events: none;
+  /* Irisé très doux, concentré au centre et fondu vers les bords */
+  background: conic-gradient(from 200deg at 40% 30%,
+    rgba(255, 130, 190, 0.12),
+    rgba(130, 200, 255, 0.12),
+    rgba(150, 255, 200, 0.11),
+    rgba(255, 225, 140, 0.12),
+    rgba(190, 150, 255, 0.12),
+    rgba(255, 130, 190, 0.12));
+  -webkit-mask: radial-gradient(85% 80% at 50% 42%, #000 20%, transparent 82%);
+          mask: radial-gradient(85% 80% at 50% 42%, #000 20%, transparent 82%);
+  mix-blend-mode: screen;
+}
+
+/* Reflet diagonal statique par-dessus l'irisé */
+.carte.brillante .carte-holo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg,
+    transparent 43%, rgba(255, 255, 255, 0.14) 50%, transparent 57%);
+}
+
 /* ----- Cartes verrouillées ----- */
 
 .carte.verrouillee {

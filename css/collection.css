@@ -32,9 +32,32 @@
   color: var(--texte-second);
 }
 
+/* ----- Sections ----- */
+.collection-section {
+  margin-top: 34px;
+}
+
+.collection-section:first-child {
+  margin-top: 30px;
+}
+
+.collection-section-tete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.collection-section-compte {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--texte-second);
+  white-space: nowrap;
+}
+
 /* ----- Grille ----- */
 .grille {
-  margin-top: 30px;
+  margin-top: 14px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;

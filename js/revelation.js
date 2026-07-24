@@ -12,12 +12,21 @@ var Revelation = (function () {
 
   function construireCarte(carte) {
     var el = document.createElement("article");
-    el.className = "carte debloquee " + carte.rarete;
+    el.className = "carte debloquee " + carte.rarete +
+      (carte.niveau ? " niveau-" + carte.niveau : "") +
+      (carte.brillante ? " brillante" : "");
+    // Crans de niveau (cartes-trophées à paliers) ; les cartes d'objectif
+    // n'en ont pas. Overlay holographique seulement si brillante.
+    var crans = (carte.paliers && carte.niveau)
+      ? '<div class="carte-niveaux">' + Cartes.losanges(carte.niveau, carte.paliers) + "</div>"
+      : "";
     el.innerHTML =
       '<span class="carte-rarete"></span>' +
       '<div class="carte-ornement">' + (carte.embleme || Cartes.EMBLEME_DEFAUT) + "</div>" +
       '<h2 class="carte-nom"></h2>' +
-      '<p class="carte-texte"></p>';
+      crans +
+      '<p class="carte-texte"></p>' +
+      (carte.brillante ? '<div class="carte-holo" aria-hidden="true"></div>' : "");
     el.querySelector(".carte-rarete").textContent = Cartes.NOMS_RARETES[carte.rarete];
     el.querySelector(".carte-nom").textContent = carte.nom;
     el.querySelector(".carte-texte").textContent = carte.description;
@@ -31,9 +40,10 @@ var Revelation = (function () {
       document.body.appendChild(overlay);
     }
 
-    overlay.className = "revelation " + carte.rarete;
+    overlay.className = "revelation " + carte.rarete + (carte.brillante ? " brillante" : "");
     overlay.innerHTML =
-      '<p class="etiquette revelation-etiquette">Carte débloquée</p>' +
+      '<p class="etiquette revelation-etiquette">' +
+        (carte.brillante ? "Carte brillante" : "Carte débloquée") + "</p>" +
       '<div class="revelation-scene">' +
         '<div class="revelation-carte">' +
           '<div class="revelation-dos">' + Cartes.EMBLEME_DEFAUT + "</div>" +

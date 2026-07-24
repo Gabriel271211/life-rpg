@@ -142,7 +142,7 @@
     var res = Regles.atteindreJalon(etat);
     if (!res) return;
 
-    var nouvellesCartes = Cartes.verifier(etat);
+    var evoCartes = Cartes.verifier(etat);
     Etat.sauvegarder(etat);
     Juice.vibrer([80, 60, 120]);
     rendre();
@@ -156,8 +156,17 @@
       }
     }
 
-    if (nouvellesCartes.length > 0) {
-      Revelation.montrer(nouvellesCartes);
+    // Cartes élevées / devenues brillantes : bandeaux discrets.
+    evoCartes.montees.forEach(function (m, i) {
+      setTimeout(function () {
+        Juice.bandeau("Carte élevée", m.carte.nom + " " + Cartes.romain(m.niveau));
+      }, (i + 1) * 2700);
+    });
+    evoCartes.brillantes.forEach(function (c) {
+      Juice.bandeau("Carte brillante", c.nom);
+    });
+    if (evoCartes.nouvelles.length > 0) {
+      Revelation.montrer(evoCartes.nouvelles);
     }
     var rangAvant = Regles.rang(niveauAvant).actuel.lettre;
     var rangApres = Regles.rang(etat.niveau).actuel.lettre;
