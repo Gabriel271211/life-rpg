@@ -292,11 +292,18 @@ var Chat = (function () {
     if (ctx) return;
     ctx = { etat: etat, surAppliquer: surAppliquer || null, overlay: null, enAttente: false };
 
+    // Sous-titre d'ambiance : une des trois phrases, au hasard à chaque
+    // ouverture — le Système ne fait jamais rien de plus que ça.
+    var murmure = ["Il observe.", "Il attend.", "Il enregistre."][Math.floor(Math.random() * 3)];
+
     var overlay = document.createElement("div");
     overlay.className = "chat";
     overlay.innerHTML =
       '<header class="chat-entete">' +
-        '<p class="etiquette">Le Système</p>' +
+        '<div class="chat-titre">' +
+          '<p class="etiquette">Le Système</p>' +
+          '<p class="chat-murmure"></p>' +
+        "</div>" +
         '<button class="session-fermer" type="button" data-action="fermer" ' +
           'aria-label="Fermer le chat">' + SVG_CROIX + "</button>" +
       "</header>" +
@@ -307,6 +314,8 @@ var Chat = (function () {
           'placeholder="Parle au Système" aria-label="Ton message"></textarea>' +
         '<button class="chat-envoyer" type="submit" aria-label="Envoyer">' + SVG_ENVOI + "</button>" +
       "</form>";
+
+    overlay.querySelector(".chat-murmure").textContent = murmure;
 
     overlay.addEventListener("click", function (e) {
       if (e.target.closest('[data-action="fermer"]')) fermer();

@@ -31,6 +31,16 @@
   letter-spacing: 0.3em;
 }
 
+/* Sous-titre d'ambiance, discret sous « LE SYSTÈME » */
+.chat-murmure {
+  margin-top: 3px;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--texte-second);
+  opacity: 0.7;
+}
+
 /* ----- Flux de messages ----- */
 .chat-flux {
   flex: 1;
