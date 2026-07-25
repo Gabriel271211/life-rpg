@@ -305,6 +305,17 @@
     });
   });
 
+  // --- Chat du Système : une action appliquée re-rend l'accueil ---
+
+  document.getElementById("ouvrir-chat").addEventListener("click", function () {
+    Chat.ouvrir(etat, function () {
+      rendreQuetes();
+      majQuetePrincipale();
+      majJourAccompli();
+      rendreSecondaires();
+    });
+  });
+
   // --- Quête principale : ligne de rappel vers quete.html ---
 
   var qpEtape = document.getElementById("qp-etape");

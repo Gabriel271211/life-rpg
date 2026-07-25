@@ -96,6 +96,8 @@ js/nav.js                — navigation basse
 js/pwa.js                — enregistrement du service worker (sw.js)
 js/ia.js                 — client de la fonction IA : IA.appeler(type, donnees),
                            null sur tout échec, anti-spam local 10 s
+js/chat.js               — le chat du Système : overlay, bulles, historique,
+                           actions proposées (appliquées après confirmation)
 api/ia.js                — fonction serverless Vercel : unique porte vers Groq,
                            routée par type, validation stricte et bornée
 api/_prompts.js          — prompts système de l'IA, un par type (non exposé)
@@ -114,7 +116,7 @@ fonction serverless Vercel :
 
 - `POST /api/ia` avec `{ type, donnees }` — types routés un par un
   (`onboarding`, `suite-principale`, `quetes`, `hebdo`, `seance`,
-  `secondaires` ; `chat` viendra)
+  `secondaires`, `chat`)
 - clé dans la variable d'environnement `GROQ_API_KEY` (dashboard Vercel →
   Settings → Environment Variables ; en local : fichier `.env.local`,
   ignoré par git)

@@ -128,6 +128,41 @@ function validerBlocsSeance(liste) {
   return blocs;
 }
 
+// Action proposée par le chat : validée par le MÊME chemin strict que
+// les autres types. Retourne l'action nettoyée, ou null (pas d'action
+// applicable — le front n'affichera alors aucune carte d'action).
+function validerActionChat(a) {
+  if (!a || typeof a !== "object") return null;
+  var d = a.donnees;
+  if (a.type === "ajouter-quete") {
+    var q = validerQueteQuotidienne(d);
+    return q ? { type: "ajouter-quete", donnees: q } : null;
+  }
+  if (a.type === "modifier-quete") {
+    var id = d && texte(d.id, 60);
+    var qm = validerQueteQuotidienne(d);
+    if (!id || !qm) return null;
+    qm.id = id;
+    return { type: "modifier-quete", donnees: qm };
+  }
+  if (a.type === "supprimer-quete") {
+    var ids = d && texte(d.id, 60);
+    return ids ? { type: "supprimer-quete", donnees: { id: ids } } : null;
+  }
+  if (a.type === "nouvelle-secondaire") {
+    var nom = d && texte(d.nom, 60);
+    if (!nom) return null;
+    return { type: "nouvelle-secondaire", donnees: {
+      nom: nom,
+      description: texte(d.description, 140),
+      xp: entier(d.xp, 30, 100, 50),
+      stat: parmi(d.stat, STATS, "discipline"),
+      dureeJours: entier(d.dureeJours, 3, 7, 5)
+    } };
+  }
+  return null;
+}
+
 // ----- Types d'appels -----
 // Chaque type définit : son prompt système, la construction du message
 // utilisateur (filtrage strict de l'entrée) et la validation de la
@@ -350,6 +385,57 @@ var TYPES = {
         carte: carte
       };
     }
+  },
+
+  chat: {
+    json: true,
+    // Entrée : { contexte, historique[], message }. Construit toute la
+    // conversation : prompt système + contexte (jamais de prénom), puis
+    // l'historique récent, puis le message du joueur (max 300).
+    construireMessages: function (d) {
+      if (!d || typeof d !== "object") return null;
+      var message = texte(d.message, 300);
+      if (!message) return null;
+
+      var c = d.contexte && typeof d.contexte === "object" ? d.contexte : {};
+      var quetes = Array.isArray(c.quetes)
+        ? c.quetes.slice(0, 8).map(function (q) {
+            return "  - [" + texte(q.id, 60) + "] " + texte(q.nom, 60) +
+              " (" + parmi(q.type, ["simple", "minuterie", "series", "seance"], "simple") + ")";
+          }).join("\n")
+        : "  (aucune)";
+      var contexte =
+        "Contexte du joueur (ne jamais le lui réciter tel quel) :\n" +
+        "- Objectif : " + (texte(c.objectif, 120) || "non défini") + "\n" +
+        "- Classe : " + texte(c.classe, 40) + ", niveau " + entier(c.niveau, 1, 999, 1) +
+        ", rang " + parmi(c.rang, ["E", "D", "C", "B", "A", "S"], "E") + "\n" +
+        "- Jalon actif : " + (texte(c.jalon, 120) || "aucun") + "\n" +
+        "- Streak : " + entier(c.streak, 0, 99999, 0) + " jours\n" +
+        "- Quêtes du jour :\n" + quetes;
+
+      var msgs = [{ role: "system", content: PROMPTS.chat + "\n\n" + contexte }];
+      if (Array.isArray(d.historique)) {
+        d.historique.slice(-12).forEach(function (m) {
+          if (!m || typeof m !== "object") return;
+          var contenu = texte(m.contenu, 500);
+          if (!contenu) return;
+          msgs.push({
+            role: m.role === "systeme" ? "assistant" : "user",
+            content: contenu
+          });
+        });
+      }
+      msgs.push({ role: "user", content: message });
+      return msgs;
+    },
+    // Sortie : { message, action } — message tronqué, action validée
+    // par le chemin strict (ou null).
+    valider: function (o) {
+      if (!o || typeof o !== "object") return null;
+      var message = texte(o.message, 500);
+      if (!message) return null;
+      return { message: message, action: validerActionChat(o.action) };
+    }
   }
 };
 
@@ -385,8 +471,22 @@ module.exports = async function (req, res) {
     return repondre(res, 400, { erreur: "Type d'appel inconnu" });
   }
 
-  var message = type.message(corps.donnees);
-  if (message === null) {
+  // La plupart des types produisent un seul message utilisateur (le
+  // handler l'enveloppe entre le prompt système et Groq). Le chat, lui,
+  // fournit toute la conversation via construireMessages.
+  var messages;
+  if (type.construireMessages) {
+    messages = type.construireMessages(corps.donnees);
+  } else {
+    var message = type.message(corps.donnees);
+    if (message !== null) {
+      messages = [
+        { role: "system", content: PROMPTS[corps.type] },
+        { role: "user", content: message }
+      ];
+    }
+  }
+  if (!messages) {
     return repondre(res, 400, { erreur: "Données manquantes ou malformées" });
   }
 
@@ -410,10 +510,7 @@ module.exports = async function (req, res) {
       signal: controleur.signal,
       body: JSON.stringify({
         model: MODELE,
-        messages: [
-          { role: "system", content: PROMPTS[corps.type] },
-          { role: "user", content: message }
-        ],
+        messages: messages,
         response_format: type.json ? { type: "json_object" } : undefined,
         temperature: 0.7
       })

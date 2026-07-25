@@ -96,6 +96,7 @@ var Etat = (function () {
     cartesDebloquees: [],
     cartesObjectif: [],
     quetesSecondaires: [],
+    chat: [],
     historique: {},
     onboardingFait: true
   };
@@ -157,6 +158,11 @@ var Etat = (function () {
     // Palmarès des quêtes principales accomplies.
     if (!Array.isArray(etat.quetesAccomplies)) {
       etat.quetesAccomplies = [];
+      modifie = true;
+    }
+    // Historique du chat du Système (chantier 7).
+    if (!Array.isArray(etat.chat)) {
+      etat.chat = [];
       modifie = true;
     }
     // Quêtes secondaires (chantier 5) et cartes d'objectif qu'elles

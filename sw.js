@@ -18,7 +18,7 @@
 // fichiers JS interdépendants : le nouveau worker ré-installe un
 // pré-cache complet et cohérent, au lieu de laisser le rafraîchissement
 // en arrière-plan mélanger anciens et nouveaux fichiers.
-var CACHE = "life-rpg-v12";
+var CACHE = "life-rpg-v13";
 
 var FICHIERS = [
   "./",
@@ -40,6 +40,7 @@ var FICHIERS = [
   "css/editeur.css",
   "css/objectif.css",
   "css/onboarding.css",
+  "css/chat.css",
   "css/juice.css",
   "js/regles.js",
   "js/aura.js",
@@ -56,6 +57,7 @@ var FICHIERS = [
   "js/editeur-principale.js",
   "js/objectif.js",
   "js/onboarding.js",
+  "js/chat.js",
   "js/accueil.js",
   "js/personnage.js",
   "js/collection.js",

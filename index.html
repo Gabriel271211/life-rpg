@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="css/cartes.css">
   <link rel="stylesheet" href="css/revelation.css">
   <link rel="stylesheet" href="css/editeur.css">
+  <link rel="stylesheet" href="css/chat.css">
 </head>
 <body data-page="accueil">
 
@@ -38,9 +39,17 @@
         <span class="puce-valeur" id="puce-streak">—</span>
         <span class="puce-unite">jours</span>
       </div>
-      <div class="puce">
-        <span class="puce-unite">Niv.</span>
-        <span class="puce-valeur" id="puce-niveau">—</span>
+      <div class="accueil-entete-droite">
+        <div class="puce">
+          <span class="puce-unite">Niv.</span>
+          <span class="puce-valeur" id="puce-niveau">—</span>
+        </div>
+        <button class="systeme-bouton" id="ouvrir-chat" type="button" aria-label="Parler au Système">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2.5l7 9.5-7 9.5L5 12z"/>
+            <path d="M12 7l3.7 5-3.7 5-3.7-5z"/>
+          </svg>
+        </button>
       </div>
     </header>
 
@@ -189,6 +198,7 @@
   <script src="js/templates.js"></script>
   <script src="js/ia.js"></script>
   <script src="js/editeur.js"></script>
+  <script src="js/chat.js"></script>
   <script src="js/accueil.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/pwa.js"></script>
