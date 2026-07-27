@@ -24,6 +24,27 @@ var Chat = (function () {
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<path d="M5 12h13"/><path d="M12 5l7 7-7 7"/></svg>';
 
+  // Volutes du temps : l'accès aux conversations passées.
+  var SVG_HISTORIQUE =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M3.5 12a8.5 8.5 0 1 1 2.6 6.1"/><path d="M3.5 18v-4h4"/>' +
+    '<path d="M12 7.5V12l3 1.8"/></svg>';
+
+  var SVG_RETOUR =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M15 5l-7 7 7 7"/></svg>';
+
+  var MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin",
+    "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+
+  function formaterDate(iso) {
+    if (!iso) return "";
+    var p = iso.split("-");
+    return parseInt(p[2], 10) + " " + MOIS[parseInt(p[1], 10) - 1];
+  }
+
   function etiquetteStat(cle) {
     return cle.charAt(0).toUpperCase() + cle.slice(1);
   }
@@ -66,6 +87,83 @@ var Chat = (function () {
   function defilerEnBas() {
     var flux = ctx.overlay.querySelector(".chat-flux");
     flux.scrollTop = flux.scrollHeight;
+  }
+
+  // ----- Archives : les conversations passées -----
+
+  // Bascule l'interface entre la conversation courante (avec saisie) et
+  // la consultation des archives (lecture seule).
+  function modeConsultation(actif) {
+    ctx.overlay.querySelector(".chat-saisie").hidden = actif;
+    ctx.overlay.querySelector(".chat-silence").hidden = true;
+    ctx.overlay.querySelector(".chat-historique-ouvrir").hidden = actif;
+    ctx.overlay.querySelector(".chat-consult-retour").hidden = !actif;
+  }
+
+  function afficherListeArchives() {
+    modeConsultation(true);
+    ctx.consultation = "liste";
+    var flux = ctx.overlay.querySelector(".chat-flux");
+    flux.innerHTML = "";
+
+    var archives = ctx.etat.chatArchives || [];
+    if (archives.length === 0) {
+      var vide = document.createElement("p");
+      vide.className = "chat-accueil";
+      vide.textContent = "Aucune conversation passée. Le Système n'a rien archivé.";
+      flux.appendChild(vide);
+      return;
+    }
+
+    var liste = document.createElement("div");
+    liste.className = "chat-archives";
+    // Les plus récentes en tête.
+    archives.slice().reverse().forEach(function (archive, i) {
+      var indexReel = archives.length - 1 - i;
+      var premier = (archive.messages[0] && archive.messages[0].contenu) || "";
+      var item = document.createElement("button");
+      item.className = "chat-archive";
+      item.type = "button";
+      item.innerHTML =
+        '<span class="chat-archive-tete">' +
+          '<span class="chat-archive-date"></span>' +
+          '<span class="chat-archive-compte"></span>' +
+        "</span>" +
+        '<span class="chat-archive-apercu"></span>';
+      item.querySelector(".chat-archive-date").textContent = formaterDate(archive.date);
+      item.querySelector(".chat-archive-compte").textContent = archive.messages.length + " messages";
+      item.querySelector(".chat-archive-apercu").textContent = premier;
+      item.addEventListener("click", function () { afficherArchive(indexReel); });
+      liste.appendChild(item);
+    });
+    flux.appendChild(liste);
+    flux.scrollTop = 0;
+  }
+
+  function afficherArchive(index) {
+    ctx.consultation = "archive";
+    var archive = (ctx.etat.chatArchives || [])[index];
+    if (!archive) { afficherListeArchives(); return; }
+    var flux = ctx.overlay.querySelector(".chat-flux");
+    flux.innerHTML = "";
+    var entete = document.createElement("p");
+    entete.className = "chat-archive-entete";
+    entete.textContent = "Conversation du " + formaterDate(archive.date);
+    flux.appendChild(entete);
+    archive.messages.forEach(function (m) { flux.appendChild(bulle(m)); });
+    flux.scrollTop = 0;
+  }
+
+  // Retour contextuel : depuis une archive -> la liste ; depuis la
+  // liste -> la conversation courante.
+  function retourConsultation() {
+    if (ctx.consultation === "archive") {
+      afficherListeArchives();
+    } else {
+      ctx.consultation = null;
+      modeConsultation(false);
+      rendreHistorique();
+    }
   }
 
   // ----- Carte d'action proposée -----
@@ -300,12 +398,18 @@ var Chat = (function () {
     overlay.className = "chat";
     overlay.innerHTML =
       '<header class="chat-entete">' +
+        '<button class="chat-consult-retour" type="button" hidden ' +
+          'aria-label="Revenir">' + SVG_RETOUR + "</button>" +
         '<div class="chat-titre">' +
           '<p class="etiquette">Le Système</p>' +
           '<p class="chat-murmure"></p>' +
         "</div>" +
-        '<button class="session-fermer" type="button" data-action="fermer" ' +
-          'aria-label="Fermer le chat">' + SVG_CROIX + "</button>" +
+        '<div class="chat-entete-actions">' +
+          '<button class="chat-historique-ouvrir" type="button" ' +
+            'aria-label="Conversations passées">' + SVG_HISTORIQUE + "</button>" +
+          '<button class="session-fermer" type="button" data-action="fermer" ' +
+            'aria-label="Fermer le chat">' + SVG_CROIX + "</button>" +
+        "</div>" +
       "</header>" +
       '<div class="chat-flux"></div>' +
       '<p class="chat-silence" hidden>Le Système est silencieux — réessaie plus tard.</p>' +
@@ -316,10 +420,15 @@ var Chat = (function () {
       "</form>";
 
     overlay.querySelector(".chat-murmure").textContent = murmure;
+    // Le bouton d'historique n'apparaît que s'il y a des archives.
+    overlay.querySelector(".chat-historique-ouvrir").hidden =
+      !(etat.chatArchives && etat.chatArchives.length > 0);
 
     overlay.addEventListener("click", function (e) {
       if (e.target.closest('[data-action="fermer"]')) fermer();
     });
+    overlay.querySelector(".chat-historique-ouvrir").addEventListener("click", afficherListeArchives);
+    overlay.querySelector(".chat-consult-retour").addEventListener("click", retourConsultation);
     overlay.querySelector(".chat-saisie").addEventListener("submit", function (e) {
       e.preventDefault();
       envoyer();

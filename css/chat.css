@@ -41,6 +41,112 @@
   opacity: 0.7;
 }
 
+/* Actions d'en-tête : historique + fermeture */
+.chat-entete-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-historique-ouvrir,
+.chat-consult-retour {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--bordure);
+  border-radius: 50%;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chat-historique-ouvrir[hidden],
+.chat-consult-retour[hidden] {
+  display: none;
+}
+
+.chat-historique-ouvrir svg,
+.chat-consult-retour svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ----- Archives : liste des conversations passées ----- */
+.chat-archives {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-archive {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px 16px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s ease;
+}
+
+.chat-archive:hover {
+  border-color: rgba(var(--accent-rgb), 0.4);
+}
+
+.chat-archive-tete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.chat-archive-date {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.chat-archive-compte {
+  font-size: 0.6rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  white-space: nowrap;
+}
+
+.chat-archive-apercu {
+  font-size: 0.78rem;
+  font-weight: 300;
+  line-height: 1.4;
+  color: var(--texte-second);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* En-tête d'une archive consultée */
+.chat-archive-entete {
+  align-self: center;
+  padding: 4px 0 6px;
+  font-size: 0.64rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
 /* ----- Flux de messages ----- */
 .chat-flux {
   flex: 1;

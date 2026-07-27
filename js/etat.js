@@ -97,6 +97,7 @@ var Etat = (function () {
     cartesObjectif: [],
     quetesSecondaires: [],
     chat: [],
+    chatArchives: [],
     historique: {},
     onboardingFait: true
   };
@@ -160,9 +161,14 @@ var Etat = (function () {
       etat.quetesAccomplies = [];
       modifie = true;
     }
-    // Historique du chat du Système (chantier 7).
+    // Historique du chat du Système (chantier 7) : conversation courante
+    // + archives des conversations passées.
     if (!Array.isArray(etat.chat)) {
       etat.chat = [];
+      modifie = true;
+    }
+    if (!Array.isArray(etat.chatArchives)) {
+      etat.chatArchives = [];
       modifie = true;
     }
     // Quêtes secondaires (chantier 5) et cartes d'objectif qu'elles
@@ -380,6 +386,35 @@ var Etat = (function () {
     return modifie;
   }
 
+  // Nouvelle session d'app = nouveau chat. Le marqueur vit dans
+  // sessionStorage : conservé tant que l'app reste ouverte (y compris en
+  // naviguant entre les écrans), effacé à la vraie fermeture. À la
+  // première ouverture d'une session, la conversation courante — si elle
+  // n'est pas vide — rejoint les archives, et le chat repart vierge.
+  function rotationSessionChat(etat) {
+    var nouvelleSession;
+    try {
+      nouvelleSession = !sessionStorage.getItem("life-rpg-session-chat");
+      if (nouvelleSession) sessionStorage.setItem("life-rpg-session-chat", "1");
+    } catch (e) {
+      return false; // sessionStorage indisponible : on ne casse rien.
+    }
+    if (!nouvelleSession) return false;
+    if (!Array.isArray(etat.chat) || etat.chat.length === 0) return false;
+
+    if (!Array.isArray(etat.chatArchives)) etat.chatArchives = [];
+    etat.chatArchives.push({
+      date: etat.dernierJour || Jour.dateDuJour(),
+      messages: etat.chat
+    });
+    // On ne garde que les 20 dernières conversations.
+    if (etat.chatArchives.length > 20) {
+      etat.chatArchives = etat.chatArchives.slice(-20);
+    }
+    etat.chat = [];
+    return true;
+  }
+
   function charger() {
     var etat = null;
     try {
@@ -391,6 +426,7 @@ var Etat = (function () {
     if (!etat) etat = JSON.parse(JSON.stringify(DEFAUT));
 
     var aMigre = migrer(etat);
+    var nouvelleSessionChat = rotationSessionChat(etat);
     var aujourdhui = Jour.dateDuJour();
     var nouveauJour = Jour.appliquerNouveauJour(etat, aujourdhui);
     var nouvelleSemaine = Jour.appliquerNouvelleSemaine(etat, aujourdhui);
@@ -399,7 +435,7 @@ var Etat = (function () {
     // Au chargement on ne révèle rien : on persiste seulement l'évolution.
     var evo = Cartes.verifier(etat);
     var aEvolue = evo.nouvelles.length > 0 || evo.montees.length > 0 || evo.brillantes.length > 0;
-    if (aMigre || nouveauJour || nouvelleSemaine || aEvolue) {
+    if (aMigre || nouvelleSessionChat || nouveauJour || nouvelleSemaine || aEvolue) {
       sauvegarder(etat);
     }
     return etat;
