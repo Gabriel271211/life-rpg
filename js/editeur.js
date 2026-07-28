@@ -39,9 +39,7 @@ var Editeur = (function () {
     return Math.min(bornes.max, Math.max(bornes.min, n));
   }
 
-  function etiquetteStat(cle) {
-    return cle.charAt(0).toUpperCase() + cle.slice(1);
-  }
+  var etiquetteStat = Commun.etiquetteStat; // util partagé (commun.js)
 
   function etiquetteType(type) {
     if (type === "minuterie") return "Minuterie";

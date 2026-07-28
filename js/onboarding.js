@@ -146,9 +146,7 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
     'stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 
-  function etiquetteStat(cle) {
-    return cle.charAt(0).toUpperCase() + cle.slice(1);
-  }
+  var etiquetteStat = Commun.etiquetteStat; // util partagé (commun.js)
 
   function etiquetteType(quete) {
     if (quete.type === "minuterie") return Math.round(quete.duree / 60) + " min";
@@ -263,7 +261,6 @@
     var etat = Templates.etatNeuf(nom, templateChoisi);
     // Contexte conservé pour les prochains appels au Système.
     etat.objectifTexte = objectifTexte;
-    etat.reponsesOnboarding = reponses;
     Etat.sauvegarder(etat);
     location.replace("index.html");
   });

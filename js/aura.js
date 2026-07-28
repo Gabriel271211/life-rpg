@@ -10,8 +10,11 @@
 
 var Aura = (function () {
 
-  // Paliers dupliqués de regles.js, qui n'est pas encore
-  // chargé au moment où le <head> s'exécute.
+  // SOURCE UNIQUE des seuils de rang. aura.js s'exécute dans le <head>
+  // avant tout le reste (regles.js compris) : c'est donc lui qui porte
+  // les paliers, et Regles.RANGS les réutilise via Aura.PALIERS. Les
+  // classes .rang-* de css/base.css doivent rester alignées sur ces
+  // lettres. Si tu changes un seuil ici, il change partout.
   var PALIERS = [
     { lettre: "E", niveauRequis: 1 },
     { lettre: "D", niveauRequis: 10 },
@@ -21,7 +24,11 @@ var Aura = (function () {
     { lettre: "S", niveauRequis: 80 }
   ];
 
-  // Mêmes valeurs que les classes rang-* de base.css.
+  // Couleur d'accent par rang. COUPLAGE : ces valeurs doublent les
+  // classes .rang-* de css/base.css (--accent / --accent-rgb /
+  // --accent-clair) — le CSS ne peut pas lire ce JS et pose la couleur
+  // avant le rendu pour éviter tout flash. Modifier un rang => modifier
+  // les DEUX endroits (ici et base.css).
   var AURAS = {
     E: { accent: "#7a7f88", rgb: [122, 127, 136], clair: "#c3c5c9" },
     D: { accent: "#6b8cae", rgb: [107, 140, 174], clair: "#b9c9da" },
@@ -142,6 +149,7 @@ var Aura = (function () {
   appliquer(rangPour(lireNiveau()));
 
   return {
+    PALIERS: PALIERS,
     rangPour: rangPour,
     appliquer: appliquer,
     monterRang: monterRang

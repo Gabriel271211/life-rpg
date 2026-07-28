@@ -22,6 +22,17 @@
   --texte-second: #6a6a75;
 
   --nav-hauteur: 64px;
+
+  /* Dégradé des grandes lettres/chiffres lumineux (rang, quête accomplie,
+     révélation, décompte). Les var() internes se résolvent au point
+     d'usage : le dégradé suit donc l'aura du rang courant. */
+  --degrade-lettre: linear-gradient(180deg, #eef2f7 0%, var(--accent-clair) 55%, var(--accent) 135%);
+
+  /* L'or des cartes légendaires / du rang S. Défini ici (base.css est
+     chargé partout) pour que var(--or) résolve sur toutes les pages,
+     y compris celles sans cartes.css. */
+  --or: #c9a86a;
+  --or-lueur: rgba(201, 168, 106, 0.3);
 }
 
 /* ----- Auras de rang : posées sur <html> par js/aura.js avant le

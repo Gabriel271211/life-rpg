@@ -17,25 +17,10 @@ var Templates = (function () {
   ];
 
   // La séance guidée du template Sport, partagée entre la quête
-  // quotidienne et la session de l'hebdo. Toujours copiée avant
-  // d'entrer dans l'état (quetesDe / hebdoDe).
-  var BLOCS_SEANCE = [
-    { nom: "Échauffement", detail: "Mobilité articulaire", duree: 120,
-      explication: "Cercles de bras, rotations du bassin, montées de genoux : réveille chaque articulation en douceur." },
-    { nom: "Pompes", detail: "15 répétitions",
-      explication: "Mains sous les épaules, corps bien gainé : descends la poitrine près du sol, remonte sans cambrer." },
-    { nom: "Repos", duree: 60, repos: true },
-    { nom: "Squats", detail: "20 répétitions",
-      explication: "Pieds largeur d'épaules, dos droit : descends comme pour t'asseoir, talons au sol." },
-    { nom: "Repos", duree: 60, repos: true },
-    { nom: "Gainage", detail: "Tiens la position", duree: 45,
-      explication: "En appui sur les avant-bras, corps aligné des épaules aux talons : ne laisse pas le bassin tomber." },
-    { nom: "Repos", duree: 60, repos: true },
-    { nom: "Pompes", detail: "12 répétitions",
-      explication: "Même consigne que la première série : amplitude complète, rythme régulier." },
-    { nom: "Étirements", detail: "Retour au calme", duree: 90,
-      explication: "Respire profondément et étire chaque groupe musculaire travaillé, sans à-coups." }
-  ];
+  // quotidienne et la session de l'hebdo. Source unique dans commun.js
+  // (chargé avant templates.js). Toujours copiée avant d'entrer dans
+  // l'état (quetesDe / hebdoDe / copier()).
+  var BLOCS_SEANCE = Commun.BLOCS_SEANCE;
 
   var LISTE = [
     {

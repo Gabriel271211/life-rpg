@@ -113,7 +113,7 @@
 }
 
 .bandeau-niveau.rarete-legendaire .bandeau-valeur {
-  color: #c9a86a;
+  color: var(--or);
 }
 
 @keyframes bandeau-niveau {

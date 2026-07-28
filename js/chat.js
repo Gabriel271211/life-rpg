@@ -45,9 +45,7 @@ var Chat = (function () {
     return parseInt(p[2], 10) + " " + MOIS[parseInt(p[1], 10) - 1];
   }
 
-  function etiquetteStat(cle) {
-    return cle.charAt(0).toUpperCase() + cle.slice(1);
-  }
+  var etiquetteStat = Commun.etiquetteStat; // util partagé (commun.js)
 
   // ----- Historique dans l'état -----
 

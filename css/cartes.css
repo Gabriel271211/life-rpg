@@ -5,10 +5,7 @@
    entre la Collection et la révélation.
    ============================================ */
 
-:root {
-  --or: #c9a86a;
-  --or-lueur: rgba(201, 168, 106, 0.3);
-}
+/* --or / --or-lueur : source unique dans css/base.css (chargé partout). */
 
 /* ----- Carte : socle commun ----- */
 .carte {

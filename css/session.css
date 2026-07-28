@@ -126,7 +126,7 @@
   font-weight: 900;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  background: linear-gradient(180deg, #eef2f7 0%, var(--accent-clair) 55%, var(--accent) 135%);
+  background: var(--degrade-lettre);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

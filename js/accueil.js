@@ -38,9 +38,7 @@
     'stroke-linecap="round" aria-hidden="true">' +
     '<path d="M5 6.5h14"/><path d="M5 12h14"/><path d="M5 17.5h9"/></svg>';
 
-  function etiquetteStat(cle) {
-    return cle.charAt(0).toUpperCase() + cle.slice(1);
-  }
+  var etiquetteStat = Commun.etiquetteStat; // util partagé (commun.js)
 
   function estGuidee(quete) {
     return quete.type === "minuterie" || quete.type === "series" || quete.type === "seance";
@@ -59,37 +57,13 @@
     majPuce(puceNiveau, etat.niveau);
   }
 
-  // Feedback après un gain : bandeaux enchaînés (niveau, cartes élevées,
-  // cartes devenues brillantes), révélation plein écran des nouvelles
-  // cartes, et la montée de rang — le moment fort — par-dessus tout.
-  // evoCartes est le retour de Cartes.verifier : { nouvelles, montees,
-  // brillantes }.
+  // Feedback après un gain : niveau, cartes élevées, cartes devenues
+  // brillantes, révélation plein écran des nouvelles cartes, et la montée
+  // de rang — le moment fort — par-dessus tout. Délégué au module partagé
+  // Feedback (même langage que l'écran Quête). evoCartes est le retour de
+  // Cartes.verifier : { nouvelles, montees, brillantes }.
   function afficherBandeaux(niveauAvant, evoCartes) {
-    var bandeaux = [];
-    if (etat.niveau > niveauAvant) {
-      bandeaux.push(["Niveau", etat.niveau]);
-    }
-    if (evoCartes) {
-      evoCartes.montees.forEach(function (m) {
-        bandeaux.push(["Carte élevée", m.carte.nom + " " + Cartes.romain(m.niveau)]);
-      });
-      evoCartes.brillantes.forEach(function (c) {
-        bandeaux.push(["Carte brillante", c.nom]);
-      });
-    }
-    bandeaux.forEach(function (b, i) {
-      setTimeout(function () { Juice.bandeau(b[0], b[1]); }, i * 2700);
-    });
-
-    if (evoCartes && evoCartes.nouvelles.length > 0) {
-      Revelation.montrer(evoCartes.nouvelles);
-    }
-
-    var rangAvant = Regles.rang(niveauAvant).actuel.lettre;
-    var rangApres = Regles.rang(etat.niveau).actuel.lettre;
-    if (rangApres !== rangAvant) {
-      Aura.monterRang(rangAvant, rangApres);
-    }
+    Feedback.evolution(niveauAvant, etat.niveau, evoCartes);
   }
 
   // Rang redescendu (décochage) : l'aura suit, sans cérémonie.

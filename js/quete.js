@@ -147,31 +147,19 @@
     Juice.vibrer([80, 60, 120]);
     rendre();
 
+    // Feedback d'évolution (niveau, cartes élevées, cartes brillantes,
+    // révélation, montée de rang) délégué au module partagé — même
+    // langage que l'accueil.
     if (res.terminee) {
+      // La quête accomplie prend l'écran ; l'overlay célèbre le niveau,
+      // on ne le double pas d'un bandeau "Niveau".
       montrerQueteAccomplie();
+      Feedback.evolution(niveauAvant, etat.niveau, evoCartes, { avecNiveau: false });
     } else {
-      Juice.bandeau("Jalon atteint", res.jalon.nom);
-      if (etat.niveau > niveauAvant) {
-        setTimeout(function () { Juice.bandeau("Niveau", etat.niveau); }, 2700);
-      }
-    }
-
-    // Cartes élevées / devenues brillantes : bandeaux discrets.
-    evoCartes.montees.forEach(function (m, i) {
-      setTimeout(function () {
-        Juice.bandeau("Carte élevée", m.carte.nom + " " + Cartes.romain(m.niveau));
-      }, (i + 1) * 2700);
-    });
-    evoCartes.brillantes.forEach(function (c) {
-      Juice.bandeau("Carte brillante", c.nom);
-    });
-    if (evoCartes.nouvelles.length > 0) {
-      Revelation.montrer(evoCartes.nouvelles);
-    }
-    var rangAvant = Regles.rang(niveauAvant).actuel.lettre;
-    var rangApres = Regles.rang(etat.niveau).actuel.lettre;
-    if (rangApres !== rangAvant) {
-      Aura.monterRang(rangAvant, rangApres);
+      // "Jalon atteint" ouvre la file, puis niveau / cartes / rang.
+      Feedback.evolution(niveauAvant, etat.niveau, evoCartes, {
+        tete: [["Jalon atteint", res.jalon.nom]]
+      });
     }
   }
 

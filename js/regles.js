@@ -6,8 +6,12 @@
 
 var Regles = (function () {
 
-  // Paliers de rang, liés au niveau global du personnage.
-  var RANGS = [
+  // Seuils de rang, liés au niveau global du personnage. SOURCE UNIQUE
+  // dans aura.js (chargé dans le <head>, avant regles.js) : on la
+  // réutilise pour ne pas dédoubler la table. Repli inline uniquement si
+  // aura.js n'est pas présent sur la page — les valeurs doivent alors
+  // rester identiques à Aura.PALIERS.
+  var RANGS = (typeof Aura !== "undefined" && Aura.PALIERS) ? Aura.PALIERS : [
     { lettre: "E", niveauRequis: 1 },
     { lettre: "D", niveauRequis: 10 },
     { lettre: "C", niveauRequis: 20 },

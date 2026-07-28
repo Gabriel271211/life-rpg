@@ -45,23 +45,10 @@ var Etat = (function () {
       {
         id: "seance-corps", nom: "Séance complète du jour", xp: 40, stat: "corps", faite: false,
         type: "seance",
-        blocs: [
-          { nom: "Échauffement", detail: "Mobilité articulaire", duree: 120,
-            explication: "Cercles de bras, rotations du bassin, montées de genoux : réveille chaque articulation en douceur." },
-          { nom: "Pompes", detail: "15 répétitions",
-            explication: "Mains sous les épaules, corps bien gainé : descends la poitrine près du sol, remonte sans cambrer." },
-          { nom: "Repos", duree: 60, repos: true },
-          { nom: "Squats", detail: "20 répétitions",
-            explication: "Pieds largeur d'épaules, dos droit : descends comme pour t'asseoir, talons au sol." },
-          { nom: "Repos", duree: 60, repos: true },
-          { nom: "Gainage", detail: "Tiens la position", duree: 45,
-            explication: "En appui sur les avant-bras, corps aligné des épaules aux talons : ne laisse pas le bassin tomber." },
-          { nom: "Repos", duree: 60, repos: true },
-          { nom: "Pompes", detail: "12 répétitions",
-            explication: "Même consigne que la première série : amplitude complète, rythme régulier." },
-          { nom: "Étirements", detail: "Retour au calme", duree: 90,
-            explication: "Respire profondément et étire chaque groupe musculaire travaillé, sans à-coups." }
-        ]
+        // Source unique des blocs dans commun.js (chargé avant etat.js).
+        // DEFAUT est toujours cloné (JSON) avant usage : partager la
+        // référence ici ne risque aucune mutation croisée.
+        blocs: Commun.BLOCS_SEANCE
       }
     ],
     hebdo: {
@@ -102,11 +89,56 @@ var Etat = (function () {
     onboardingFait: true
   };
 
+  // Table FIGÉE des hebdos livrées par le passé (templates et anciennes
+  // versions), pour deviner `lien` et `session` des états d'AVANT que
+  // l'hebdo ne porte elle-même ces champs. Les clés sont des noms
+  // d'affichage HISTORIQUES : ne jamais les renommer, seulement en
+  // ajouter — un état ancien garde son ancien nom. Une seule table pour
+  // que `lien` et `session` ne puissent plus diverger. Un nom absent ->
+  // lien null (progression manuelle) et pas de session (tap +1 direct).
+  // Les blocs d'une session "seance" sont posés au runtime depuis
+  // commun.js (Commun.blocsSeance()), source unique de la séance.
+  var HEBDOS_CONNUES = {
+    "3 séances de sport complètes":               { lien: "seance", session: { type: "seance" } },
+    "3 séances complètes":                        { lien: "seance", session: { type: "seance" } },
+    "5 sessions de révision":                     { lien: "minuterie:esprit", session: { type: "minuterie", duree: 1500 } },
+    "Lire 5 jours cette semaine":                 { lien: "minuterie:esprit", session: { type: "minuterie", duree: 1200 } },
+    "4 sessions de lecture":                      { lien: "minuterie:esprit", session: { type: "minuterie", duree: 1200 } },
+    "4 sessions de création":                     { lien: "minuterie:esprit", session: { type: "minuterie", duree: 2700 } },
+    "5 matins maîtrisés":                         { lien: "journee" },
+    "6 journées avec toutes les quêtes validées": { lien: "journee" },
+    "5 jours d'action vers ton objectif":         { lien: "quete" },
+    "5 quêtes accomplies dans la semaine":        { lien: "quete" },
+    "5 actions concrètes pour ton business":      { session: { type: "simple", enCours: "Action en cours" } },
+    "5 journées d'action pour ton projet":        { session: { type: "simple", enCours: "Action en cours" } }
+  };
+
   // Ajoute les propriétés manquantes aux états sauvegardés par
   // d'anciennes versions, sans écraser le reste.
   // Retourne true si quelque chose a été ajouté.
   function migrer(etat) {
     var modifie = false;
+    // Filet d'intégrité : un état tronqué ou corrompu peut manquer des
+    // structures de base que la suite de la migration ET les écrans
+    // supposent présentes (etat.quetes est lu plus bas sans garde, et
+    // le changement de jour/semaine lit quetes et hebdo). On les
+    // rétablit depuis DEFAUT AVANT tout le reste, pour qu'aucun accès
+    // ne parte en exception et ne laisse un écran blanc.
+    if (!Array.isArray(etat.quetes)) {
+      etat.quetes = JSON.parse(JSON.stringify(DEFAUT.quetes));
+      modifie = true;
+    }
+    if (!etat.hebdo || typeof etat.hebdo !== "object") {
+      etat.hebdo = JSON.parse(JSON.stringify(DEFAUT.hebdo));
+      modifie = true;
+    }
+    if (!etat.stats || typeof etat.stats !== "object") {
+      etat.stats = JSON.parse(JSON.stringify(DEFAUT.stats));
+      modifie = true;
+    }
+    if (typeof etat.niveau !== "number") { etat.niveau = 1; modifie = true; }
+    if (typeof etat.xp !== "number") { etat.xp = 0; modifie = true; }
+    if (typeof etat.streak !== "number") { etat.streak = 0; modifie = true; }
     if (typeof etat.dernierJour !== "string") {
       etat.dernierJour = Jour.dateDuJour();
       modifie = true;
@@ -267,21 +299,8 @@ var Etat = (function () {
     // sinon null (progression manuelle) — une hebdo personnalisée ne
     // se met pas à avancer toute seule.
     if (etat.hebdo && !("lien" in etat.hebdo)) {
-      var LIENS_CONNUS = {
-        "3 séances de sport complètes": "seance",
-        "3 séances complètes": "seance",
-        "5 sessions de révision": "minuterie:esprit",
-        "Lire 5 jours cette semaine": "minuterie:esprit",
-        "4 sessions de lecture": "minuterie:esprit",
-        "4 sessions de création": "minuterie:esprit",
-        "5 matins maîtrisés": "journee",
-        "6 journées avec toutes les quêtes validées": "journee",
-        "5 jours d'action vers ton objectif": "quete",
-        "5 quêtes accomplies dans la semaine": "quete"
-      };
-      etat.hebdo.lien = Object.prototype.hasOwnProperty.call(LIENS_CONNUS, etat.hebdo.nom)
-        ? LIENS_CONNUS[etat.hebdo.nom]
-        : null;
+      var connueLien = HEBDOS_CONNUES[etat.hebdo.nom];
+      etat.hebdo.lien = (connueLien && "lien" in connueLien) ? connueLien.lien : null;
       modifie = true;
     }
     // Session guidée de l'hebdo : le tap sur la carte traverse une
@@ -289,42 +308,23 @@ var Etat = (function () {
     // simple +1. Déduite du nom si l'hebdo vient d'un template connu,
     // sinon null (tap direct conservé).
     if (etat.hebdo && !("session" in etat.hebdo)) {
-      var SESSIONS_CONNUES = {
-        "3 séances de sport complètes": { type: "seance" },
-        "3 séances complètes": { type: "seance" },
-        "5 sessions de révision": { type: "minuterie", duree: 1500 },
-        "Lire 5 jours cette semaine": { type: "minuterie", duree: 1200 },
-        "4 sessions de lecture": { type: "minuterie", duree: 1200 },
-        "4 sessions de création": { type: "minuterie", duree: 2700 },
-        "5 actions concrètes pour ton business": { type: "simple", enCours: "Action en cours" },
-        "5 journées d'action pour ton projet": { type: "simple", enCours: "Action en cours" }
-      };
-      var sessionConnue = SESSIONS_CONNUES[etat.hebdo.nom] || null;
-      if (sessionConnue) {
-        sessionConnue = JSON.parse(JSON.stringify(sessionConnue));
-        // La séance reprend les blocs de la séance par défaut,
-        // référence des migrations.
-        if (sessionConnue.type === "seance") {
-          for (var s = 0; s < DEFAUT.quetes.length; s++) {
-            if (DEFAUT.quetes[s].id === "seance-corps") {
-              sessionConnue.blocs = JSON.parse(JSON.stringify(DEFAUT.quetes[s].blocs));
-            }
-          }
-        }
+      var connueSession = HEBDOS_CONNUES[etat.hebdo.nom];
+      var sessionConnue = (connueSession && connueSession.session)
+        ? JSON.parse(JSON.stringify(connueSession.session))
+        : null;
+      // La séance reprend les blocs de la séance par défaut, source
+      // unique dans commun.js.
+      if (sessionConnue && sessionConnue.type === "seance") {
+        sessionConnue.blocs = Commun.blocsSeance();
       }
       etat.hebdo.session = sessionConnue;
       modifie = true;
     }
     // Contexte d'objectif pour les appels IA : la phrase d'objectif du
-    // joueur et ses réponses d'onboarding (deadline, temps, niveau).
-    // Pour les états d'avant : le titre de la quête principale fait
-    // office d'objectif, les réponses restent inconnues (null).
+    // joueur. Pour les états d'avant : le titre de la quête principale
+    // en fait office.
     if (typeof etat.objectifTexte !== "string") {
       etat.objectifTexte = (etat.quetePrincipale && etat.quetePrincipale.titre) || "";
-      modifie = true;
-    }
-    if (!("reponsesOnboarding" in etat)) {
-      etat.reponsesOnboarding = null;
       modifie = true;
     }
     // La séance guidée par défaut, ajoutée UNE seule fois aux états
@@ -423,9 +423,22 @@ var Etat = (function () {
     } catch (e) {
       // Stockage indisponible ou corrompu : on repart de l'état par défaut.
     }
-    if (!etat) etat = JSON.parse(JSON.stringify(DEFAUT));
+    // Un JSON valide mais non-objet (tableau, nombre, null) ne peut pas
+    // servir d'état : on repart proprement.
+    if (!etat || typeof etat !== "object" || Array.isArray(etat)) {
+      etat = JSON.parse(JSON.stringify(DEFAUT));
+    }
 
-    var aMigre = migrer(etat);
+    // migrer() a un filet interne, mais on ceinture aussi ici : si un
+    // état trop corrompu la faisait malgré tout échouer, on repart de
+    // DEFAUT plutôt que de laisser l'exception blanchir tous les écrans.
+    var aMigre;
+    try {
+      aMigre = migrer(etat);
+    } catch (e) {
+      etat = JSON.parse(JSON.stringify(DEFAUT));
+      aMigre = migrer(etat);
+    }
     var nouvelleSessionChat = rotationSessionChat(etat);
     var aujourdhui = Jour.dateDuJour();
     var nouveauJour = Jour.appliquerNouveauJour(etat, aujourdhui);
