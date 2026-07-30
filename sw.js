@@ -6,19 +6,22 @@
 // Stratégies :
 // - HTML (navigations)  : réseau d'abord, cache en secours
 //   -> une mise à jour Vercel arrive dès la visite suivante.
-// - CSS / JS            : cache d'abord, rafraîchi en arrière-plan
-//   (stale-while-revalidate) -> affichage instantané, et comme les
-//   fichiers ne sont pas versionnés par hash, le cache se remet à
-//   jour tout seul à chaque visite au lieu de figer du vieux code.
+// - CSS / JS            : réseau d'abord, cache en secours (comme le
+//   HTML) -> tant qu'il y a du réseau, l'app charge TOUJOURS le JS du
+//   déploiement courant. Ceci évite le piège majeur : les fichiers ne
+//   sont pas versionnés par hash, donc une stratégie cache-first
+//   pouvait figer un MÉLANGE moitié-ancien / moitié-nouveau entre deux
+//   déploiements. Réseau d'abord garantit un ensemble COHÉRENT.
 // - Icônes / manifest   : cache d'abord (ils ne changent pas).
 // - Police Google Fonts : non interceptée, reste réseau.
 // ============================================
 
-// Version à incrémenter à chaque déploiement qui modifie plusieurs
-// fichiers JS interdépendants : le nouveau worker ré-installe un
-// pré-cache complet et cohérent, au lieu de laisser le rafraîchissement
-// en arrière-plan mélanger anciens et nouveaux fichiers.
-var CACHE = "life-rpg-v15";
+// La correction de cohérence ne dépend plus d'un geste manuel : le
+// réseau-d'abord charge toujours le JS du déploiement courant. Cette
+// version ne sert donc plus qu'au snapshot HORS-LIGNE : l'incrémenter
+// purge l'ancien cache (activate supprime tout cache != CACHE) et
+// rafraîchit le pré-cache atomique servi quand il n'y a pas de réseau.
+var CACHE = "life-rpg-v16";
 
 var FICHIERS = [
   "./",
@@ -47,6 +50,7 @@ var FICHIERS = [
   "js/garde.js",
   "js/ia.js",
   "js/jour.js",
+  "js/commun.js",
   "js/cartes.js",
   "js/etat.js",
   "js/templates.js",
@@ -58,6 +62,7 @@ var FICHIERS = [
   "js/objectif.js",
   "js/onboarding.js",
   "js/chat.js",
+  "js/feedback.js",
   "js/accueil.js",
   "js/personnage.js",
   "js/collection.js",
@@ -142,20 +147,22 @@ self.addEventListener("fetch", function (event) {
     return;
   }
 
-  // CSS / JS : servi du cache immédiatement, rafraîchi en arrière-plan.
+  // CSS / JS : réseau d'abord, cache en secours (hors-ligne). Même
+  // stratégie que le HTML -> l'app charge un ensemble de fichiers
+  // COHÉRENT (tous du déploiement courant), jamais un mélange figé.
+  // La copie fraîche remet le cache à jour pour le prochain accès
+  // hors-ligne.
   event.respondWith(
-    caches.open(CACHE).then(function (cache) {
-      return cache.match(requete).then(function (enCache) {
-        var rafraichissement = fetch(requete).then(function (reponse) {
-          if (reponse && reponse.ok) {
-            cache.put(requete, reponse.clone());
-          }
-          return reponse;
-        }).catch(function () {
-          return enCache;
+    fetch(requete).then(function (reponse) {
+      if (reponse && reponse.ok) {
+        var copie = reponse.clone();
+        caches.open(CACHE).then(function (cache) {
+          cache.put(requete, copie);
         });
-        return enCache || rafraichissement;
-      });
+      }
+      return reponse;
+    }).catch(function () {
+      return caches.match(requete);
     })
   );
 });
