@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="css/cartes.css">
   <link rel="stylesheet" href="css/revelation.css">
   <link rel="stylesheet" href="css/editeur.css">
+  <link rel="stylesheet" href="css/jours-engagement.css">
   <link rel="stylesheet" href="css/chat.css">
 </head>
 <body data-page="accueil">
@@ -53,6 +54,13 @@
       </div>
     </header>
 
+    <p class="gel-message" id="gel-message" hidden>
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9"/>
+      </svg>
+      <span>Un jour a été gelé. La chaîne tient.</span>
+    </p>
+
     <div class="accueil-titre">
       <p class="etiquette">Aujourd'hui</p>
       <div class="accueil-titre-ligne">
@@ -72,6 +80,19 @@
       <p class="jour-accompli-titre">Toutes tes quêtes du jour sont accomplies.</p>
       <p class="jour-accompli-xp"><span id="jour-accompli-xp">0</span> XP aujourd'hui</p>
       <p class="jour-accompli-suite">Reviens demain.</p>
+    </section>
+
+    <section class="jour-repos" id="jour-repos" aria-label="Jour de repos">
+      <div class="repos-embleme" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.5 14.8A8.5 8.5 0 0 1 9.2 3.5a8.5 8.5 0 1 0 11.3 11.3z"/>
+        </svg>
+      </div>
+      <p class="repos-sous-titre">Repos. Le Système attend.</p>
+      <div class="repos-decompte">
+        <p class="etiquette">Prochaine quête dans</p>
+        <p class="repos-temps" id="repos-temps">—</p>
+      </div>
     </section>
 
     <a class="qp-lien" href="quete.html" aria-label="Voir la quête principale">
@@ -197,6 +218,7 @@
   <script src="js/revelation.js"></script>
   <script src="js/session.js"></script>
   <script src="js/templates.js"></script>
+  <script src="js/jours-engagement.js"></script>
   <script src="js/ia.js"></script>
   <script src="js/editeur.js"></script>
   <script src="js/chat.js"></script>

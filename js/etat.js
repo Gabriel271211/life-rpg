@@ -24,6 +24,13 @@ var Etat = (function () {
     streakValideAujourdhui: false,
     dernierJour: null,   // rempli à la date du jour par la migration
     lundiSemaine: null,  // rempli au lundi de la semaine par la migration
+    // Jours d'engagement choisis (0 = lundi ... 6 = dimanche) : la boucle
+    // quotidienne n'est active que ces jours-là. Par défaut lundi-vendredi.
+    joursEngagement: [0, 1, 2, 3, 4],
+    gels: 2,              // protections d'un jour d'engagement manqué (plafond 2)
+    tenusSemaine: 0,      // jours d'engagement honorés dans la semaine en cours
+    gelEnAttente: false,  // un gel vient d'être consommé : message sobre à afficher
+    jourExempt: null,     // date exemptée après un changement de jours (VERS L'AVANT)
     stats: {
       corps: { niveau: 1, xp: 0 },
       esprit: { niveau: 1, xp: 0 },
@@ -149,6 +156,44 @@ var Etat = (function () {
     }
     if (typeof etat.lundiSemaine !== "string") {
       etat.lundiSemaine = Jour.lundiDe(Jour.dateDuJour());
+      modifie = true;
+    }
+    // Jours d'engagement (défaut lundi-vendredi) + gels. Un état existant
+    // hérite de 5 jours et de 2 gels : sa série en cours n'est jamais
+    // cassée (la migration tourne AVANT le changement de jour, et les
+    // jours déjà refermés ne sont pas ré-évalués). On assainit les indices
+    // (0-6, uniques) pour qu'un tableau corrompu ne fige pas la progression.
+    if (!Array.isArray(etat.joursEngagement)) {
+      etat.joursEngagement = [0, 1, 2, 3, 4];
+      modifie = true;
+    } else {
+      var propres = [];
+      etat.joursEngagement.forEach(function (j) {
+        var n = parseInt(j, 10);
+        if (n >= 0 && n <= 6 && propres.indexOf(n) === -1) propres.push(n);
+      });
+      propres.sort(function (a, b) { return a - b; });
+      if (propres.length === 0) propres = [0, 1, 2, 3, 4];
+      if (propres.length !== etat.joursEngagement.length ||
+          propres.some(function (n, i) { return n !== etat.joursEngagement[i]; })) {
+        etat.joursEngagement = propres;
+        modifie = true;
+      }
+    }
+    if (typeof etat.gels !== "number") {
+      etat.gels = Jour.GELS_DEPART;
+      modifie = true;
+    }
+    if (typeof etat.tenusSemaine !== "number") {
+      etat.tenusSemaine = 0;
+      modifie = true;
+    }
+    if (typeof etat.gelEnAttente !== "boolean") {
+      etat.gelEnAttente = false;
+      modifie = true;
+    }
+    if (!("jourExempt" in etat)) {
+      etat.jourExempt = null;
       modifie = true;
     }
     if (!etat.quetePrincipale) {

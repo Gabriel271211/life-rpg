@@ -13,14 +13,16 @@
   var etapes = document.querySelectorAll(".onb-etape");
   var traits = document.querySelectorAll(".onb-trait");
 
-  // Trait allumé selon l'écran : les sous-étapes du parcours
-  // personnalisé vivent toutes dans le deuxième temps du voyage.
-  var TRAITS_PAR_ETAPE = { "1": 1, "2": 2, "questions": 2, "attente": 3, "proposition": 3, "3": 3 };
+  // Trait allumé selon l'écran : le choix des jours d'engagement
+  // appartient au deuxième temps (l'objectif), avant la révélation.
+  var TRAITS_PAR_ETAPE = { "1": 1, "2": 2, "jours": 2, "questions": 2, "attente": 3, "proposition": 3, "3": 3 };
 
   var nom = "";
   var choix = null;           // contrôleur ChoixObjectif
   var templateChoisi = null;  // template final, prêt pour etatNeuf
   var objectifTexte = "";     // la phrase du joueur (parcours personnalisé)
+  var estPerso = false;       // le parcours personnalisé (questions + IA) ?
+  var joursEngagement = null; // indices des jours choisis (0 = lundi ... 6 = dimanche)
   var reponses = null;        // { deadline, tempsParJour, niveau } ou null
   var proposition = null;     // réponse IA validée par le serveur
   var quetesProposees = [];   // quêtes IA restantes après suppressions
@@ -70,8 +72,25 @@
     if (!lu) return;
     templateChoisi = lu;
     objectifTexte = lu.quetePrincipale.titre;
-    if (lu.id === "personnalise") {
-      // Le Système entre en scène : trois questions d'abord.
+    estPerso = lu.id === "personnalise";
+    // Étape universelle : le rythme d'engagement, pour tous les objectifs.
+    montrerEtape("jours");
+  });
+
+  // --- Étape jours d'engagement (universelle) ---
+
+  var boutonJours = document.getElementById("onb-valider-jours");
+  var joursChoix = JoursEngagement.rendre(
+    document.getElementById("onb-jours"),
+    [0, 1, 2, 3, 4], // reco : Semaine (5 jours), pré-sélectionnée
+    function () { boutonJours.disabled = !joursChoix.estValide(); }
+  );
+
+  boutonJours.addEventListener("click", function () {
+    if (!joursChoix.estValide()) return;
+    joursEngagement = joursChoix.lire();
+    if (estPerso) {
+      // Le Système entre en scène : trois questions, puis la forge.
       montrerEtape("questions");
     } else {
       reponses = null;
@@ -261,6 +280,10 @@
     var etat = Templates.etatNeuf(nom, templateChoisi);
     // Contexte conservé pour les prochains appels au Système.
     etat.objectifTexte = objectifTexte;
+    // Rythme choisi à l'étape universelle (filet : reco de 5 jours).
+    if (Array.isArray(joursEngagement) && joursEngagement.length >= 3) {
+      etat.joursEngagement = joursEngagement;
+    }
     Etat.sauvegarder(etat);
     location.replace("index.html");
   });

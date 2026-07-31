@@ -1,0 +1,100 @@
+/* ============================================
+   LIFE RPG — jours-engagement.css
+   Sélecteur des jours d'engagement : presets,
+   sept pastilles rondes, compteur. Partagé par
+   l'onboarding et l'éditeur.
+   ============================================ */
+
+.je {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ----- Presets rapides ----- */
+.je-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.je-preset {
+  padding: 9px 14px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.66rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.je-preset.actif {
+  background: var(--accent-doux);
+  border-color: var(--accent);
+  color: var(--texte);
+  font-weight: 600;
+}
+
+/* ----- Sept pastilles rondes ----- */
+.je-pastilles {
+  display: flex;
+  gap: 8px;
+}
+
+.je-pastille {
+  flex: 1;
+  aspect-ratio: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 50%;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.je-pastille.actif {
+  background: var(--accent-doux);
+  border-color: var(--accent);
+  color: var(--texte);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.22);
+}
+
+/* ----- Compteur + message ----- */
+.je-compteur {
+  font-size: 0.82rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--texte-second);
+}
+
+.je-compteur .je-compte {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.je-compteur.insuffisant .je-compte {
+  color: var(--texte-second);
+}
+
+.je-message {
+  font-size: 0.72rem;
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: var(--texte-second);
+}

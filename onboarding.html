@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="css/session.css">
   <link rel="stylesheet" href="css/editeur.css">
   <link rel="stylesheet" href="css/objectif.css">
+  <link rel="stylesheet" href="css/jours-engagement.css">
   <link rel="stylesheet" href="css/onboarding.css">
 </head>
 <body data-page="onboarding">
@@ -50,6 +51,15 @@
       <h1 class="onb-question">Quelle est ta quête ?</h1>
       <div class="onb-objectifs" id="onb-objectifs"></div>
       <button class="session-bouton onb-continuer" id="onb-valider-objectif" type="button" disabled>Continuer</button>
+    </section>
+
+    <!-- Étape jours d'engagement (universelle, après le choix d'objectif) -->
+    <section class="onb-etape" data-etape="jours" hidden>
+      <p class="etiquette">Ton rythme</p>
+      <h1 class="onb-question">Tes jours d'engagement</h1>
+      <p class="onb-jours-intro">Les jours où tu t'engages à avancer. Le repos fait partie du plan — il ne casse jamais ta série.</p>
+      <div class="onb-jours" id="onb-jours"></div>
+      <button class="session-bouton onb-continuer" id="onb-valider-jours" type="button">Continuer</button>
     </section>
 
     <!-- Étape 2b — Trois questions (objectif personnalisé) -->
@@ -148,6 +158,7 @@
   <script src="js/templates.js"></script>
   <script src="js/etat.js"></script>
   <script src="js/objectif.js"></script>
+  <script src="js/jours-engagement.js"></script>
   <script src="js/ia.js"></script>
   <script src="js/onboarding.js"></script>
   <script src="js/pwa.js"></script>

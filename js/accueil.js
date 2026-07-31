@@ -276,6 +276,8 @@
       majPuces();
       majQuetePrincipale();
       majJourAccompli();
+      // Les jours d'engagement ont pu changer : on ré-évalue le repos.
+      majModeRepos();
     });
   });
 
@@ -709,11 +711,85 @@
     majEtatSection();
   });
 
+  // --- Jour de repos : la boucle quotidienne se met en pause ---
+  // Un jour de repos, on ne gagne rien (ni XP, ni flamme) : la liste des
+  // quêtes, l'hebdo et les secondaires s'effacent au profit d'un écran
+  // calme avec un décompte en temps réel jusqu'au prochain jour
+  // d'engagement. La quête principale (qp-lien) reste, elle, accessible.
+
+  var jourRepos = document.getElementById("jour-repos");
+  var reposTemps = document.getElementById("repos-temps");
+  var titreH1 = document.querySelector(".accueil-titre h1");
+  var intervalleRepos = null;
+
+  function estJourRepos() {
+    return !Jour.estJourEngagement(etat, etat.dernierJour);
+  }
+
+  // "YYYY-MM-DD" du prochain jour d'engagement, à partir de demain.
+  function prochainJourEngagement() {
+    for (var i = 1; i <= 14; i++) {
+      var d = Jour.decalerDate(etat.dernierJour, i);
+      if (Jour.estJourEngagement(etat, d)) return d;
+    }
+    return Jour.decalerDate(etat.dernierJour, 1); // filet
+  }
+
+  function texteDecompte(secondes) {
+    var h = Math.floor(secondes / 3600);
+    var m = Math.floor((secondes % 3600) / 60);
+    var s = secondes % 60;
+    return h + "h " + m + "min " + s + "sec";
+  }
+
+  // Décompte jusqu'à minuit (00:00 local) du prochain jour d'engagement.
+  // Peut dépasser 24h si plusieurs repos s'enchaînent.
+  function tickDecompte() {
+    var parts = prochainJourEngagement().split("-");
+    var cibleMs = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), 0, 0, 0).getTime();
+    var reste = Math.max(0, Math.round((cibleMs - Date.now()) / 1000));
+    reposTemps.textContent = texteDecompte(reste);
+  }
+
+  function arreterDecompte() {
+    if (intervalleRepos) {
+      clearInterval(intervalleRepos);
+      intervalleRepos = null;
+    }
+  }
+
+  function majModeRepos() {
+    var repos = estJourRepos();
+    document.body.classList.toggle("mode-repos", repos);
+    arreterDecompte();
+    if (repos) {
+      titreH1.textContent = "Jour de repos";
+      tickDecompte();
+      intervalleRepos = setInterval(tickDecompte, 1000);
+    } else {
+      titreH1.textContent = "Tes quêtes du jour";
+    }
+  }
+
+  // Le décompte s'arrête proprement à la sortie de la page.
+  window.addEventListener("pagehide", arreterDecompte);
+
+  // --- Message sobre au retour, quand un gel a été consommé ---
+  var gelMessage = document.getElementById("gel-message");
+  function afficherMessageGelSiBesoin() {
+    if (!etat.gelEnAttente) return;
+    gelMessage.hidden = false;
+    etat.gelEnAttente = false;
+    Etat.sauvegarder(etat);
+  }
+
   majPuces();
   majQuetePrincipale();
   rendreHebdo();
   majJourAccompli();
-  proposerHebdoSiBesoin();
   rendreSecondaires();
+  if (!estJourRepos()) proposerHebdoSiBesoin();
+  majModeRepos();
+  afficherMessageGelSiBesoin();
 
 })();

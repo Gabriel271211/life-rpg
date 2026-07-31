@@ -335,6 +335,13 @@ var Templates = (function () {
       streakValideAujourdhui: false,
       dernierJour: null,
       lundiSemaine: null,
+      // Jours d'engagement : l'onboarding pose le choix du joueur juste
+      // après etatNeuf. Défaut lundi-vendredi comme filet.
+      joursEngagement: [0, 1, 2, 3, 4],
+      gels: Jour.GELS_DEPART,
+      tenusSemaine: 0,
+      gelEnAttente: false,
+      jourExempt: null,
       stats: {
         corps: { niveau: 1, xp: 0 },
         esprit: { niveau: 1, xp: 0 },

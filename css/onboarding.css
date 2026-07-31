@@ -102,6 +102,23 @@
   margin-top: 26px;
 }
 
+/* ----- Étape jours d'engagement ----- */
+.onb-jours-intro {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--texte-second);
+}
+
+.onb-jours {
+  margin-top: 28px;
+}
+
+.onb-etape[data-etape="jours"] .onb-continuer {
+  margin-top: 34px;
+}
+
 /* ----- Étape 2b : trois questions à puces ----- */
 .onb-questions {
   margin-top: 30px;

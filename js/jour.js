@@ -7,6 +7,14 @@
 
 var Jour = (function () {
 
+  // Gels : protections contre un jour d'engagement manqué. Valeurs
+  // simples et ajustables. La mécanique de CONSOMMATION (ci-dessous)
+  // est volontairement isolée du mode d'OBTENTION (recharge à la
+  // semaine tenue) : plus tard, l'obtention passera par une boutique
+  // sans toucher à la consommation.
+  var GELS_MAX = 2;
+  var GELS_DEPART = 2;
+
   function deuxChiffres(n) {
     return n < 10 ? "0" + n : String(n);
   }
@@ -43,6 +51,32 @@ var Jour = (function () {
     return dateDuJour(d);
   }
 
+  // Indice du jour de la semaine d'une date "YYYY-MM-DD" :
+  // 0 = lundi ... 6 = dimanche (même convention que lundiDe).
+  function indiceJourSemaine(chaine) {
+    return (versDate(chaine).getDay() + 6) % 7;
+  }
+
+  // La date est-elle un jour d'engagement du joueur ? Filet : sans
+  // configuration (état tronqué), tout jour compte comme engagement,
+  // pour ne jamais bloquer la progression.
+  function estJourEngagement(etat, dateISO) {
+    var jours = etat && etat.joursEngagement;
+    if (!Array.isArray(jours) || jours.length === 0) return true;
+    return jours.indexOf(indiceJourSemaine(dateISO)) !== -1;
+  }
+
+  // Recharge d'un gel quand la semaine qui se ferme a été entièrement
+  // tenue : tous les jours d'engagement honorés (tenusSemaine compte les
+  // jours d'engagement validés au fil de la semaine). Plafonné.
+  // Mode d'OBTENTION isolé — à remplacer plus tard par une boutique.
+  function rechargerGelSiSemaineTenue(etat) {
+    var nb = Array.isArray(etat.joursEngagement) ? etat.joursEngagement.length : 0;
+    if (nb > 0 && (etat.tenusSemaine || 0) >= nb && (etat.gels || 0) < GELS_MAX) {
+      etat.gels = Math.min(GELS_MAX, (etat.gels || 0) + 1);
+    }
+  }
+
   // Transition de semaine, appelée au même moment qu'appliquerNouveauJour.
   // La quête hebdomadaire se réinitialise chaque lundi ; l'XP acquis reste acquis.
   // Retourne true si l'état a été modifié.
@@ -60,6 +94,12 @@ var Jour = (function () {
     };
     etat.propositionHebdoAttendue = true;
 
+    // Recharge de gel : la semaine qui vient de se fermer a-t-elle été
+    // entièrement tenue ? On évalue AVANT de remettre le compteur à zéro
+    // pour la nouvelle semaine.
+    rechargerGelSiSemaineTenue(etat);
+    etat.tenusSemaine = 0;
+
     etat.hebdo.progres = 0;
     delete etat.hebdo.xpDonne;
     etat.lundiSemaine = lundi;
@@ -76,15 +116,44 @@ var Jour = (function () {
 
     var ecart = joursEcoules(etat.dernierJour, aujourdhui);
 
-    // Écart négatif = horloge reculée : on resynchronise la date sans juger le streak.
-    if (ecart > 0 && !(ecart === 1 && etat.streakValideAujourdhui)) {
-      etat.streak = 0;
+    // Le jour qui se ferme (== dernierJour) a-t-il été exempté par une
+    // modification des jours d'engagement faite dans la journée ? Si oui,
+    // il est traité comme un jour de repos : un changement de jours
+    // s'applique VERS L'AVANT et ne crée jamais de manque rétroactif ni
+    // ne casse la série en cours.
+    var jourExempt = etat.jourExempt || null;
+    function engagementEffectif(dateISO) {
+      if (jourExempt && dateISO === jourExempt) return false;
+      return estJourEngagement(etat, dateISO);
+    }
+
+    // --- Streak : manques et gels sur les jours d'engagement refermés ---
+    // On ne juge que quand le temps a avancé (écart > 0) ; une horloge
+    // reculée resynchronise sans rien casser. Pour chaque jour calendaire
+    // qui s'est refermé entre dernierJour et aujourd'hui :
+    //   - jour de repos            -> transparent (ignoré)
+    //   - jour d'engagement tenu   -> rien à casser (le +1 a déjà eu lieu)
+    //   - jour d'engagement manqué -> un gel le protège, sinon série = 0
+    // Seul le jour == dernierJour a pu être honoré (streakValideAujourdhui) ;
+    // les jours strictement entre sont forcément non honorés.
+    if (ecart > 0) {
+      for (var i = 0; i < ecart; i++) {
+        var jourFerme = decalerDate(etat.dernierJour, i);
+        if (!engagementEffectif(jourFerme)) continue;
+        var honore = i === 0 && etat.streakValideAujourdhui;
+        if (honore) continue;
+        if (etat.gels > 0) {
+          etat.gels -= 1;
+          etat.gelEnAttente = true; // message sobre au prochain affichage
+        } else {
+          etat.streak = 0;
+          break; // série cassée : on arrête d'évaluer les manques suivants
+        }
+      }
     }
 
     // Le jour qui se ferme était-il PARFAIT (toutes les quêtes du jour
-    // validées) ? Il prolonge le streak parfait — mais seulement si le
-    // jour suivant est le lendemain direct (aucun jour sauté). Sinon la
-    // chaîne se brise. Sert aux cartes brillantes.
+    // validées) ? Sert aux cartes brillantes (streak parfait).
     var jourParfait = etat.quetes.length > 0 &&
       etat.quetes.every(function (q) { return q.faite; });
 
@@ -96,8 +165,18 @@ var Jour = (function () {
       Regles.progresserHebdo(etat);
     }
 
-    if (etat.compteurs) {
-      if (jourParfait && ecart === 1) {
+    // Streak parfait : on ne considère QUE les jours d'engagement. Un
+    // jour de repos ne rompt pas la chaîne (transparent) ; un jour
+    // d'engagement manqué dans l'intervalle la brise.
+    if (etat.compteurs && ecart > 0 && engagementEffectif(etat.dernierJour)) {
+      var manqueEngagement = false;
+      for (var j = 1; j < ecart; j++) {
+        if (engagementEffectif(decalerDate(etat.dernierJour, j))) {
+          manqueEngagement = true;
+          break;
+        }
+      }
+      if (jourParfait && !manqueEngagement) {
         etat.compteurs.streakParfait = (etat.compteurs.streakParfait || 0) + 1;
       } else {
         etat.compteurs.streakParfait = 0;
@@ -135,6 +214,12 @@ var Jour = (function () {
 
     etat.streakValideAujourdhui = false;
     etat.dernierJour = aujourdhui;
+
+    // L'exemption ne vaut que pour le jour où le changement a eu lieu :
+    // une fois ce jour refermé, on l'oublie.
+    if (etat.jourExempt && etat.jourExempt !== aujourdhui) {
+      etat.jourExempt = null;
+    }
     return true;
   }
 
@@ -142,11 +227,17 @@ var Jour = (function () {
   // - première quête validée du jour  -> streak +1
   // - toutes les quêtes décochées     -> streak -1 (retour à l'état d'avant)
   function majStreak(etat) {
+    // La série ne bouge QUE les jours d'engagement. Un jour de repos, la
+    // boucle quotidienne est inactive : aucune validation, aucun effet.
+    if (!estJourEngagement(etat, etat.dernierJour)) return;
+
     var aucuneFaite = etat.quetes.every(function (q) { return !q.faite; });
 
     if (!aucuneFaite && !etat.streakValideAujourdhui) {
       etat.streak += 1;
       etat.streakValideAujourdhui = true;
+      // Jour d'engagement tenu, comptabilisé pour la recharge de gel.
+      etat.tenusSemaine = (etat.tenusSemaine || 0) + 1;
       // Le record de streak ne redescend jamais.
       if (etat.compteurs && etat.streak > etat.compteurs.meilleurStreak) {
         etat.compteurs.meilleurStreak = etat.streak;
@@ -154,14 +245,19 @@ var Jour = (function () {
     } else if (aucuneFaite && etat.streakValideAujourdhui) {
       etat.streak = Math.max(0, etat.streak - 1);
       etat.streakValideAujourdhui = false;
+      etat.tenusSemaine = Math.max(0, (etat.tenusSemaine || 0) - 1);
     }
   }
 
   return {
+    GELS_MAX: GELS_MAX,
+    GELS_DEPART: GELS_DEPART,
     dateDuJour: dateDuJour,
     joursEcoules: joursEcoules,
     decalerDate: decalerDate,
     lundiDe: lundiDe,
+    indiceJourSemaine: indiceJourSemaine,
+    estJourEngagement: estJourEngagement,
     appliquerNouveauJour: appliquerNouveauJour,
     appliquerNouvelleSemaine: appliquerNouvelleSemaine,
     majStreak: majStreak

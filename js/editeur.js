@@ -76,7 +76,10 @@ var Editeur = (function () {
       '<button class="session-bouton editeur-nouvelle" type="button">Nouvelle quête</button>' +
       '<button class="session-lien accent editeur-ia" type="button">Demander au Système</button>' +
       '<p class="etiquette editeur-section">Quête hebdomadaire</p>' +
-      '<div class="editeur-liste"></div>'
+      '<div class="editeur-liste"></div>' +
+      '<p class="etiquette editeur-section">Tes jours d\'engagement</p>' +
+      '<p class="editeur-jours-intro">Les jours où la boucle quotidienne est active. Le repos ne casse jamais ta série. Un changement s\'applique vers l\'avant.</p>' +
+      '<div class="editeur-jours"></div>'
     );
 
     var listes = corps.querySelectorAll(".editeur-liste");
@@ -85,10 +88,29 @@ var Editeur = (function () {
     });
     listes[1].appendChild(ligneHebdo());
 
+    monterJoursEngagement(corps.querySelector(".editeur-jours"));
+
     corps.querySelector(".editeur-nouvelle").addEventListener("click", function () {
       vueFormulaire(null);
     });
     corps.querySelector(".editeur-ia").addEventListener("click", vueDemanderSysteme);
+  }
+
+  // --- Jours d'engagement : même UI que l'onboarding, appliquée en
+  // direct. Les changements valent VERS L'AVANT : on marque le jour
+  // courant comme exempté pour qu'ajouter/retirer un jour ne crée
+  // jamais un manque passé ni ne casse la série en cours (voir jour.js).
+  function monterJoursEngagement(conteneur) {
+    var choix = JoursEngagement.rendre(
+      conteneur,
+      ctx.etat.joursEngagement,
+      function () {
+        if (!choix.estValide()) return; // sous le minimum : on ne persiste pas
+        ctx.etat.joursEngagement = choix.lire();
+        ctx.etat.jourExempt = ctx.etat.dernierJour;
+        Etat.sauvegarder(ctx.etat);
+      }
+    );
   }
 
   // --- Quêtes proposées par le Système (type "quetes") ---
