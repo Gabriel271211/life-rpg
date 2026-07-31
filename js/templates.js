@@ -342,6 +342,7 @@ var Templates = (function () {
       tenusSemaine: 0,
       gelEnAttente: false,
       jourExempt: null,
+      journal: {},
       stats: {
         corps: { niveau: 1, xp: 0 },
         esprit: { niveau: 1, xp: 0 },

@@ -33,6 +33,12 @@
      y compris celles sans cartes.css. */
   --or: #c9a86a;
   --or-lueur: rgba(201, 168, 106, 0.3);
+
+  /* Le froid du Système : gel qui protège la série. Couleur FIXE hors
+     aura (comme --or), pour que la glace reste froide quel que soit le
+     rang. Seul jeton dédié au gel — pas de couleur en dur ailleurs. */
+  --glace: #a9cce3;
+  --glace-rgb: 169, 204, 227;
 }
 
 /* ----- Auras de rang : posées sur <html> par js/aura.js avant le

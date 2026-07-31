@@ -15,6 +15,18 @@
   var puceNiveau = document.getElementById("puce-niveau");
   var listeQuetes = document.getElementById("quetes");
 
+  var flammeEntete = document.getElementById("flamme-entete");
+  var flammeRepos = document.getElementById("flamme-repos");
+  var reposStreakValeur = document.getElementById("repos-streak-valeur");
+  var semaineConteneur = document.getElementById("streak-semaine");
+
+  var LABELS_SEMAINE = ["L", "M", "M", "J", "V", "S", "D"];
+
+  // Petite flamme des créneaux honorés / gelés de la mini-semaine.
+  var SVG_FLAMME_MINI =
+    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+    '<path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>';
+
   var elementsQuetes = {}; // id de quête -> { carte, bouton }
 
   var SVG_COCHE =
@@ -55,6 +67,95 @@
   function majPuces() {
     majPuce(puceStreak, etat.streak);
     majPuce(puceNiveau, etat.niveau);
+    majFlamme();
+    majSemaine();
+  }
+
+  // ----- Flamme évolutive + flamme gelée -----
+
+  // Braise (3+) -> flamme (10+) -> brasier (30+). En dessous : dormante.
+  function palierFlamme(streak) {
+    if (streak >= 30) return "t-brasier";
+    if (streak >= 10) return "t-flamme";
+    if (streak >= 3) return "t-braise";
+    return "t-dormante";
+  }
+
+  // La série est-elle actuellement TENUE PAR UN GEL ? On remonte depuis
+  // aujourd'hui : le dernier jour d'engagement à issue est-il un gel
+  // (pas encore relayé par un jour honoré) ? La flamme se fige alors,
+  // le nombre de jours conservé.
+  function flammeGelee() {
+    if (!etat.streak || !etat.journal) return false;
+    for (var i = 0; i <= 14; i++) {
+      var d = Jour.decalerDate(etat.dernierJour, -i);
+      if (!Jour.estJourEngagement(etat, d)) continue;
+      var s = etat.journal[d];
+      if (s === "gele") return true;
+      if (s === "honore") return false;
+      if (d !== etat.dernierJour) return false; // manque sec : rien à figer
+    }
+    return false;
+  }
+
+  function majFlamme() {
+    var palier = palierFlamme(etat.streak);
+    var gel = flammeGelee();
+    if (flammeEntete) {
+      flammeEntete.className = "flamme flamme-entete " + palier + (gel ? " gelee" : "");
+    }
+    if (flammeRepos) {
+      flammeRepos.className = "flamme flamme-repos " + palier + (gel ? " gelee" : "");
+    }
+    if (reposStreakValeur) reposStreakValeur.textContent = etat.streak;
+  }
+
+  // ----- Mini-semaine : 7 créneaux L..D reflétant l'état réel -----
+
+  function construireSemaine() {
+    if (!semaineConteneur) return;
+    semaineConteneur.innerHTML = "";
+    for (var i = 0; i < 7; i++) {
+      var jour = document.createElement("div");
+      jour.className = "sem-jour";
+      jour.innerHTML =
+        '<span class="sem-slot"></span>' +
+        '<span class="sem-label">' + LABELS_SEMAINE[i] + "</span>";
+      semaineConteneur.appendChild(jour);
+    }
+  }
+
+  // repos / avenir / actuel / honore / manque / gele pour un jour de la
+  // semaine courante (index 0 = lundi de etat.lundiSemaine).
+  function etatJourSemaine(idx) {
+    var date = Jour.decalerDate(etat.lundiSemaine, idx);
+    if (!Jour.estJourEngagement(etat, date)) return "repos";
+    var s = etat.journal && etat.journal[date];
+    if (s === "gele") return "gele";
+    if (s === "honore") return "honore";
+    var cmp = Jour.joursEcoules(etat.dernierJour, date); // >0 futur, 0 aujourd'hui, <0 passé
+    if (cmp === 0) return "actuel";
+    if (cmp < 0) return "manque";
+    return "avenir";
+  }
+
+  function majSemaine() {
+    if (!semaineConteneur || !semaineConteneur.children.length) return;
+    var aujourdIdx = Jour.indiceJourSemaine(etat.dernierJour);
+    for (var i = 0; i < 7; i++) {
+      var jour = semaineConteneur.children[i];
+      var et = etatJourSemaine(i);
+      jour.setAttribute("data-etat", et);
+      jour.classList.toggle("actuel", i === aujourdIdx);
+      var slot = jour.querySelector(".sem-slot");
+      if (et === "honore" || et === "gele") {
+        slot.innerHTML =
+          '<span class="flamme sem-flamme' + (et === "gele" ? " gelee" : "") + '">' +
+          SVG_FLAMME_MINI + "</span>";
+      } else {
+        slot.innerHTML = "";
+      }
+    }
   }
 
   // Feedback après un gain : niveau, cartes élevées, cartes devenues
@@ -735,11 +836,22 @@
     return Jour.decalerDate(etat.dernierJour, 1); // filet
   }
 
+  function deuxChiffres(n) {
+    return n < 10 ? "0" + n : String(n);
+  }
+
+  // Chiffres nets séparés par des points sobres : le décompte rassure
+  // sans presser. Minutes/secondes à deux chiffres pour une largeur
+  // stable et calme.
   function texteDecompte(secondes) {
     var h = Math.floor(secondes / 3600);
     var m = Math.floor((secondes % 3600) / 60);
     var s = secondes % 60;
-    return h + "h " + m + "min " + s + "sec";
+    return '<span class="rt-n">' + h + '</span>' +
+           '<span class="rt-sep"></span>' +
+           '<span class="rt-n">' + deuxChiffres(m) + '</span>' +
+           '<span class="rt-sep"></span>' +
+           '<span class="rt-n">' + deuxChiffres(s) + '</span>';
   }
 
   // Décompte jusqu'à minuit (00:00 local) du prochain jour d'engagement.
@@ -748,7 +860,7 @@
     var parts = prochainJourEngagement().split("-");
     var cibleMs = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), 0, 0, 0).getTime();
     var reste = Math.max(0, Math.round((cibleMs - Date.now()) / 1000));
-    reposTemps.textContent = texteDecompte(reste);
+    reposTemps.innerHTML = texteDecompte(reste);
   }
 
   function arreterDecompte() {
@@ -783,6 +895,7 @@
     Etat.sauvegarder(etat);
   }
 
+  construireSemaine();
   majPuces();
   majQuetePrincipale();
   rendreHebdo();

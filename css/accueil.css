@@ -43,6 +43,105 @@
   height: 17px;
 }
 
+/* ----- Flamme du streak dans l'en-tête ----- */
+.flamme-entete {
+  --flamme-taille: 17px;
+}
+
+/* La puce garde son gabarit ; la lueur de la flamme peut déborder. */
+.puce-streak-puce {
+  overflow: visible;
+}
+
+/* ----- Mini-semaine sous la flamme ----- */
+.streak-semaine {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+}
+
+.sem-jour {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.sem-slot {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Forme du créneau selon l'état (pour les jours SANS flamme) */
+.sem-slot::before {
+  content: "";
+  border-radius: 50%;
+  transition: width 0.3s ease, height 0.3s ease, background 0.3s ease,
+    border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+}
+
+/* Jour de repos : point discret */
+.sem-jour[data-etat="repos"] .sem-slot::before {
+  width: 4px;
+  height: 4px;
+  background: var(--texte-second);
+  opacity: 0.45;
+}
+
+/* Jour d'engagement à venir : créneau allumé neutre */
+.sem-jour[data-etat="avenir"] .sem-slot::before {
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid rgba(var(--accent-rgb), 0.38);
+}
+
+/* Aujourd'hui (jour d'engagement en cours) : cerclé, léger halo */
+.sem-jour[data-etat="actuel"] .sem-slot::before {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--accent);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.4);
+}
+
+/* Jour d'engagement manqué : éteint */
+.sem-jour[data-etat="manque"] .sem-slot::before {
+  width: 9px;
+  height: 9px;
+  background: var(--texte-second);
+  opacity: 0.18;
+}
+
+/* Jours honoré / gelé : la flamme remplace la forme */
+.sem-jour[data-etat="honore"] .sem-slot::before,
+.sem-jour[data-etat="gele"] .sem-slot::before {
+  display: none;
+}
+
+.sem-flamme {
+  --flamme-taille: 14px;
+}
+
+.sem-jour[data-etat="honore"] .sem-flamme svg {
+  filter: drop-shadow(0 0 4px rgba(var(--accent-rgb), 0.5));
+}
+
+.sem-label {
+  font-size: 0.52rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+  transition: color 0.3s ease;
+}
+
+.sem-jour.actuel .sem-label {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* ----- Titre ----- */
 .accueil-titre {
   margin-top: 34px;
@@ -287,19 +386,32 @@ body.mode-repos .jour-repos {
   display: flex;
 }
 
-.repos-embleme {
-  width: 58px;
-  height: 58px;
+/* Flamme du streak, en grand : gelée si un gel protège la série,
+   le nombre de jours toujours conservé dessous. */
+.repos-flamme {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  color: var(--accent);
-  opacity: 0.9;
+  gap: 14px;
 }
 
-.repos-embleme svg {
-  width: 34px;
-  height: 34px;
+.flamme-repos {
+  --flamme-taille: 46px;
+}
+
+.repos-streak {
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--texte-second);
+}
+
+.repos-streak span {
+  margin-right: 5px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--accent);
 }
 
 .repos-sous-titre {
@@ -315,16 +427,45 @@ body.mode-repos .jour-repos {
   margin-top: 26px;
 }
 
+/* Décompte : chiffres nets et froids, unités en retrait. Largeur
+   stable (tabular-nums + min/sec à deux chiffres) : il rassure, sans
+   jamais donner l'impression de courir. */
 .repos-temps {
-  margin-top: 10px;
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.repos-temps .rt-n {
+  font-size: 1.95rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
   background: var(--degrade-lettre);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Séparateur : deux petits points superposés, comme le « : » d'une
+   horloge classique. */
+.repos-temps .rt-sep {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  margin: 0 10px;
+}
+
+.repos-temps .rt-sep::before,
+.repos-temps .rt-sep::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--texte-second);
 }
 
 /* Apparition en cascade des blocs fixes, après les cartes de quêtes */

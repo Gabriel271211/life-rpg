@@ -31,6 +31,7 @@ var Etat = (function () {
     tenusSemaine: 0,      // jours d'engagement honorés dans la semaine en cours
     gelEnAttente: false,  // un gel vient d'être consommé : message sobre à afficher
     jourExempt: null,     // date exemptée après un changement de jours (VERS L'AVANT)
+    journal: {},          // issues par jour (date -> "honore"|"gele") : AFFICHAGE seul
     stats: {
       corps: { niveau: 1, xp: 0 },
       esprit: { niveau: 1, xp: 0 },
@@ -194,6 +195,13 @@ var Etat = (function () {
     }
     if (!("jourExempt" in etat)) {
       etat.jourExempt = null;
+      modifie = true;
+    }
+    // Journal des issues quotidiennes (affichage : mini-semaine + flamme
+    // gelée). Un état existant démarre à vide : la semaine se remplit au
+    // fil des validations, aucun historique à reconstituer.
+    if (!etat.journal || typeof etat.journal !== "object" || Array.isArray(etat.journal)) {
+      etat.journal = {};
       modifie = true;
     }
     if (!etat.quetePrincipale) {

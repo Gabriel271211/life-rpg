@@ -145,6 +145,7 @@ var Jour = (function () {
         if (etat.gels > 0) {
           etat.gels -= 1;
           etat.gelEnAttente = true; // message sobre au prochain affichage
+          if (etat.journal) etat.journal[jourFerme] = "gele"; // mémoire d'affichage
         } else {
           etat.streak = 0;
           break; // série cassée : on arrête d'évaluer les manques suivants
@@ -212,6 +213,17 @@ var Jour = (function () {
       });
     }
 
+    // Journal des issues (honoré / gelé) : mémoire d'AFFICHAGE de la
+    // mini-semaine et de la flamme gelée. Purgé au-delà de 14 jours —
+    // seule la semaine en cours est montrée. N'influence aucune règle.
+    if (etat.journal) {
+      Object.keys(etat.journal).forEach(function (date) {
+        if (joursEcoules(date, aujourdhui) > 14) {
+          delete etat.journal[date];
+        }
+      });
+    }
+
     etat.streakValideAujourdhui = false;
     etat.dernierJour = aujourdhui;
 
@@ -238,6 +250,7 @@ var Jour = (function () {
       etat.streakValideAujourdhui = true;
       // Jour d'engagement tenu, comptabilisé pour la recharge de gel.
       etat.tenusSemaine = (etat.tenusSemaine || 0) + 1;
+      if (etat.journal) etat.journal[etat.dernierJour] = "honore"; // affichage
       // Le record de streak ne redescend jamais.
       if (etat.compteurs && etat.streak > etat.compteurs.meilleurStreak) {
         etat.compteurs.meilleurStreak = etat.streak;
@@ -246,6 +259,7 @@ var Jour = (function () {
       etat.streak = Math.max(0, etat.streak - 1);
       etat.streakValideAujourdhui = false;
       etat.tenusSemaine = Math.max(0, (etat.tenusSemaine || 0) - 1);
+      if (etat.journal) delete etat.journal[etat.dernierJour]; // affichage
     }
   }
 
