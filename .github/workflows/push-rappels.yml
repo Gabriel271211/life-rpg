@@ -1,0 +1,35 @@
+# Planificateur gratuit des rappels push (remplace Vercel Cron, qui
+# exige le plan Pro pour tourner plusieurs fois/jour). Réveille
+# l'endpoint /api/push-cron ; c'est LUI qui décide, par abonné, s'il
+# faut envoyer un rappel maintenant.
+#
+# Secrets à définir dans GitHub (repo -> Settings -> Secrets -> Actions) :
+#   PUSH_CRON_URL  = https://TON-DOMAINE.vercel.app/api/push-cron
+#   CRON_SECRET    = la même valeur que la variable CRON_SECRET sur Vercel
+#
+# Note : les crons GitHub Actions tournent en UTC et peuvent être
+# retardés de quelques minutes ; c'est sans importance pour des rappels
+# tirés au hasard dans des fenêtres larges. Un workflow programmé est
+# désactivé après 60 jours sans commit sur le dépôt.
+name: Rappels push Life RPG
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"   # toutes les 20 minutes
+  workflow_dispatch: {}       # déclenchement manuel (bouton "Run workflow")
+
+jobs:
+  rappels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Réveiller l'endpoint de rappels
+        env:
+          PUSH_CRON_URL: ${{ secrets.PUSH_CRON_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$PUSH_CRON_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "Secrets PUSH_CRON_URL / CRON_SECRET manquants."
+            exit 1
+          fi
+          curl -fsS -X POST "$PUSH_CRON_URL" \
+            -H "Authorization: Bearer $CRON_SECRET"

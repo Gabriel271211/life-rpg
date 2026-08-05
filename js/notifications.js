@@ -1,0 +1,226 @@
+// ============================================
+// LIFE RPG — notifications.js
+// Rappels push des jours d'engagement. Entièrement optionnel :
+// si le navigateur ne gère pas le push, si la permission est
+// refusée, ou si le serveur n'est pas configuré, l'app fonctionne
+// exactement pareil — ce module se tait.
+//
+// Déroulé :
+//   - on ne demande RIEN au premier écran ; l'invitation n'apparaît
+//     qu'APRÈS un premier jour réussi (streak >= 1) ;
+//   - l'utilisateur active d'un geste explicite (bouton) — requis par
+//     les navigateurs, et par iOS (PWA installée, iOS 16.4+) ;
+//   - une fois abonné, les drapeaux d'état (jours d'engagement, quêtes
+//     faites, gel, streak) sont resynchronisés à chaque sauvegarde.
+//
+// Vie privée : on n'envoie QUE le strict minimum, jamais le prénom.
+// ============================================
+
+(function () {
+
+  var CLE_ETAT = "life-rpg-etat-v1";
+  var CLE_CHOIX = "life-rpg-push-choix"; // "active" | "refuse" (invitation)
+  var DELAI_SYNCHRO = 3000;              // anti-rafale de re-synchro
+
+  var supporte = ("serviceWorker" in navigator) &&
+                 ("PushManager" in window) &&
+                 ("Notification" in window);
+
+  // ----- Lecture SANS effet de bord de l'état -----
+
+  function lireEtat() {
+    try {
+      var brut = localStorage.getItem(CLE_ETAT);
+      if (!brut) return null;
+      var etat = JSON.parse(brut);
+      return (etat && typeof etat === "object" && !Array.isArray(etat)) ? etat : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+
+  function dateLocale() {
+    var d = new Date();
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+
+  // Drapeaux STRICT minimum envoyés au serveur.
+  function drapeaux(etat) {
+    var quetes = Array.isArray(etat.quetes) ? etat.quetes : [];
+    var toutesFaites = quetes.length > 0 && quetes.every(function (q) { return q && q.faite; });
+    return {
+      joursEngagement: Array.isArray(etat.joursEngagement) ? etat.joursEngagement : [],
+      tzOffsetMin: new Date().getTimezoneOffset(),
+      dateLocale: dateLocale(),
+      quetesFaites: toutesFaites,
+      gelEnAttente: Boolean(etat.gelEnAttente),
+      streak: typeof etat.streak === "number" ? etat.streak : 0
+    };
+  }
+
+  // Un premier jour réussi a-t-il eu lieu ? (moment d'inviter)
+  function jourReussi(etat) {
+    return (typeof etat.streak === "number" && etat.streak >= 1) ||
+           etat.streakValideAujourdhui === true;
+  }
+
+  // ----- Utilitaires push -----
+
+  function base64UrlVersUint8(base64) {
+    var padding = "=".repeat((4 - base64.length % 4) % 4);
+    var b64 = (base64 + padding).replace(/-/g, "+").replace(/_/g, "/");
+    var brut = atob(b64);
+    var sortie = new Uint8Array(brut.length);
+    for (var i = 0; i < brut.length; i++) sortie[i] = brut.charCodeAt(i);
+    return sortie;
+  }
+
+  function poster(charge) {
+    return fetch("/api/push", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(charge)
+    }).then(function (r) { return r.ok; }).catch(function () { return false; });
+  }
+
+  // ----- Abonnement / synchro -----
+
+  function abonnementCourant() {
+    return navigator.serviceWorker.ready.then(function (reg) {
+      return reg.pushManager.getSubscription();
+    });
+  }
+
+  function synchroniser() {
+    if (!supporte || Notification.permission !== "granted") return;
+    var etat = lireEtat();
+    if (!etat) return;
+    abonnementCourant().then(function (sub) {
+      if (!sub) return;
+      poster({ action: "synchro", abonnement: sub.toJSON(), drapeaux: drapeaux(etat) });
+    }).catch(function () {});
+  }
+
+  // Abonne (à la suite d'un geste utilisateur qui a accordé la permission).
+  function abonner() {
+    var etat = lireEtat();
+    if (!etat) return Promise.resolve(false);
+    return fetch("/api/push")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (conf) {
+        if (!conf || !conf.clePublique) return false;
+        return navigator.serviceWorker.ready.then(function (reg) {
+          return reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: base64UrlVersUint8(conf.clePublique)
+          });
+        }).then(function (sub) {
+          return poster({ action: "abonner", abonnement: sub.toJSON(), drapeaux: drapeaux(etat) });
+        });
+      })
+      .catch(function () { return false; });
+  }
+
+  // ----- Invitation in-app (discrète, une seule fois) -----
+
+  function injecterStyle() {
+    if (document.getElementById("notif-invite-style")) return;
+    var s = document.createElement("style");
+    s.id = "notif-invite-style";
+    s.textContent =
+      ".notif-invite{position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;" +
+      "max-width:520px;margin:0 auto;padding:14px 16px;border-radius:14px;" +
+      "background:rgba(18,20,28,.96);border:1px solid rgba(120,140,200,.35);" +
+      "box-shadow:0 8px 30px rgba(0,0,0,.45);color:#e8ecf5;" +
+      "font:inherit;backdrop-filter:blur(6px)}" +
+      ".notif-invite p{margin:0 0 10px;font-size:14px;line-height:1.4;color:#cdd4e4}" +
+      ".notif-invite .notif-actions{display:flex;gap:8px;justify-content:flex-end}" +
+      ".notif-invite button{font:inherit;font-size:13px;padding:8px 14px;border-radius:9px;" +
+      "border:1px solid transparent;cursor:pointer}" +
+      ".notif-invite .notif-oui{background:#5566cc;color:#fff}" +
+      ".notif-invite .notif-non{background:transparent;color:#9aa3ba;border-color:rgba(150,160,190,.3)}";
+    document.head.appendChild(s);
+  }
+
+  function fermerInvite() {
+    var el = document.querySelector(".notif-invite");
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+
+  function afficherInvite() {
+    injecterStyle();
+    var boite = document.createElement("div");
+    boite.className = "notif-invite";
+    boite.setAttribute("role", "dialog");
+    boite.innerHTML =
+      "<p>Veux-tu que le Système te rappelle d'agir tes jours d'engagement ? " +
+      "Des rappels sobres, jamais un jour de repos.</p>" +
+      "<div class=\"notif-actions\">" +
+      "<button type=\"button\" class=\"notif-non\">Pas maintenant</button>" +
+      "<button type=\"button\" class=\"notif-oui\">Activer</button>" +
+      "</div>";
+    document.body.appendChild(boite);
+
+    boite.querySelector(".notif-non").addEventListener("click", function () {
+      try { localStorage.setItem(CLE_CHOIX, "refuse"); } catch (e) {}
+      fermerInvite();
+    });
+    boite.querySelector(".notif-oui").addEventListener("click", function () {
+      fermerInvite();
+      // requestPermission DOIT partir du geste : on est dans le handler.
+      Notification.requestPermission().then(function (p) {
+        if (p === "granted") {
+          try { localStorage.setItem(CLE_CHOIX, "active"); } catch (e) {}
+          abonner();
+        } else {
+          try { localStorage.setItem(CLE_CHOIX, "refuse"); } catch (e) {}
+        }
+      }).catch(function () {});
+    });
+  }
+
+  function choix() {
+    try { return localStorage.getItem(CLE_CHOIX); } catch (e) { return null; }
+  }
+
+  // ----- Amorçage -----
+
+  function demarrer() {
+    if (!supporte) return;
+
+    // Déjà autorisé : on s'assure d'être abonné et on resynchronise.
+    if (Notification.permission === "granted") {
+      abonnementCourant().then(function (sub) {
+        if (sub) synchroniser();
+        else if (choix() !== "refuse") abonner();
+      }).catch(function () {});
+      return;
+    }
+
+    // Refusé (navigateur ou invitation) : on ne redemande jamais.
+    if (Notification.permission === "denied" || choix() === "refuse") return;
+
+    // Sinon : on n'invite qu'APRÈS un premier jour réussi.
+    var etat = lireEtat();
+    if (etat && jourReussi(etat)) afficherInvite();
+  }
+
+  // Re-synchro à chaque sauvegarde d'état (quêtes faites, gel, jours…),
+  // anti-rafale par un petit délai.
+  var minuteurSynchro = null;
+  window.addEventListener("life-rpg-etat-sauve", function () {
+    if (minuteurSynchro) clearTimeout(minuteurSynchro);
+    minuteurSynchro = setTimeout(synchroniser, DELAI_SYNCHRO);
+  });
+
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", demarrer);
+  } else {
+    demarrer();
+  }
+
+  // Exposition minimale (tests / réglages éventuels).
+  window.Notifications = { synchroniser: synchroniser, abonner: abonner };
+})();

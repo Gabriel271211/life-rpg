@@ -513,6 +513,9 @@ var Etat = (function () {
     } catch (e) {
       // Stockage indisponible : l'état reste valable pour la session en cours.
     }
+    // Signal découplé : notifications.js (s'il est chargé) resynchronise
+    // ses drapeaux push. Aucun couplage dur — l'absence d'écouteur est sans effet.
+    try { window.dispatchEvent(new CustomEvent("life-rpg-etat-sauve")); } catch (e) {}
   }
 
   function reinitialiser() {

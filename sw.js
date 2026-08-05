@@ -21,7 +21,7 @@
 // version ne sert donc plus qu'au snapshot HORS-LIGNE : l'incrémenter
 // purge l'ancien cache (activate supprime tout cache != CACHE) et
 // rafraîchit le pré-cache atomique servi quand il n'y a pas de réseau.
-var CACHE = "life-rpg-v19";
+var CACHE = "life-rpg-v20";
 
 var FICHIERS = [
   "./",
@@ -72,6 +72,7 @@ var FICHIERS = [
   "js/sauvegarde.js",
   "js/nav.js",
   "js/pwa.js",
+  "js/notifications.js",
   "assets/icone-192.png",
   "assets/icone-512.png",
   "assets/apple-touch-icon.png",
@@ -167,6 +168,36 @@ self.addEventListener("fetch", function (event) {
       return reponse;
     }).catch(function () {
       return caches.match(requete);
+    })
+  );
+});
+
+// ----- Notifications push (rappels des jours d'engagement) -----
+// Le serveur envoie un JSON { titre, corps, url }. On affiche la
+// notification ; un tap ramène (ou ouvre) l'app.
+self.addEventListener("push", function (event) {
+  var donnees = {};
+  try { donnees = event.data ? event.data.json() : {}; } catch (e) { donnees = {}; }
+  var titre = donnees.titre || "Life RPG";
+  var options = {
+    body: donnees.corps || "",
+    icon: "assets/icone-192.png",
+    badge: "assets/icone-192.png",
+    tag: "life-rpg-rappel",       // une notif à la fois, pas d'empilement
+    data: { url: donnees.url || "/index.html" }
+  };
+  event.waitUntil(self.registration.showNotification(titre, options));
+});
+
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+  var cible = (event.notification.data && event.notification.data.url) || "/index.html";
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (liste) {
+      for (var i = 0; i < liste.length; i++) {
+        if ("focus" in liste[i]) return liste[i].focus();
+      }
+      if (clients.openWindow) return clients.openWindow(cible);
     })
   );
 });

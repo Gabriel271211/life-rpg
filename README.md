@@ -102,6 +102,13 @@ api/ia.js                — fonction serverless Vercel : unique porte vers Groq
                            routée par type, validation stricte et bornée
 api/_prompts.js          — prompts système de l'IA, un par type (non exposé)
 api/_limite.js           — garde-fou de débit (compteurs en mémoire, fail-safe)
+api/push.js              — abonnement / synchro push (clé VAPID + drapeaux)
+api/push-cron.js         — envoi des rappels, déclenché par GitHub Actions
+api/_push.js             — store Upstash (REST) + envoi Web Push (VAPID)
+api/_planificateur.js    — logique pure des rappels (fuseau, créneaux, décision)
+api/_messages-push.js    — banque de messages, ton du Système
+js/notifications.js      — client push : permission, abonnement, re-synchro
+.github/workflows/push-rappels.yml — planificateur (cron GitHub Actions)
 ```
 
 L'état vit dans `localStorage` (`life-rpg-etat-v1`). Toute nouvelle propriété
@@ -159,6 +166,48 @@ budget global plafonne la casse même en cas d'IP falsifiée. Un vrai joueur
 **Fail-safe** : toute anomalie interne → on laisse passer (le jeu prime).
 Seuils ajustables (facultatif) par variable d'environnement : `LIMITE_IP_MIN`,
 `LIMITE_IP_JOUR`, `BUDGET_GLOBAL_JOUR` (mettre `0` désactive le budget global).
+
+## Notifications push (rappels des jours d'engagement)
+
+Rappels envoyés **app fermée** pour inviter à agir SES jours d'engagement.
+Entièrement **optionnel** : sans permission, sans navigateur compatible ou sans
+configuration serveur, l'app fonctionne exactement pareil — le module se tait.
+
+**Déroulé.** On ne demande rien au premier écran : l'invitation (`js/notifications.js`)
+n'apparaît qu'**après un premier jour réussi** (streak ≥ 1). D'un geste explicite,
+le joueur active → abonnement Web Push (VAPID) → l'abonnement + un **strict minimum**
+de drapeaux (jours d'engagement, quêtes du jour faites o/n, gel consommé, streak,
+fuseau) partent vers `/api/push`. **Jamais** le prénom, jamais d'historique. Ces
+drapeaux se resynchronisent à chaque sauvegarde d'état (événement `life-rpg-etat-sauve`).
+
+**Envoi.** Un planificateur gratuit (**GitHub Actions**, `.github/workflows/push-rappels.yml`,
+toutes les 20 min) réveille `/api/push-cron`, qui pour chaque abonné :
+
+- **jamais** de push un jour de repos, ni après quêtes du jour faites ;
+- tire **une fois par jour** 3 créneaux au hasard (matin / après-midi / soir), à
+  des heures différentes chaque jour (`_planificateur.js`, logique pure et testée) ;
+- envoie au plus **un** rappel par réveil, avec le message adapté (`_messages-push.js`,
+  ton du Système, sobre, sans emoji, jamais culpabilisant) : gel consommé la veille,
+  dernier moment le soir, nouvelle semaine le lundi, sinon rappel générique.
+
+Abonnements + plan du jour persistés dans **Upstash Redis** (API REST, `_push.js`),
+car le planificateur doit les relire entre deux réveils.
+
+### Configuration (une seule fois, tout gratuit)
+
+1. **Upstash Redis** (offre gratuite) → variables Vercel `UPSTASH_REDIS_REST_URL`
+   et `UPSTASH_REDIS_REST_TOKEN`.
+2. **Clés VAPID** (`npx web-push generate-vapid-keys`) → variables Vercel
+   `VAPID_PUBLIC`, `VAPID_PRIVATE`, et `VAPID_SUBJECT` (`mailto:ton@email`).
+3. **Secret du cron** → variable Vercel `CRON_SECRET` (une valeur aléatoire).
+4. **GitHub Actions** → dans le dépôt, Settings → Secrets → Actions :
+   `PUSH_CRON_URL = https://TON-DOMAINE.vercel.app/api/push-cron` et
+   `CRON_SECRET` (la même valeur qu'à l'étape 3).
+5. Sur le téléphone : **installer** la PWA (obligatoire sur iOS 16.4+) et accepter
+   l'invitation après le premier jour réussi.
+
+Tant que ces variables ne sont pas définies, les endpoints répondent proprement
+`503` et le client n'insiste pas : rien ne casse.
 
 ## Développement
 
