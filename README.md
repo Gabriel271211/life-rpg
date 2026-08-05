@@ -101,6 +101,7 @@ js/chat.js               — le chat du Système : overlay, bulles, historique,
 api/ia.js                — fonction serverless Vercel : unique porte vers Groq,
                            routée par type, validation stricte et bornée
 api/_prompts.js          — prompts système de l'IA, un par type (non exposé)
+api/_limite.js           — garde-fou de débit (compteurs en mémoire, fail-safe)
 ```
 
 L'état vit dans `localStorage` (`life-rpg-etat-v1`). Toute nouvelle propriété
@@ -134,6 +135,30 @@ secours, l'IA ne casse jamais le jeu. Au pire l'utilisateur lit « Le
 Système est silencieux — réessaie plus tard ». Anti-spam local : un même
 type d'appel au plus une fois toutes les 10 s. Le service worker ne met
 jamais `/api/` en cache.
+
+### Garde-fou de débit (serveur)
+
+L'anti-spam local est contournable (un script peut marteler `POST /api/ia`
+et brûler le quota Groq). `api/_limite.js` ajoute une limite **côté
+serveur**, volontairement très large — elle ne vise qu'un abus flagrant :
+
+- par IP : **60 req/min ET 1000 req/jour** → dépassement = `429`
+  `{ erreur: "Trop de requêtes" }`, sans appeler Groq ;
+- budget quotidien **global** (toutes IP) : **2000 req/jour** → une fois
+  atteint, échec propre, le front retombe sur son contenu de secours.
+
+Compteurs **en mémoire** — aucune dépendance, aucun service externe, aucune
+configuration : actif dès le déploiement. Les fonctions serverless étant
+multi-instances, les compteurs sont **par instance** (remis à zéro à froid) :
+ce n'est pas un quota comptable exact, mais un coupe-circuit contre
+l'emballement. C'est justement le cas visé — un script qui martèle en boucle
+garde une instance chaude et retombe dessus, donc il est stoppé ; et le
+budget global plafonne la casse même en cas d'IP falsifiée. Un vrai joueur
+(quelques appels/minute) n'atteint jamais ces seuils.
+
+**Fail-safe** : toute anomalie interne → on laisse passer (le jeu prime).
+Seuils ajustables (facultatif) par variable d'environnement : `LIMITE_IP_MIN`,
+`LIMITE_IP_JOUR`, `BUDGET_GLOBAL_JOUR` (mettre `0` désactive le budget global).
 
 ## Développement
 

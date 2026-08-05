@@ -16,6 +16,7 @@
 // ============================================
 
 var PROMPTS = require("./_prompts.js");
+var LIMITE = require("./_limite.js");
 
 var GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 var MODELE = "llama-3.3-70b-versatile";
@@ -450,6 +451,15 @@ function repondre(res, code, objet) {
 module.exports = async function (req, res) {
   if (req.method !== "POST") {
     return repondre(res, 405, { erreur: "POST uniquement" });
+  }
+
+  // Garde-fou de débit (compteurs en mémoire, voir _limite.js). Placé
+  // tôt : même un corps malformé compte comme une tentative, et un
+  // dépassement répond sans jamais appeler Groq. Fail-safe : n'échoue
+  // jamais sur un vrai joueur.
+  var refus = await LIMITE.verifier(req);
+  if (refus) {
+    return repondre(res, refus.code, refus.corps);
   }
 
   // Corps : Vercel parse le JSON ; on reste défensif (chaîne brute,
