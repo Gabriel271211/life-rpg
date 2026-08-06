@@ -117,6 +117,25 @@ function choisirEnvoi(plan, nowMs, contexte) {
   return { index: index, aConsommer: dus, categorie: categorie };
 }
 
+// Applique au plan le résultat d'un envoi (marqueurs anti-double-envoi).
+// Pur, donc testable.
+//   - fenêtres échues SAUTÉES (dépassées, hors cible) : marquées quoi
+//     qu'il arrive -> jamais de rafale de rattrapage ;
+//   - fenêtre CIBLE : marquée seulement si l'envoi a RÉUSSI. Un échec
+//     TRANSITOIRE (429/5xx, réseau) la laisse ouverte pour un nouvel
+//     essai au prochain passage ;
+//   - gelEnvoye n'est posé qu'après un envoi de gel réussi.
+function appliquerEnvoi(plan, choix, envoiOk) {
+  choix.aConsommer.forEach(function (i) {
+    if (i !== choix.index) plan.creneaux[i].envoye = true;
+  });
+  if (envoiOk) {
+    plan.creneaux[choix.index].envoye = true;
+    if (choix.categorie === "gel") plan.gelEnvoye = true;
+  }
+  return plan;
+}
+
 module.exports = {
   FENETRES: FENETRES,
   fuseauValide: fuseauValide,
@@ -125,5 +144,6 @@ module.exports = {
   estJourEngagement: estJourEngagement,
   versUTC: versUTC,
   genererCreneaux: genererCreneaux,
-  choisirEnvoi: choisirEnvoi
+  choisirEnvoi: choisirEnvoi,
+  appliquerEnvoi: appliquerEnvoi
 };

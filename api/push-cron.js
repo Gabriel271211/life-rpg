@@ -72,15 +72,15 @@ async function traiterAbonne(id, nowMs) {
     url: "/index.html"
   });
 
+  // Échec PERMANENT (404/410) : l'abonnement est mort -> on le supprime.
   if (envoi.mort) {
     await PUSH.oublierId(id);
     return "mort";
   }
 
-  // Marque les créneaux échus comme traités (jamais de rafale) et note
-  // si le message de gel est parti (une seule fois par jour).
-  choix.aConsommer.forEach(function (i) { plan.creneaux[i].envoye = true; });
-  if (choix.categorie === "gel") plan.gelEnvoye = true;
+  // Marqueurs anti-double-envoi. La fenêtre cible n'est consommée que si
+  // l'envoi a réussi ; un échec transitoire (429/5xx) sera réessayé.
+  PLAN.appliquerEnvoi(plan, choix, envoi.ok);
   await PUSH.sauverPlan(id, repere.dateLocale, plan);
 
   return envoi.ok ? "envoye" : "echec";
