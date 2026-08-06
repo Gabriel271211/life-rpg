@@ -70,7 +70,10 @@ avait apporté (marqueur `hebdoCompte`).
 js/regles.js             — règles du jeu : courbes d'XP, rangs, critique, quête
                            principale, historique d'XP — fonctions pures
 js/jour.js               — temps : reset quotidien, streak, semaine hebdo,
-                           nettoyage de l'historique (90 jours) — fonctions pures
+                           nettoyage de l'historique (90 jours), issue de série
+                           (transitionSerie) — fonctions pures
+js/moment-serie.js       — grand moment plein écran (~4 s) à la réouverture d'un
+                           nouveau jour : flamme continuée / gelée / rompue
 js/cartes.js             — définitions des cartes et conditions de déblocage — pur
 js/templates.js          — templates d'objectif (6 voies + personnalisé),
                            création d'état neuf — données pures

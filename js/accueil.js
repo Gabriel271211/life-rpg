@@ -895,6 +895,18 @@
     Etat.sauvegarder(etat);
   }
 
+  // --- Grand moment plein écran selon l'issue de la série (une seule fois) ---
+  function jouerMomentSerieSiBesoin() {
+    var issue = etat.transitionSerie;
+    if (!issue) return;
+    // Effacé AVANT de jouer : même si l'app se ferme pendant l'animation,
+    // le moment ne se rejoue jamais au rechargement du même jour.
+    delete etat.transitionSerie;
+    Etat.sauvegarder(etat);
+    if (window.MomentSerie) MomentSerie.jouer(issue, etat.streak);
+  }
+
+  jouerMomentSerieSiBesoin();
   construireSemaine();
   majPuces();
   majQuetePrincipale();

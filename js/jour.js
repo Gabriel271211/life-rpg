@@ -136,6 +136,11 @@ var Jour = (function () {
     //   - jour d'engagement manqué -> un gel le protège, sinon série = 0
     // Seul le jour == dernierJour a pu être honoré (streakValideAujourdhui) ;
     // les jours strictement entre sont forcément non honorés.
+    // Issue de la série sur les jours refermés : suivie pour alimenter le
+    // MOMENT plein écran joué une fois à la réouverture (accueil.js).
+    var streakAvant = etat.streak;
+    var gelUtilise = false;
+    var serieRompue = false;
     if (ecart > 0) {
       for (var i = 0; i < ecart; i++) {
         var jourFerme = decalerDate(etat.dernierJour, i);
@@ -145,12 +150,28 @@ var Jour = (function () {
         if (etat.gels > 0) {
           etat.gels -= 1;
           etat.gelEnAttente = true; // message sobre au prochain affichage
+          gelUtilise = true;
           if (etat.journal) etat.journal[jourFerme] = "gele"; // mémoire d'affichage
         } else {
           etat.streak = 0;
+          if (streakAvant > 0) serieRompue = true;
           break; // série cassée : on arrête d'évaluer les manques suivants
         }
       }
+    }
+
+    // Drapeau transitoire d'issue de série (continuée / gelée / rompue),
+    // lu PUIS effacé par l'accueil pour ne jouer le moment qu'une fois.
+    // Priorité rompue > gelée > continuée ; rien au tout premier lancement
+    // ni sur un simple jour de repos sans événement.
+    var honoreFermeture = ecart > 0 && engagementEffectif(etat.dernierJour) &&
+      etat.streakValideAujourdhui;
+    if (serieRompue) {
+      etat.transitionSerie = "rompue";
+    } else if (gelUtilise) {
+      etat.transitionSerie = "gelee";
+    } else if (honoreFermeture) {
+      etat.transitionSerie = "continuee";
     }
 
     // Le jour qui se ferme était-il PARFAIT (toutes les quêtes du jour

@@ -1,0 +1,270 @@
+/* ============================================
+   LIFE RPG — moment-serie.css
+   Le grand moment plein écran (~4 s) joué UNE fois à la réouverture
+   d'un nouveau jour, selon l'issue de la série :
+     - continuée : flamme orange qui grossit (montée + rebond, lueur)
+     - gelée     : flamme figée, bleue, givrée
+     - rompue    : flamme grise qui vacille puis se casse / s'éteint
+   Couleurs DÉDIÉES à la flamme (indépendantes de l'aura de rang).
+   ============================================ */
+
+:root {
+  --flamme-orange: #ff8a2b;
+  --flamme-orange-clair: #ffd08a;
+  --flamme-orange-coeur: #fff3d6;
+  --flamme-bleu: #7ec8ff;
+  --flamme-bleu-clair: #d6f0ff;
+  --flamme-bleu-givre: #bfe6ff;
+  --flamme-gris: #7d828e;
+  --flamme-gris-clair: #aeb3bd;
+}
+
+.moment-serie {
+  position: fixed;
+  inset: 0;
+  z-index: 100;               /* au-dessus de tout (nav, révélation…) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 24px;
+  text-align: center;
+  background: radial-gradient(120% 120% at 50% 42%, #1b1410 0%, #0b0c10 62%, #07080b 100%);
+  color: #f2ede6;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  animation: moment-fond-in 0.35s ease both;
+}
+
+.moment-serie.sortie {
+  animation: moment-fond-out 0.4s ease forwards;
+}
+
+.moment-serie.gelee {
+  background: radial-gradient(120% 120% at 50% 42%, #0e1a24 0%, #0a0f16 62%, #06080b 100%);
+}
+.moment-serie.rompue {
+  background: radial-gradient(120% 120% at 50% 42%, #141519 0%, #0a0b0e 62%, #060708 100%);
+}
+
+/* ----- Scène / flamme ----- */
+
+.moment-flamme {
+  position: relative;
+  width: 46vw;
+  max-width: 260px;
+  aspect-ratio: 3 / 4;
+  filter: drop-shadow(0 0 34px rgba(255, 138, 43, 0.55));
+}
+
+.moment-flamme .flamme-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Dégradés appliqués via currentColor + calques */
+.moment-flamme .flamme-corps { fill: var(--flamme-orange); }
+.moment-flamme .flamme-coeur { fill: var(--flamme-orange-coeur); opacity: 0.9; }
+
+/* Givre (gelée) et fissure (rompue) : cachés par défaut. */
+.moment-givre,
+.moment-fissure { display: none; }
+
+.moment-nombre {
+  font-size: clamp(56px, 20vw, 130px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--flamme-orange-clair);
+  text-shadow: 0 0 26px rgba(255, 138, 43, 0.6);
+}
+.moment-nombre .moment-unite {
+  display: block;
+  font-size: 0.24em;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #e7c39a;
+  margin-top: 6px;
+}
+
+.moment-texte {
+  font-size: clamp(15px, 4.4vw, 19px);
+  font-weight: 500;
+  max-width: 22ch;
+  color: #d8d2c8;
+  line-height: 1.45;
+}
+
+/* ============================================
+   ÉTAT : CONTINUÉE — orange, grossit, rebond, lueur
+   ============================================ */
+
+.moment-serie.continuee .moment-flamme {
+  animation: flamme-grossit 1.05s cubic-bezier(0.22, 1.2, 0.36, 1) both,
+             flamme-vie 1.8s ease-in-out 1.05s infinite;
+}
+.moment-serie.continuee .moment-nombre {
+  animation: nombre-pop 0.6s cubic-bezier(0.22, 1.4, 0.4, 1) 0.5s both;
+}
+.moment-serie.continuee .moment-texte {
+  animation: moment-texte-in 0.5s ease 0.7s both;
+}
+
+@keyframes flamme-grossit {
+  0%   { transform: scale(0.25) translateY(30px); opacity: 0; }
+  60%  { opacity: 1; }
+  80%  { transform: scale(1.08) translateY(0); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+@keyframes flamme-vie {
+  0%, 100% { transform: scale(1) rotate(-0.6deg); filter: drop-shadow(0 0 30px rgba(255,138,43,0.5)); }
+  50%      { transform: scale(1.035) rotate(0.6deg); filter: drop-shadow(0 0 44px rgba(255,170,60,0.7)); }
+}
+@keyframes nombre-pop {
+  0%   { transform: scale(0.3); opacity: 0; }
+  70%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ============================================
+   ÉTAT : GELÉE — flamme figée, bleue, givrée
+   ============================================ */
+
+.moment-serie.gelee .moment-flamme {
+  filter: drop-shadow(0 0 30px rgba(126, 200, 255, 0.55));
+  animation: flamme-gel 1s ease both;
+}
+.moment-serie.gelee .flamme-corps { fill: var(--flamme-bleu); }
+.moment-serie.gelee .flamme-coeur { fill: var(--flamme-bleu-clair); }
+.moment-serie.gelee .moment-nombre { display: none; }
+
+/* Givre : voile cristallin + éclats en aiguilles autour du cœur. */
+.moment-serie.gelee .moment-givre {
+  display: block;
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(60% 60% at 50% 55%, rgba(214, 240, 255, 0.28), transparent 70%),
+    conic-gradient(from 0deg,
+      transparent 0 8%, rgba(214,240,255,0.5) 9% 10%, transparent 11% 25%,
+      rgba(191,230,255,0.45) 26% 27%, transparent 28% 42%,
+      rgba(214,240,255,0.5) 43% 44%, transparent 45% 58%,
+      rgba(191,230,255,0.45) 59% 60%, transparent 61% 75%,
+      rgba(214,240,255,0.5) 76% 77%, transparent 78% 92%,
+      rgba(191,230,255,0.45) 93% 94%, transparent 95% 100%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: givre-in 0.9s ease 0.3s both, givre-scintille 3.2s ease-in-out 1.2s infinite;
+}
+.moment-serie.gelee .moment-texte {
+  color: var(--flamme-bleu-clair);
+  animation: moment-texte-in 0.6s ease 0.5s both;
+}
+
+@keyframes flamme-gel {
+  0%   { transform: scale(0.4); opacity: 0; }
+  55%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes givre-in {
+  from { opacity: 0; transform: scale(0.6) rotate(-20deg); }
+  to   { opacity: 0.9; transform: scale(1) rotate(0deg); }
+}
+@keyframes givre-scintille {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+
+/* ============================================
+   ÉTAT : ROMPUE — grise, vacille, se casse, s'éteint
+   ============================================ */
+
+.moment-serie.rompue .moment-flamme {
+  filter: drop-shadow(0 0 18px rgba(125, 130, 142, 0.4));
+  animation: flamme-vacille 0.9s ease-in-out 1, flamme-eteint 1.5s ease 1.4s forwards;
+}
+.moment-serie.rompue .flamme-corps { fill: var(--flamme-gris); }
+.moment-serie.rompue .flamme-coeur { fill: var(--flamme-gris-clair); opacity: 0.6; }
+.moment-serie.rompue .moment-nombre { display: none; }
+
+/* Fissure : trait clair qui traverse la flamme au moment de la rupture. */
+.moment-serie.rompue .moment-fissure {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 3px;
+  height: 84%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, transparent, rgba(230,232,238,0.9) 30%, rgba(230,232,238,0.9) 70%, transparent);
+  clip-path: polygon(50% 0, 60% 12%, 42% 26%, 62% 40%, 40% 55%, 58% 70%, 46% 84%, 50% 100%, 50% 100%, 46% 84%, 58% 70%, 40% 55%, 62% 40%, 42% 26%, 60% 12%);
+  opacity: 0;
+  animation: fissure-flash 0.7s ease 1s forwards;
+}
+.moment-serie.rompue .moment-texte {
+  color: #c7ccd6;
+  animation: moment-texte-in 0.6s ease 0.6s both;
+}
+
+@keyframes flamme-vacille {
+  0%   { transform: scale(0.9); opacity: 0; }
+  20%  { opacity: 1; }
+  30%  { transform: scale(1.02) translateX(-2px) rotate(-1.5deg); }
+  45%  { transform: scale(0.98) translateX(3px) rotate(1.5deg); }
+  60%  { transform: scale(1.01) translateX(-2px) rotate(-1deg); }
+  100% { transform: scale(1) translateX(0) rotate(0); opacity: 1; }
+}
+@keyframes fissure-flash {
+  0%   { opacity: 0; }
+  40%  { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+@keyframes flamme-eteint {
+  0%   { transform: scale(1); opacity: 1; filter: grayscale(1) drop-shadow(0 0 14px rgba(125,130,142,0.4)); }
+  60%  { transform: scale(0.92) translateY(6px); opacity: 0.5; }
+  100% { transform: scale(0.7) translateY(24px); opacity: 0.12; filter: grayscale(1) blur(1.5px); }
+}
+
+/* ----- Fondu de l'overlay ----- */
+
+@keyframes moment-fond-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes moment-fond-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes moment-texte-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   Réduction des animations : version STATIQUE lisible.
+   base.css neutralise déjà les keyframes ; on force ici le
+   BON état final visible (flamme au bon état, sans mouvement).
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .moment-serie,
+  .moment-serie * {
+    animation: none !important;
+  }
+  .moment-serie .moment-flamme,
+  .moment-serie .moment-nombre,
+  .moment-serie .moment-texte {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* Rompue : rester GRISE et cassée (visible), jamais éteinte/vide. */
+  .moment-serie.rompue .moment-flamme {
+    filter: grayscale(1) drop-shadow(0 0 14px rgba(125, 130, 142, 0.4)) !important;
+  }
+  .moment-serie.rompue .moment-fissure { display: block; opacity: 1 !important; }
+  /* Gelée : givre visible et figé. */
+  .moment-serie.gelee .moment-givre { display: block; opacity: 0.9 !important; }
+}
