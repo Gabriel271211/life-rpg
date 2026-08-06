@@ -1,9 +1,11 @@
 // ============================================
 // LIFE RPG — api/_planificateur.js
 // Logique PURE (aucun réseau, aucun store) des rappels :
-//   - convertir l'instant courant en date/heure LOCALES du joueur ;
+//   - convertir l'instant courant en date/heure LOCALES du joueur, à
+//     partir de son fuseau IANA (ex. "Europe/Paris") — jamais un simple
+//     décalage numérique, qui casserait au changement d'heure été/hiver ;
 //   - tirer au hasard un créneau par fenêtre (matin / après-midi /
-//     soir), à des heures DIFFÉRENTES chaque jour ;
+//     soir), à des heures différentes chaque jour ;
 //   - décider, à chaque réveil du planificateur, s'il faut envoyer un
 //     rappel maintenant et lequel.
 // Fonctions pures et déterministes (aléa injectable) -> testables.
@@ -18,11 +20,32 @@ var FENETRES = [
 
 function pad(n) { return n < 10 ? "0" + n : "" + n; }
 
-// Instant UTC -> repères LOCAUX du joueur (offset = getTimezoneOffset(),
-// négatif à l'est de UTC). On décale l'epoch pour que les getters UTC
-// lisent l'heure murale locale.
-function jourLocal(nowMs, tzOffsetMin) {
-  var d = new Date(nowMs - tzOffsetMin * 60000);
+// Un fuseau IANA est-il exploitable par le moteur ?
+function fuseauValide(tz) {
+  if (typeof tz !== "string" || !tz) return false;
+  try { new Intl.DateTimeFormat("en-US", { timeZone: tz }); return true; }
+  catch (e) { return false; }
+}
+
+// Décalage (ms) entre l'heure LOCALE du fuseau et UTC, à l'instant tsUtc.
+// Recalculé à chaque appel -> suit automatiquement l'heure d'été/hiver.
+function decalageMs(tsUtc, tz) {
+  var dtf = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz, hour12: false,
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit"
+  });
+  var m = {};
+  dtf.formatToParts(new Date(tsUtc)).forEach(function (p) { m[p.type] = p.value; });
+  var h = m.hour === "24" ? 0 : parseInt(m.hour, 10); // certains moteurs rendent "24"
+  var commeUTC = Date.UTC(+m.year, +m.month - 1, +m.day, h, +m.minute, +m.second);
+  return commeUTC - tsUtc;
+}
+
+// Instant UTC -> repères LOCAUX du joueur (date, jour de semaine, minute).
+function jourLocal(nowMs, tz) {
+  if (!fuseauValide(tz)) tz = "UTC";
+  var d = new Date(nowMs + decalageMs(nowMs, tz)); // getters UTC = heure murale locale
   return {
     dateLocale: d.getUTCFullYear() + "-" + pad(d.getUTCMonth() + 1) + "-" + pad(d.getUTCDate()),
     jourSemaine: (d.getUTCDay() + 6) % 7,          // 0 = lundi ... 6 = dimanche
@@ -30,25 +53,31 @@ function jourLocal(nowMs, tzOffsetMin) {
   };
 }
 
-// La date locale (AAAA-MM-JJ) est-elle un jour d'engagement ?
+// La date locale est-elle un jour d'engagement ?
 function estJourEngagement(jourSemaine, joursEngagement) {
   return Array.isArray(joursEngagement) && joursEngagement.indexOf(jourSemaine) !== -1;
 }
 
-// Heure locale (min) -> instant UTC réel pour cette date locale.
-function versUTC(dateLocale, minuteLocale, tzOffsetMin) {
+// Heure locale (min) d'une date locale -> instant UTC réel. Une passe de
+// raffinage gère proprement les bords de changement d'heure.
+function versUTC(dateLocale, minuteLocale, tz) {
+  if (!fuseauValide(tz)) tz = "UTC";
   var p = dateLocale.split("-");
-  var minuit = Date.UTC(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
-  return minuit + (minuteLocale + tzOffsetMin) * 60000;
+  var murAsUTC = Date.UTC(+p[0], +p[1] - 1, +p[2], Math.floor(minuteLocale / 60), minuteLocale % 60);
+  var dec = decalageMs(murAsUTC, tz);
+  var reel = murAsUTC - dec;
+  var dec2 = decalageMs(reel, tz);
+  if (dec2 !== dec) reel = murAsUTC - dec2;
+  return reel;
 }
 
-// Tire un créneau (timestamp UTC) par fenêtre pour la journée. `rnd`
-// est injectable pour des tests déterministes.
-function genererCreneaux(dateLocale, tzOffsetMin, rnd) {
+// Tire un créneau (timestamp UTC) par fenêtre pour la journée locale.
+// `rnd` est injectable pour des tests déterministes.
+function genererCreneaux(dateLocale, tz, rnd) {
   rnd = rnd || Math.random;
   return FENETRES.map(function (f) {
     var minute = f.debut + Math.floor(rnd() * (f.fin - f.debut + 1));
-    return { ts: versUTC(dateLocale, minute, tzOffsetMin), fenetre: f.nom, envoye: false };
+    return { ts: versUTC(dateLocale, minute, tz), fenetre: f.nom, envoye: false };
   }).sort(function (a, b) { return a.ts - b.ts; });
 }
 
@@ -58,9 +87,9 @@ function genererCreneaux(dateLocale, tzOffsetMin, rnd) {
 //   contexte  : { quetesFaites, gelEnAttente, jourSemaine }
 // Retourne null (rien à envoyer) ou :
 //   { index, aConsommer:[...], categorie }
-// index         = créneau à envoyer (le plus récent dû, jamais de rafale)
-// aConsommer    = indices à marquer envoyés (les créneaux dépassés)
-// categorie     = clé de la banque de messages
+// index      = créneau à envoyer (le plus récent dû, jamais de rafale)
+// aConsommer = indices à marquer envoyés (les créneaux dépassés)
+// categorie  = clé de la banque de messages
 function choisirEnvoi(plan, nowMs, contexte) {
   // Règle absolue : plus rien une fois les quêtes du jour faites.
   if (contexte.quetesFaites) return null;
@@ -90,6 +119,8 @@ function choisirEnvoi(plan, nowMs, contexte) {
 
 module.exports = {
   FENETRES: FENETRES,
+  fuseauValide: fuseauValide,
+  decalageMs: decalageMs,
   jourLocal: jourLocal,
   estJourEngagement: estJourEngagement,
   versUTC: versUTC,

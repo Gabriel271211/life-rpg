@@ -46,13 +46,25 @@
     return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
   }
 
+  // Fuseau IANA du joueur (ex. "Europe/Paris"). On l'envoie tel quel —
+  // pas un décalage numérique, qui casserait au changement d'heure. Le
+  // serveur en déduit lui-même l'heure locale, DST compris.
+  function fuseau() {
+    try {
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return tz || "UTC";
+    } catch (e) {
+      return "UTC";
+    }
+  }
+
   // Drapeaux STRICT minimum envoyés au serveur.
   function drapeaux(etat) {
     var quetes = Array.isArray(etat.quetes) ? etat.quetes : [];
     var toutesFaites = quetes.length > 0 && quetes.every(function (q) { return q && q.faite; });
     return {
       joursEngagement: Array.isArray(etat.joursEngagement) ? etat.joursEngagement : [],
-      tzOffsetMin: new Date().getTimezoneOffset(),
+      tz: fuseau(),
       dateLocale: dateLocale(),
       quetesFaites: toutesFaites,
       gelEnAttente: Boolean(etat.gelEnAttente),

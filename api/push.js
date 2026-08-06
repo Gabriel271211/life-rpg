@@ -22,6 +22,15 @@ function entier(v, min, max, defaut) {
   return Math.min(max, Math.max(min, n));
 }
 
+// Fuseau IANA plausible et réellement supporté par le moteur.
+function fuseauPropre(tz) {
+  if (typeof tz !== "string" || tz.length > 64 || !/^[A-Za-z0-9_+\-\/]+$/.test(tz)) {
+    return "UTC";
+  }
+  try { new Intl.DateTimeFormat("en-US", { timeZone: tz }); return tz; }
+  catch (e) { return "UTC"; }
+}
+
 function drapeauxPropres(d) {
   d = d && typeof d === "object" ? d : {};
   var jours = Array.isArray(d.joursEngagement)
@@ -33,7 +42,7 @@ function drapeauxPropres(d) {
     ? d.dateLocale : null;
   return {
     joursEngagement: jours,
-    tzOffsetMin: entier(d.tzOffsetMin, -840, 840, 0),
+    tz: fuseauPropre(d.tz),
     dateLocale: date,
     quetesFaites: Boolean(d.quetesFaites),
     gelEnAttente: Boolean(d.gelEnAttente),

@@ -38,17 +38,23 @@ async function traiterAbonne(id, nowMs) {
   if (!enr || !enr.abonnement) return "ignore";
   var d = enr.drapeaux || {};
 
-  var repere = PLAN.jourLocal(nowMs, d.tzOffsetMin || 0);
+  var tz = d.tz || "UTC";
+  var repere = PLAN.jourLocal(nowMs, tz);
 
-  // Jour de repos -> aucun push.
+  // Jour de repos (en LOCAL) -> aucun push.
   if (!PLAN.estJourEngagement(repere.jourSemaine, d.joursEngagement)) return "repos";
-  // Quêtes du jour faites -> plus aucun rappel.
-  if (d.quetesFaites) return "faites";
 
-  // Plan du jour : tiré une seule fois, puis relu tel quel.
+  // Quêtes faites -> plus aucun rappel. MAIS le drapeau ne vaut que
+  // pour le jour LOCAL auquel il se rattache : un drapeau d'hier (client
+  // pas rouvert depuis) ne doit pas bloquer les rappels d'aujourd'hui.
+  if (d.quetesFaites && d.dateLocale === repere.dateLocale) return "faites";
+
+  // Plan du jour LOCAL : tiré une seule fois, puis relu tel quel. La clé
+  // est datée en local -> il se réinitialise au changement de jour local
+  // (marqueurs "déjà envoyé" par fenêtre remis à zéro).
   var plan = await PUSH.lirePlan(id, repere.dateLocale);
   if (!plan || !Array.isArray(plan.creneaux)) {
-    plan = { creneaux: PLAN.genererCreneaux(repere.dateLocale, d.tzOffsetMin || 0), gelEnvoye: false };
+    plan = { creneaux: PLAN.genererCreneaux(repere.dateLocale, tz), gelEnvoye: false };
     await PUSH.sauverPlan(id, repere.dateLocale, plan);
   }
 
