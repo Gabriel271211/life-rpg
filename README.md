@@ -176,9 +176,29 @@ configuration serveur, l'app fonctionne exactement pareil — le module se tait.
 **Déroulé.** On ne demande rien au premier écran : l'invitation (`js/notifications.js`)
 n'apparaît qu'**après un premier jour réussi** (streak ≥ 1). D'un geste explicite,
 le joueur active → abonnement Web Push (VAPID) → l'abonnement + un **strict minimum**
-de drapeaux (jours d'engagement, quêtes du jour faites o/n, gel consommé, streak,
-fuseau) partent vers `/api/push`. **Jamais** le prénom, jamais d'historique. Ces
-drapeaux se resynchronisent à chaque sauvegarde d'état (événement `life-rpg-etat-sauve`).
+de drapeaux partent vers `/api/push`. Ces drapeaux se resynchronisent à chaque
+sauvegarde d'état (événement `life-rpg-etat-sauve`).
+
+**iOS.** Le Web Push n'existe QUE dans le PWA **installé** (« Sur l'écran d'accueil »,
+iOS 16.4+), jamais dans un onglet Safari. Le client détecte le mode installé
+(`display-mode: standalone` / `navigator.standalone`) : sur iPhone **non installé**,
+il n'offre pas l'activation (elle échouerait) mais invite d'abord à installer l'app.
+Sur navigateur non compatible ou permission refusée, il se tait — le jeu fonctionne.
+
+**Vie privée — exactement ce qui est envoyé et stocké** (rien d'autre) :
+
+| Champ | Pourquoi | Personnel ? |
+|---|---|---|
+| `abonnement` (endpoint + clés `p256dh`/`auth`) | destination du push (opaque) | non |
+| `tz` (fuseau IANA) | calculer l'heure locale du joueur | non |
+| `joursEngagement` (`[0-6]`) | savoir quels jours notifier | non |
+| `quetesFaites` (bool) + `dateLocale` | stopper les rappels une fois le jour fait | non |
+| `gelEnAttente` (bool) | message contextuel « gel utilisé » | non |
+| `streak` (nombre) | personnalisation future des messages | non |
+
+**Jamais transmis** : prénom, noms/contenus des quêtes, texte d'objectif, chat,
+aucune donnée d'état sensible. Le store ne contient que `{ abonnement, drapeaux, maj }`
++ le plan du jour (créneaux) — que des valeurs anonymes.
 
 **Envoi.** Un planificateur gratuit (**GitHub Actions**, `.github/workflows/push-rappels.yml`,
 toutes les 20 min) réveille `/api/push-cron`, qui pour chaque abonné :

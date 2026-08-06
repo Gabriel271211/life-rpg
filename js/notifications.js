@@ -19,12 +19,25 @@
 (function () {
 
   var CLE_ETAT = "life-rpg-etat-v1";
-  var CLE_CHOIX = "life-rpg-push-choix"; // "active" | "refuse" (invitation)
-  var DELAI_SYNCHRO = 3000;              // anti-rafale de re-synchro
+  var CLE_CHOIX = "life-rpg-push-choix";     // "active" | "refuse" (invitation)
+  var CLE_INSTALL = "life-rpg-push-install"; // "vu" (astuce d'installation iOS déjà montrée)
+  var DELAI_SYNCHRO = 3000;                  // anti-rafale de re-synchro
 
   var supporte = ("serviceWorker" in navigator) &&
                  ("PushManager" in window) &&
                  ("Notification" in window);
+
+  // App lancée en mode installé (écran d'accueil) ? Sur iOS, le Web Push
+  // n'existe QUE dans ce mode (iOS 16.4+) — jamais dans un onglet Safari.
+  var installe = (window.matchMedia &&
+                  window.matchMedia("(display-mode: standalone)").matches) ||
+                 navigator.standalone === true;
+
+  var ua = navigator.userAgent || "";
+  // iPhone/iPad/iPod — l'iPadOS récent se présente comme "Macintosh" mais
+  // avec un écran tactile : on le rattrape via maxTouchPoints.
+  var estIOS = /iPhone|iPad|iPod/.test(ua) ||
+               (/Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1);
 
   // ----- Lecture SANS effet de bord de l'état -----
 
@@ -197,9 +210,45 @@
     try { return localStorage.getItem(CLE_CHOIX); } catch (e) { return null; }
   }
 
+  // Astuce d'installation iOS : montrée UNE fois, sans jamais bloquer
+  // l'activation ultérieure (clé distincte de CLE_CHOIX).
+  function afficherInviteInstall() {
+    injecterStyle();
+    var boite = document.createElement("div");
+    boite.className = "notif-invite";
+    boite.setAttribute("role", "dialog");
+    boite.innerHTML =
+      "<p>Pour recevoir les rappels du Système sur iPhone, installe l'app : " +
+      "bouton Partager, puis « Sur l'écran d'accueil ». Les notifications " +
+      "s'activeront ensuite.</p>" +
+      "<div class=\"notif-actions\">" +
+      "<button type=\"button\" class=\"notif-oui\">Compris</button>" +
+      "</div>";
+    document.body.appendChild(boite);
+    boite.querySelector(".notif-oui").addEventListener("click", function () {
+      try { localStorage.setItem(CLE_INSTALL, "vu"); } catch (e) {}
+      fermerInvite();
+    });
+  }
+
+  function installVu() {
+    try { return localStorage.getItem(CLE_INSTALL) === "vu"; } catch (e) { return false; }
+  }
+
   // ----- Amorçage -----
 
   function demarrer() {
+    var etat = lireEtat();
+    var premierSucces = etat && jourReussi(etat);
+
+    // iOS hors installation : le push n'est PAS disponible dans Safari.
+    // On n'offre pas l'activation (elle échouerait) ; on invite plutôt à
+    // installer l'app, une seule fois, après un premier succès.
+    if (estIOS && !installe) {
+      if (premierSucces && !installVu()) afficherInviteInstall();
+      return;
+    }
+
     if (!supporte) return;
 
     // Déjà autorisé : on s'assure d'être abonné et on resynchronise.
@@ -215,8 +264,7 @@
     if (Notification.permission === "denied" || choix() === "refuse") return;
 
     // Sinon : on n'invite qu'APRÈS un premier jour réussi.
-    var etat = lireEtat();
-    if (etat && jourReussi(etat)) afficherInvite();
+    if (premierSucces) afficherInvite();
   }
 
   // Re-synchro à chaque sauvegarde d'état (quêtes faites, gel, jours…),
