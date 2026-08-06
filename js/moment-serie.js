@@ -6,23 +6,43 @@
 // drapeau etat.transitionSerie.
 //
 // Overlay au-dessus de tout, non bloquant : disparaît au tap ou
-// automatiquement après ~4 s. Le style (animations + version statique
-// pour prefers-reduced-motion) vit dans css/moment-serie.css.
-// Les vibrations sont un bonus (Android) ; l'animation se suffit.
+// automatiquement après ~4 s. Animations et version statique
+// (prefers-reduced-motion) dans css/moment-serie.css. Les vibrations
+// sont un bonus (Android) ; l'animation se suffit à elle-même.
 // ============================================
 
 var MomentSerie = (function () {
 
-  var DUREE = 4000;   // ms avant disparition automatique
+  var DUREE = 4200;   // ms avant disparition automatique
   var ISSUES = { continuee: true, gelee: true, rompue: true };
 
-  // Flamme : silhouette + cœur (les couleurs viennent du CSS selon l'état).
+  // Flamme en calques à dégradés : halo de base, corps, cœur.
+  // Les couleurs (stops) viennent des variables CSS selon l'état.
   var SVG_FLAMME =
-    '<svg class="flamme-svg" viewBox="0 0 100 130" aria-hidden="true">' +
-    '<path class="flamme-corps" d="M50 4 C58 30 84 44 84 78 C84 108 66 126 50 126 ' +
-    'C34 126 16 108 16 78 C16 52 34 44 40 26 C44 40 40 54 52 60 C60 52 58 36 50 4 Z"/>' +
-    '<path class="flamme-coeur" d="M50 58 C56 70 68 78 68 94 C68 110 60 120 50 120 ' +
-    'C40 120 32 110 32 94 C32 80 42 74 46 62 C48 72 46 80 52 84 C58 80 56 70 50 58 Z"/>' +
+    '<svg class="fl-svg" viewBox="0 0 100 140" aria-hidden="true">' +
+      '<defs>' +
+        '<linearGradient id="ms-body" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="var(--fl-body-1)"/>' +
+          '<stop offset="0.55" stop-color="var(--fl-body-2)"/>' +
+          '<stop offset="1" stop-color="var(--fl-body-3)"/>' +
+        '</linearGradient>' +
+        '<radialGradient id="ms-core" cx="0.5" cy="0.72" r="0.62">' +
+          '<stop offset="0" stop-color="var(--fl-core-1)"/>' +
+          '<stop offset="0.5" stop-color="var(--fl-core-2)"/>' +
+          '<stop offset="1" stop-color="var(--fl-core-2)" stop-opacity="0"/>' +
+        '</radialGradient>' +
+        '<radialGradient id="ms-glow" cx="0.5" cy="0.6" r="0.5">' +
+          '<stop offset="0" stop-color="var(--fl-glow)"/>' +
+          '<stop offset="1" stop-color="var(--fl-glow)" stop-opacity="0"/>' +
+        '</radialGradient>' +
+      '</defs>' +
+      '<ellipse class="fl-glow-base" cx="50" cy="116" rx="34" ry="20" fill="url(#ms-glow)"/>' +
+      '<path class="fl-layer fl-body" fill="url(#ms-body)" d="M50 8 ' +
+        'C58 36 86 52 86 88 C86 117 70 134 50 134 C30 134 14 117 14 88 ' +
+        'C14 60 32 52 39 33 C41 49 37 62 50 70 C62 62 59 41 50 8 Z"/>' +
+      '<path class="fl-layer fl-core" fill="url(#ms-core)" d="M50 60 ' +
+        'C55 74 70 82 70 100 C70 117 61 128 50 128 C39 128 30 117 30 100 ' +
+        'C30 86 41 80 45 66 C47 78 45 86 50 90 C56 86 54 74 50 60 Z"/>' +
     '</svg>';
 
   var TEXTES = {
@@ -31,12 +51,18 @@ var MomentSerie = (function () {
     rompue: "La chaîne s'est rompue. Elle se reforge dès aujourd'hui."
   };
 
-  // Motifs de vibration (ignorés là où navigator.vibrate n'existe pas, ex. iOS).
   var VIBRATIONS = {
     continuee: { motif: [0, 80, 40, 80], delai: 550 }, // positive, au pic
-    gelee: { motif: [0, 30, 30, 30], delai: 450 },      // cristalline
+    gelee: { motif: [0, 30, 30, 30], delai: 500 },      // cristalline
     rompue: { motif: [0, 140], delai: 1000 }            // brève et mate, à la rupture
   };
+
+  function reduit() {
+    return window.matchMedia &&
+           window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function alea(min, max) { return min + Math.random() * (max - min); }
 
   function vibrer(issue) {
     var v = VIBRATIONS[issue];
@@ -47,19 +73,77 @@ var MomentSerie = (function () {
     }, v.delai);
   }
 
+  // Particules : braises (continuée), givre (gelée), cendres (rompue).
+  function semerParticules(scene, issue) {
+    var boite = scene.querySelector(".moment-particules");
+    if (!boite) return;
+
+    if (issue === "continuee") {
+      for (var i = 0; i < 16; i++) {
+        var e = document.createElement("span");
+        e.className = "particule p-ember";
+        e.style.setProperty("--x", alea(38, 62) + "%");
+        e.style.setProperty("--size", alea(3, 6).toFixed(1) + "px");
+        e.style.setProperty("--tx", alea(-42, 42).toFixed(0) + "px");
+        e.style.setProperty("--ty", alea(-150, -240).toFixed(0) + "px");
+        e.style.setProperty("--dur", alea(1.7, 3).toFixed(2) + "s");
+        e.style.setProperty("--delay", alea(0, 2.4).toFixed(2) + "s");
+        boite.appendChild(e);
+      }
+    } else if (issue === "gelee") {
+      for (var j = 0; j < 15; j++) {
+        var f = document.createElement("span");
+        f.className = "particule p-frost";
+        f.style.setProperty("--x", alea(18, 82) + "%");
+        f.style.setProperty("--y", alea(22, 78) + "%");
+        f.style.setProperty("--size", alea(2, 4).toFixed(1) + "px");
+        f.style.setProperty("--tx", alea(-18, 18).toFixed(0) + "px");
+        f.style.setProperty("--ty", alea(-14, 14).toFixed(0) + "px");
+        f.style.setProperty("--dur", alea(3, 5).toFixed(2) + "s");
+        f.style.setProperty("--delay", alea(0.8, 3).toFixed(2) + "s");
+        boite.appendChild(f);
+      }
+    } else if (issue === "rompue") {
+      for (var k = 0; k < 10; k++) {
+        var a = document.createElement("span");
+        a.className = "particule p-ash";
+        a.style.setProperty("--x", alea(38, 62) + "%");
+        a.style.setProperty("--size", alea(2, 4).toFixed(1) + "px");
+        a.style.setProperty("--tx", alea(-30, 30).toFixed(0) + "px");
+        a.style.setProperty("--ty", alea(40, 90).toFixed(0) + "px");
+        a.style.setProperty("--dur", alea(2.2, 3.6).toFixed(2) + "s");
+        a.style.setProperty("--delay", alea(1.4, 2.4).toFixed(2) + "s");
+        boite.appendChild(a);
+      }
+      // Volutes de fumée de l'extinction.
+      var fumee = scene.querySelector(".moment-fumee");
+      if (fumee) {
+        for (var m = 0; m < 4; m++) {
+          var v = document.createElement("span");
+          v.className = "volute";
+          v.style.setProperty("--x", alea(40, 60) + "%");
+          v.style.setProperty("--size", alea(26, 40).toFixed(0) + "px");
+          v.style.setProperty("--tx", alea(-24, 24).toFixed(0) + "px");
+          v.style.setProperty("--dur", alea(1.8, 2.6).toFixed(2) + "s");
+          v.style.setProperty("--delay", (1.5 + alea(0, 0.5)).toFixed(2) + "s");
+          fumee.appendChild(v);
+        }
+      }
+    }
+  }
+
   function fermer(overlay) {
     if (!overlay || overlay.dataset.sortie === "1") return;
     overlay.dataset.sortie = "1";
     overlay.classList.add("sortie");
     setTimeout(function () {
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-    }, 420);
+    }, 520);
   }
 
   function jouer(issue, streak) {
     if (!ISSUES[issue] || !document.body) return;
 
-    // Un seul moment à la fois.
     var existant = document.querySelector(".moment-serie");
     if (existant && existant.parentNode) existant.parentNode.removeChild(existant);
 
@@ -76,12 +160,19 @@ var MomentSerie = (function () {
     }
 
     overlay.innerHTML =
-      '<div class="moment-flamme">' + SVG_FLAMME +
-      '<span class="moment-givre"></span><span class="moment-fissure"></span></div>' +
+      '<div class="moment-scene">' +
+        '<div class="moment-glow"></div>' +
+        '<div class="moment-flamme">' + SVG_FLAMME + '</div>' +
+        '<div class="moment-givre"></div>' +
+        '<div class="moment-fumee"></div>' +
+        '<div class="moment-particules"></div>' +
+      '</div>' +
       nombre +
       '<p class="moment-texte">' + TEXTES[issue] + '</p>';
 
     document.body.appendChild(overlay);
+
+    if (!reduit()) semerParticules(overlay.querySelector(".moment-scene"), issue);
     vibrer(issue);
 
     var minuteur = setTimeout(function () { fermer(overlay); }, DUREE);
