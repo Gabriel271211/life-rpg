@@ -68,26 +68,26 @@
 
 /* Rare : liseré accent + très léger glow */
 .carte.rare {
-  border-color: rgba(var(--accent-rgb), 0.38);
-  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.05), transparent 55%), var(--surface);
-  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.1);
+  border-color: rgba(var(--marque-rgb), 0.38);
+  background: linear-gradient(180deg, rgba(var(--marque-rgb), 0.05), transparent 55%), var(--surface);
+  box-shadow: 0 0 14px rgba(var(--marque-rgb), 0.1);
 }
 
 .carte.rare .carte-ornement {
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .carte.rare .carte-rarete {
-  color: rgba(var(--accent-rgb), 0.85);
+  color: rgba(var(--marque-rgb), 0.85);
 }
 
 /* Épique : liseré plus présent, glow net, ligne lumineuse en haut */
 .carte.epique {
-  border-color: rgba(var(--accent-rgb), 0.6);
-  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.09), transparent 60%), var(--surface);
+  border-color: rgba(var(--marque-rgb), 0.6);
+  background: linear-gradient(180deg, rgba(var(--marque-rgb), 0.09), transparent 60%), var(--surface);
   box-shadow:
-    0 0 22px rgba(var(--accent-rgb), 0.18),
-    inset 0 0 26px rgba(var(--accent-rgb), 0.05);
+    0 0 22px rgba(var(--marque-rgb), 0.18),
+    inset 0 0 26px rgba(var(--marque-rgb), 0.05);
 }
 
 .carte.epique::before {
@@ -101,12 +101,12 @@
 }
 
 .carte.epique .carte-ornement {
-  color: var(--accent);
-  filter: drop-shadow(0 0 6px var(--accent-lueur));
+  color: var(--marque);
+  filter: drop-shadow(0 0 6px var(--marque-lueur));
 }
 
 .carte.epique .carte-rarete {
-  color: var(--accent);
+  color: var(--marque);
 }
 
 /* Légendaire : l'unique exception dorée */
@@ -167,8 +167,8 @@
 }
 
 .carte-cran.actif svg {
-  fill: var(--accent);
-  filter: drop-shadow(0 0 3px var(--accent-lueur));
+  fill: var(--marque);
+  filter: drop-shadow(0 0 3px var(--marque-lueur));
 }
 
 .carte.legendaire .carte-cran.actif svg {
@@ -180,15 +180,15 @@
    Ne concerne que les cartes à plusieurs paliers — jamais les épiques
    ou légendaires, qui restent à un palier. */
 .carte.debloquee.niveau-2 {
-  border-color: rgba(var(--accent-rgb), 0.5);
-  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.16);
+  border-color: rgba(var(--marque-rgb), 0.5);
+  box-shadow: 0 0 18px rgba(var(--marque-rgb), 0.16);
 }
 
 .carte.debloquee.niveau-3 {
-  border-color: rgba(var(--accent-rgb), 0.78);
+  border-color: rgba(var(--marque-rgb), 0.78);
   box-shadow:
-    0 0 26px rgba(var(--accent-rgb), 0.28),
-    inset 0 0 22px rgba(var(--accent-rgb), 0.06);
+    0 0 26px rgba(var(--marque-rgb), 0.28),
+    inset 0 0 22px rgba(var(--marque-rgb), 0.06);
 }
 
 /* ----- Cartes brillantes : holographie CSS pure, rare et sobre ----- */

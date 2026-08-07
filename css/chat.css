@@ -13,7 +13,7 @@
   flex-direction: column;
   padding: 22px 22px calc(env(safe-area-inset-bottom) + 16px);
   background:
-    radial-gradient(ellipse 120% 45% at 50% -8%, var(--accent-doux), transparent 65%),
+    radial-gradient(ellipse 120% 45% at 50% -8%, var(--marque-doux), transparent 65%),
     rgba(10, 10, 15, 0.98);
   animation: session-entree 0.25s ease;
 }
@@ -99,7 +99,7 @@
 }
 
 .chat-archive:hover {
-  border-color: rgba(var(--accent-rgb), 0.4);
+  border-color: rgba(var(--marque-rgb), 0.4);
 }
 
 .chat-archive-tete {
@@ -112,7 +112,7 @@
 .chat-archive-date {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .chat-archive-compte {
@@ -189,15 +189,15 @@
 .chat-systeme {
   align-self: flex-start;
   background: var(--surface);
-  border: 1px solid rgba(var(--accent-rgb), 0.22);
-  color: var(--accent);
+  border: 1px solid rgba(var(--marque-rgb), 0.22);
+  color: var(--marque);
   border-bottom-left-radius: 5px;
 }
 
 /* Le joueur : texte clair, aligné à droite */
 .chat-joueur {
   align-self: flex-end;
-  background: rgba(var(--accent-rgb), 0.14);
+  background: rgba(var(--marque-rgb), 0.14);
   color: var(--texte);
   border-bottom-right-radius: 5px;
 }
@@ -213,7 +213,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--marque);
   opacity: 0.5;
   animation: chat-point 1.2s ease-in-out infinite;
 }
@@ -232,7 +232,7 @@
   max-width: 82%;
   padding: 14px 16px;
   background: var(--surface);
-  border: 1px dashed rgba(var(--accent-rgb), 0.45);
+  border: 1px dashed rgba(var(--marque-rgb), 0.45);
   border-radius: 14px;
   animation: chat-bulle-entree 0.3s ease backwards;
 }
@@ -304,8 +304,8 @@
 
 .chat-champ:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent-doux);
+  border-color: var(--marque);
+  box-shadow: 0 0 0 1px var(--marque-doux);
 }
 
 .chat-champ:disabled {
@@ -319,7 +319,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent);
+  background: var(--marque);
   border: none;
   border-radius: 50%;
   color: var(--fond);

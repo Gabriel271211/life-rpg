@@ -64,7 +64,7 @@
 }
 
 .etape.finie:not(:last-child)::before {
-  background: rgba(var(--accent-rgb), 0.45);
+  background: rgba(var(--marque-rgb), 0.45);
 }
 
 /* ----- Marqueur ----- */
@@ -90,13 +90,13 @@
 }
 
 .etape.finie .etape-marqueur {
-  border-color: rgba(var(--accent-rgb), 0.55);
-  color: var(--accent);
+  border-color: rgba(var(--marque-rgb), 0.55);
+  color: var(--marque);
 }
 
 .etape.active .etape-marqueur {
-  border-color: var(--accent);
-  box-shadow: 0 0 14px var(--accent-lueur);
+  border-color: var(--marque);
+  box-shadow: 0 0 14px var(--marque-lueur);
 }
 
 .etape.active .etape-marqueur::after {
@@ -104,8 +104,8 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent-lueur);
+  background: var(--marque);
+  box-shadow: 0 0 8px var(--marque-lueur);
 }
 
 /* ----- Corps de l'étape ----- */
@@ -118,9 +118,9 @@
 .etape.active .etape-corps {
   padding: 15px 16px;
   background: var(--surface);
-  border: 1px solid rgba(var(--accent-rgb), 0.28);
+  border: 1px solid rgba(var(--marque-rgb), 0.28);
   border-radius: 14px;
-  box-shadow: 0 0 22px rgba(var(--accent-rgb), 0.08);
+  box-shadow: 0 0 22px rgba(var(--marque-rgb), 0.08);
 }
 
 /* Les étapes futures sont estompées */
@@ -143,7 +143,7 @@
 .etape-bonus {
   font-size: 0.78rem;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--marque);
   white-space: nowrap;
 }
 
@@ -229,7 +229,7 @@
   padding: 22px;
   text-align: center;
   background:
-    radial-gradient(ellipse 120% 55% at 50% 30%, rgba(var(--accent-rgb), 0.14), transparent 70%),
+    radial-gradient(ellipse 120% 55% at 50% 30%, rgba(var(--marque-rgb), 0.14), transparent 70%),
     #0a0a0f;
   animation: qa-entree 0.5s ease;
 }
@@ -246,7 +246,7 @@
 
 .qa-etiquette {
   letter-spacing: 0.34em;
-  color: var(--accent);
+  color: var(--marque);
   animation: qa-apparition 0.9s ease 0.2s backwards;
 }
 
@@ -260,8 +260,8 @@
   background-clip: text;
   color: transparent;
   filter:
-    drop-shadow(0 0 22px var(--accent-lueur))
-    drop-shadow(0 0 70px var(--accent-doux));
+    drop-shadow(0 0 22px var(--marque-lueur))
+    drop-shadow(0 0 70px var(--marque-doux));
   animation: qa-pose 2s ease-out;
 }
 
@@ -318,7 +318,7 @@
 
 /* ----- Proposition de suite (chrome éditeur) ----- */
 .suite-niveau {
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .suite-titre {
@@ -359,7 +359,7 @@
   padding: 26px 18px;
   text-align: center;
   background: var(--surface);
-  border: 1px solid rgba(var(--accent-rgb), 0.22);
+  border: 1px solid rgba(var(--marque-rgb), 0.22);
   border-radius: 16px;
 }
 

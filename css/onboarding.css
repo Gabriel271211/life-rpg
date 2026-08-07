@@ -28,8 +28,8 @@
 }
 
 .onb-trait.actif {
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent-lueur);
+  background: var(--marque);
+  box-shadow: 0 0 8px var(--marque-lueur);
 }
 
 /* ----- Étapes : une seule visible, fondu à chaque passage ----- */
@@ -207,7 +207,7 @@
   top: 7px;
   width: 7px;
   height: 7px;
-  border: 1px solid rgba(var(--accent-rgb), 0.55);
+  border: 1px solid rgba(var(--marque-rgb), 0.55);
   border-radius: 50%;
 }
 
@@ -327,7 +327,7 @@
   position: absolute;
   inset: -12%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.16), rgba(var(--accent-rgb), 0.05) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--marque-rgb), 0.16), rgba(var(--marque-rgb), 0.05) 45%, transparent 70%);
   pointer-events: none;
 }
 
@@ -340,12 +340,12 @@
 
 .rev-anneau-un {
   inset: 13%;
-  border-color: rgba(var(--accent-rgb), 0.16);
+  border-color: rgba(var(--marque-rgb), 0.16);
 }
 
 .rev-anneau-deux {
   inset: 1%;
-  border-color: rgba(var(--accent-rgb), 0.06);
+  border-color: rgba(var(--marque-rgb), 0.06);
 }
 
 .rev-lettre {
@@ -357,8 +357,8 @@
   background-clip: text;
   color: transparent;
   filter:
-    drop-shadow(0 0 22px rgba(var(--accent-rgb), 0.35))
-    drop-shadow(0 0 70px rgba(var(--accent-rgb), 0.18));
+    drop-shadow(0 0 22px rgba(var(--marque-rgb), 0.35))
+    drop-shadow(0 0 70px rgba(var(--marque-rgb), 0.18));
 }
 
 .rev-rang-etiquette {

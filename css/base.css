@@ -26,29 +26,45 @@
 }
 
 :root {
-  --fond: #0a0a0f;
-  --surface: #12121a;
-  --bordure: rgba(255, 255, 255, 0.06);
+  /* Darks teintés bleu nuit (et non gris neutres) : l'app "tire" vers le
+     bleu dès le premier rendu, indépendamment du rang. */
+  --fond: #080b14;                 /* bleu-noir profond */
+  --surface: #141a2b;              /* carte, bleu nuit */
+  --bordure: rgba(150, 175, 220, 0.12);
 
-  /* L'aura : la couleur d'accent unique, qui dépend du rang.
-     Toutes les déclinaisons passent par --accent-rgb, pour que
-     les classes de rang n'aient que deux valeurs à redéfinir
-     (+ --accent-clair pour les dégradés de lettres). */
+  /* LA couleur de l'app : bleu VIF, CONSTANT, non lié au rang. Tout le
+     chrome du quotidien passe par --marque* (boutons, lueurs, barres,
+     cercles validés, tags, nav active, marqueurs, halo de fond, cartes
+     rare/épique). L'identité reste IDENTIQUE sur chaque page, quel que
+     soit le rang. Seuls la LETTRE de rang (fiche perso) et la cérémonie
+     de montée de rang gardent la couleur de rang. */
+  --marque: #4f83ff;
+  --marque-rgb: 79, 131, 255;
+  --marque-doux: rgba(var(--marque-rgb), 0.18);
+  --marque-lueur: rgba(var(--marque-rgb), 0.48);   /* lueurs bien présentes */
+  --marque-clair: #a9c4ff;                          /* bleu clair (accents lumineux) */
+
+  /* L'AURA de rang : ne pilote plus que la LETTRE de rang (#rang-lettre)
+     et la cérémonie de montée (js/aura.js, autonome). Les classes .rang-*
+     ci-dessous redéfinissent --accent / --accent-rgb / --accent-clair ;
+     aura.js les pose sur <html> avant le rendu. Aucun autre élément du
+     chrome ne lit --accent : tout est passé sur --marque. */
   --accent: #6b8cae;
   --accent-rgb: 107, 140, 174;
   --accent-clair: #b9c9da;
-  --accent-doux: rgba(var(--accent-rgb), 0.12);
-  --accent-lueur: rgba(var(--accent-rgb), 0.35);
 
-  --texte: #e8e8ec;
-  --texte-second: #6a6a75;
+  --texte: #e9ecf4;
+  --texte-second: #7c869c;         /* gris-bleu froid */
 
   --nav-hauteur: 64px;
 
-  /* Dégradé des grandes lettres/chiffres lumineux (rang, quête accomplie,
-     révélation, décompte). Les var() internes se résolvent au point
-     d'usage : le dégradé suit donc l'aura du rang courant. */
-  --degrade-lettre: linear-gradient(180deg, #eef2f7 0%, var(--accent-clair) 55%, var(--accent) 135%);
+  /* Grandes lettres/chiffres du QUOTIDIEN (décompte repos, "Quête
+     accomplie", niveau, noms de cartes en révélation) → BLEU constant. */
+  --degrade-lettre: linear-gradient(180deg, #eef3ff 0%, #a9c4ff 55%, var(--marque) 135%);
+
+  /* Dégradé réservé à la LETTRE de rang (#rang-lettre) : suit la couleur
+     de rang courante (--accent-clair / --accent posés par aura.js). */
+  --degrade-rang: linear-gradient(180deg, #eef2f7 0%, var(--accent-clair) 55%, var(--accent) 135%);
 
   /* L'or des cartes légendaires / du rang S. Défini ici (base.css est
      chargé partout) pour que var(--or) résolve sur toutes les pages,
@@ -119,7 +135,7 @@ html {
 body {
   min-height: 100dvh;
   background:
-    radial-gradient(ellipse 120% 45% at 50% -8%, rgba(var(--accent-rgb), 0.07), transparent 65%),
+    radial-gradient(ellipse 120% 45% at 50% -8%, rgba(var(--marque-rgb), 0.10), transparent 65%),
     var(--fond);
   color: var(--texte);
   font-family: "Saira", system-ui, sans-serif;
@@ -206,7 +222,7 @@ svg {
 }
 
 .puce svg {
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .puce-valeur {
@@ -237,8 +253,8 @@ svg {
   width: 0;
   height: 100%;
   border-radius: 999px;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent-lueur);
+  background: var(--marque);
+  box-shadow: 0 0 10px var(--marque-lueur);
   transition: width 0.6s ease;
 }
 
@@ -250,7 +266,7 @@ svg {
   right: 0;
   height: calc(var(--nav-hauteur) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  background: rgba(10, 10, 15, 0.88);
+  background: rgba(6, 8, 15, 0.9);   /* proche du --fond, à peine plus foncé */
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-top: 1px solid var(--bordure);
@@ -283,7 +299,7 @@ svg {
 }
 
 .nav-lien.actif {
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .nav-lien.actif span {

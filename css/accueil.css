@@ -26,16 +26,16 @@
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  border: 1px solid rgba(var(--marque-rgb), 0.4);
   border-radius: 50%;
-  color: var(--accent);
+  color: var(--marque);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .systeme-bouton:hover {
-  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.25);
+  box-shadow: 0 0 14px rgba(var(--marque-rgb), 0.25);
 }
 
 .systeme-bouton svg {
@@ -95,15 +95,15 @@
 .sem-jour[data-etat="avenir"] .sem-slot::before {
   width: 11px;
   height: 11px;
-  border: 1.5px solid rgba(var(--accent-rgb), 0.38);
+  border: 1.5px solid rgba(var(--marque-rgb), 0.38);
 }
 
 /* Aujourd'hui (jour d'engagement en cours) : cerclé, léger halo */
 .sem-jour[data-etat="actuel"] .sem-slot::before {
   width: 12px;
   height: 12px;
-  border: 1.5px solid var(--accent);
-  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.4);
+  border: 1.5px solid var(--marque);
+  box-shadow: 0 0 8px rgba(var(--marque-rgb), 0.4);
 }
 
 /* Jour d'engagement manqué : éteint */
@@ -125,7 +125,7 @@
 }
 
 .sem-jour[data-etat="honore"] .sem-flamme svg {
-  filter: drop-shadow(0 0 4px rgba(var(--accent-rgb), 0.5));
+  filter: drop-shadow(0 0 4px rgba(var(--marque-rgb), 0.5));
 }
 
 .sem-label {
@@ -138,7 +138,7 @@
 }
 
 .sem-jour.actuel .sem-label {
-  color: var(--accent);
+  color: var(--marque);
   font-weight: 600;
 }
 
@@ -194,7 +194,7 @@
 .quete-xp {
   font-size: 0.8rem;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .quete-tag {
@@ -203,8 +203,8 @@
   font-weight: 300;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent);
-  background: var(--accent-doux);
+  color: var(--marque);
+  background: var(--marque-doux);
   border-radius: 999px;
 }
 
@@ -230,8 +230,8 @@
 
 @keyframes quete-eclat {
   0% {
-    border-color: rgba(var(--accent-rgb), 0.75);
-    box-shadow: 0 0 18px var(--accent-lueur);
+    border-color: rgba(var(--marque-rgb), 0.75);
+    box-shadow: 0 0 18px var(--marque-lueur);
   }
 }
 
@@ -276,9 +276,9 @@
 
 /* Quête validée */
 .quete.faite .quete-cercle {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 12px var(--accent-lueur);
+  background: var(--marque);
+  border-color: var(--marque);
+  box-shadow: 0 0 12px var(--marque-lueur);
 }
 
 .quete.faite .quete-cercle svg {
@@ -296,7 +296,7 @@
   padding: 20px 18px;
   text-align: center;
   background: var(--surface);
-  border: 1px solid rgba(var(--accent-rgb), 0.22);
+  border: 1px solid rgba(var(--marque-rgb), 0.22);
   border-radius: 16px;
   animation: entree-elt 0.35s ease backwards;
 }
@@ -322,7 +322,7 @@
 .jour-accompli-xp span {
   font-size: 1.35rem;
   font-weight: 900;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .jour-accompli-suite {
@@ -342,7 +342,7 @@
   gap: 9px;
   padding: 11px 15px;
   background: var(--surface);
-  border: 1px solid rgba(var(--accent-rgb), 0.22);
+  border: 1px solid rgba(var(--marque-rgb), 0.22);
   border-radius: 12px;
   font-size: 0.76rem;
   font-weight: 300;
@@ -357,7 +357,7 @@
 
 .gel-message svg {
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 /* ----- Jour de repos : écran calme à la place de la boucle du jour ----- */
@@ -411,7 +411,7 @@ body.mode-repos .jour-repos {
   margin-right: 5px;
   font-size: 1.5rem;
   font-weight: 900;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .repos-sous-titre {
@@ -496,7 +496,7 @@ body.mode-repos .jour-repos {
 
 .qp-icone {
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .qp-libelle {
@@ -520,7 +520,7 @@ body.mode-repos .jour-repos {
   margin-left: auto;
   font-size: 0.8rem;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--marque);
   white-space: nowrap;
 }
 
@@ -539,7 +539,7 @@ body.mode-repos .jour-repos {
   margin-top: 12px;
   padding: 16px 18px;
   background: var(--surface);
-  border: 1px solid rgba(var(--accent-rgb), 0.28);
+  border: 1px solid rgba(var(--marque-rgb), 0.28);
   border-radius: 16px;
   animation: entree-elt 0.4s ease backwards;
 }
@@ -578,8 +578,8 @@ body.mode-repos .jour-repos {
 .quete-hebdo {
   margin-top: 12px;
   padding: 18px;
-  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.09), rgba(var(--accent-rgb), 0.03)), var(--surface);
-  border: 1px solid rgba(var(--accent-rgb), 0.22);
+  background: linear-gradient(180deg, rgba(var(--marque-rgb), 0.09), rgba(var(--marque-rgb), 0.03)), var(--surface);
+  border: 1px solid rgba(var(--marque-rgb), 0.22);
   border-radius: 16px;
   /* Comme les quêtes du jour : la carte entière réagit au tap */
   cursor: pointer;
@@ -629,13 +629,13 @@ body.mode-repos .jour-repos {
 
 /* Hebdo accomplie : même langage que les quêtes validées */
 .quete-hebdo.accomplie {
-  border-color: rgba(var(--accent-rgb), 0.4);
+  border-color: rgba(var(--marque-rgb), 0.4);
 }
 
 .quete-hebdo.accomplie .quete-cercle {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 12px var(--accent-lueur);
+  background: var(--marque);
+  border-color: var(--marque);
+  box-shadow: 0 0 12px var(--marque-lueur);
   cursor: default;
 }
 
@@ -669,8 +669,8 @@ body.mode-repos .jour-repos {
 }
 
 .hebdo-segment.rempli {
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent-lueur);
+  background: var(--marque);
+  box-shadow: 0 0 10px var(--marque-lueur);
 }
 
 .hebdo-compte {
@@ -757,16 +757,16 @@ body.mode-repos .jour-repos {
   font-weight: 300;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--accent);
-  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  color: var(--marque);
+  border: 1px solid rgba(var(--marque-rgb), 0.4);
   border-radius: 999px;
 }
 
 /* Validée : même langage que les quêtes du jour */
 .secondaire.faite .quete-cercle {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 12px var(--accent-lueur);
+  background: var(--marque);
+  border-color: var(--marque);
+  box-shadow: 0 0 12px var(--marque-lueur);
 }
 
 .secondaire.faite .quete-cercle svg {
@@ -788,9 +788,9 @@ body.mode-repos .jour-repos {
   gap: 8px;
   padding: 13px 16px;
   background: transparent;
-  border: 1px dashed rgba(var(--accent-rgb), 0.35);
+  border: 1px dashed rgba(var(--marque-rgb), 0.35);
   border-radius: 14px;
-  color: var(--accent);
+  color: var(--marque);
   font-family: inherit;
   font-size: 0.68rem;
   font-weight: 600;
@@ -814,7 +814,7 @@ body.mode-repos .jour-repos {
   margin-top: 12px;
   padding: 16px 18px;
   background: var(--surface);
-  border: 1px solid rgba(var(--accent-rgb), 0.28);
+  border: 1px solid rgba(var(--marque-rgb), 0.28);
   border-radius: 16px;
   animation: entree-elt 0.4s ease backwards;
 }
@@ -843,7 +843,7 @@ body.mode-repos .jour-repos {
   font-size: 0.7rem;
   font-weight: 300;
   letter-spacing: 0.04em;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .secondaires-prop-boutons {

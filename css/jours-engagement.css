@@ -35,8 +35,8 @@
 }
 
 .je-preset.actif {
-  background: var(--accent-doux);
-  border-color: var(--accent);
+  background: var(--marque-doux);
+  border-color: var(--marque);
   color: var(--texte);
   font-weight: 600;
 }
@@ -67,10 +67,10 @@
 }
 
 .je-pastille.actif {
-  background: var(--accent-doux);
-  border-color: var(--accent);
+  background: var(--marque-doux);
+  border-color: var(--marque);
   color: var(--texte);
-  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.22);
+  box-shadow: 0 0 12px rgba(var(--marque-rgb), 0.22);
 }
 
 /* ----- Compteur + message ----- */
@@ -84,7 +84,7 @@
 .je-compteur .je-compte {
   font-size: 1.05rem;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .je-compteur.insuffisant .je-compte {

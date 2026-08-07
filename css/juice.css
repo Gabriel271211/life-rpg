@@ -13,7 +13,7 @@
   font-weight: 800;
   letter-spacing: 0.04em;
   white-space: nowrap;
-  color: var(--accent);
+  color: var(--marque);
   pointer-events: none;
   animation: xp-monte 0.8s ease-out forwards;
 }
@@ -39,8 +39,8 @@
   font-weight: 900;
   letter-spacing: 0.08em;
   text-shadow:
-    0 0 14px var(--accent-lueur),
-    0 0 34px var(--accent-lueur);
+    0 0 14px var(--marque-lueur),
+    0 0 34px var(--marque-lueur);
   animation: xp-monte-critique 0.9s ease-out forwards;
 }
 
@@ -73,9 +73,9 @@
   gap: 9px;
   padding: 10px 20px;
   background: rgba(18, 18, 26, 0.92);
-  border: 1px solid rgba(var(--accent-rgb), 0.32);
+  border: 1px solid rgba(var(--marque-rgb), 0.32);
   border-radius: 999px;
-  box-shadow: 0 0 26px rgba(var(--accent-rgb), 0.16);
+  box-shadow: 0 0 26px rgba(var(--marque-rgb), 0.16);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   pointer-events: none;
@@ -94,17 +94,17 @@
   font-size: 1.15rem;
   font-weight: 900;
   line-height: 1;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 /* Teintes de rareté pour les déblocages de cartes */
 .bandeau-niveau.rarete-rare {
-  border-color: rgba(var(--accent-rgb), 0.5);
+  border-color: rgba(var(--marque-rgb), 0.5);
 }
 
 .bandeau-niveau.rarete-epique {
-  border-color: rgba(var(--accent-rgb), 0.7);
-  box-shadow: 0 0 32px rgba(var(--accent-rgb), 0.28);
+  border-color: rgba(var(--marque-rgb), 0.7);
+  box-shadow: 0 0 32px rgba(var(--marque-rgb), 0.28);
 }
 
 .bandeau-niveau.rarete-legendaire {
@@ -145,7 +145,7 @@
   align-items: center;
   justify-content: center;
   line-height: 0;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .flamme svg {
@@ -165,21 +165,21 @@
 
 /* Palier braise (3-9) */
 .flamme.t-braise svg {
-  filter: drop-shadow(0 0 4px rgba(var(--accent-rgb), 0.35));
+  filter: drop-shadow(0 0 4px rgba(var(--marque-rgb), 0.35));
   animation: flamme-vacille 3.6s ease-in-out infinite;
 }
 
 /* Palier flamme franche (10-29) */
 .flamme.t-flamme svg {
-  filter: drop-shadow(0 0 7px rgba(var(--accent-rgb), 0.5));
+  filter: drop-shadow(0 0 7px rgba(var(--marque-rgb), 0.5));
   animation: flamme-vacille 2.6s ease-in-out infinite;
 }
 
 /* Palier brasier (30+) : double lueur, vacillement plus vif */
 .flamme.t-brasier svg {
   filter:
-    drop-shadow(0 0 9px rgba(var(--accent-rgb), 0.6))
-    drop-shadow(0 0 22px rgba(var(--accent-rgb), 0.32));
+    drop-shadow(0 0 9px rgba(var(--marque-rgb), 0.6))
+    drop-shadow(0 0 22px rgba(var(--marque-rgb), 0.32));
   animation: flamme-vacille 1.9s ease-in-out infinite;
 }
 

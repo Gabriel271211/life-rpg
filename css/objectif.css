@@ -23,13 +23,13 @@
 
 .objectif-carte:focus-visible {
   outline: none;
-  border-color: rgba(var(--accent-rgb), 0.5);
+  border-color: rgba(var(--marque-rgb), 0.5);
 }
 
 /* Liseré accent sur la carte choisie */
 .objectif-carte.actif {
-  border-color: var(--accent);
-  box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.12);
+  border-color: var(--marque);
+  box-shadow: 0 0 16px rgba(var(--marque-rgb), 0.12);
 }
 
 .objectif-nom {
@@ -44,7 +44,7 @@
   font-weight: 300;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .objectif-description {

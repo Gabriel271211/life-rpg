@@ -12,7 +12,7 @@
   flex-direction: column;
   padding: 22px 22px calc(env(safe-area-inset-bottom) + 22px);
   background:
-    radial-gradient(ellipse 120% 45% at 50% -8%, rgba(var(--accent-rgb), 0.07), transparent 65%),
+    radial-gradient(ellipse 120% 45% at 50% -8%, rgba(var(--marque-rgb), 0.07), transparent 65%),
     rgba(10, 10, 15, 0.98);
   animation: session-entree 0.25s ease;
 }
@@ -97,7 +97,7 @@
 }
 
 .session-lien.accent {
-  color: var(--accent);
+  color: var(--marque);
 }
 
 /* ----- Corps : centre de l'écran ----- */
@@ -131,8 +131,8 @@
   background-clip: text;
   color: transparent;
   filter:
-    drop-shadow(0 0 22px var(--accent-lueur))
-    drop-shadow(0 0 70px var(--accent-doux));
+    drop-shadow(0 0 22px var(--marque-lueur))
+    drop-shadow(0 0 70px var(--marque-doux));
 }
 
 /* Chaque seconde : le chiffre se pose, respire, puis s'estompe
@@ -169,10 +169,10 @@
 
 .anneau-progression {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--marque);
   stroke-width: 3.5;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 6px var(--accent-lueur));
+  filter: drop-shadow(0 0 6px var(--marque-lueur));
   transition: stroke-dashoffset 0.25s linear;
 }
 
@@ -220,7 +220,7 @@
 .session-bouton {
   padding: 15px 42px;
   background: var(--surface);
-  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  border: 1px solid rgba(var(--marque-rgb), 0.4);
   border-radius: 999px;
   font-family: inherit;
   font-size: 0.82rem;
@@ -290,11 +290,11 @@
 }
 
 .seance-segment.fait {
-  background: var(--accent);
+  background: var(--marque);
 }
 
 .seance-segment.actif {
-  background: var(--accent);
+  background: var(--marque);
   opacity: 0.45;
 }
 
@@ -351,17 +351,17 @@
   font-size: 3.2rem;
   font-weight: 900;
   line-height: 1;
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .session-fin-xp.critique {
   text-shadow:
-    0 0 18px var(--accent-lueur),
-    0 0 40px var(--accent-lueur);
+    0 0 18px var(--marque-lueur),
+    0 0 40px var(--marque-lueur);
 }
 
 .session-fin-critique {
-  color: var(--accent);
+  color: var(--marque);
 }
 
 .session-fin .session-bouton {

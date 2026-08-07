@@ -44,7 +44,7 @@
   width: 246px;
   height: 246px;
   transform: translate(-50%, -46%);
-  border: 1px solid rgba(var(--accent-rgb), 0.16);
+  border: 1px solid rgba(var(--marque-rgb), 0.16);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -57,7 +57,7 @@
   width: 300px;
   height: 300px;
   transform: translate(-50%, -46%);
-  border: 1px solid rgba(var(--accent-rgb), 0.06);
+  border: 1px solid rgba(var(--marque-rgb), 0.06);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -73,13 +73,13 @@
   font-size: clamp(10rem, 54vw, 13rem);
   font-weight: 900;
   line-height: 0.95;
-  background: var(--degrade-lettre);
+  background: var(--degrade-rang);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   filter:
-    drop-shadow(0 0 22px rgba(var(--accent-rgb), 0.35))
-    drop-shadow(0 0 70px rgba(var(--accent-rgb), 0.18));
+    drop-shadow(0 0 22px rgba(var(--marque-rgb), 0.35))
+    drop-shadow(0 0 70px rgba(var(--marque-rgb), 0.18));
 }
 
 /* Progression vers le rang suivant */
@@ -112,7 +112,7 @@
   width: 340px;
   height: 340px;
   transform: translate(-50%, -46%);
-  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.16), rgba(var(--accent-rgb), 0.05) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--marque-rgb), 0.16), rgba(var(--marque-rgb), 0.05) 45%, transparent 70%);
   pointer-events: none;
 }
 
@@ -234,14 +234,14 @@
 }
 
 .historique-graphique rect.actif {
-  fill: var(--accent);
-  filter: drop-shadow(0 0 5px var(--accent-lueur));
+  fill: var(--marque);
+  filter: drop-shadow(0 0 5px var(--marque-lueur));
 }
 
 /* Aujourd'hui : légèrement plus lumineux */
 .historique-graphique rect.aujourdhui.actif {
-  fill: var(--accent-clair);
-  filter: drop-shadow(0 0 7px var(--accent-lueur));
+  fill: var(--marque-clair);
+  filter: drop-shadow(0 0 7px var(--marque-lueur));
 }
 
 .historique-reperes {
@@ -317,8 +317,8 @@
 }
 
 .sauvegarde-bouton:active {
-  color: var(--accent);
-  border-color: var(--accent-lueur);
+  color: var(--marque);
+  border-color: var(--marque-lueur);
 }
 
 .sauvegarde-question {
@@ -342,7 +342,7 @@
 }
 
 .sauvegarde-texte-accent {
-  color: var(--accent);
+  color: var(--marque);
   font-weight: 600;
 }
 
