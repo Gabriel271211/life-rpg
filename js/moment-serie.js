@@ -5,8 +5,9 @@
 // MomentSerie.jouer(issue, streak) après avoir lu puis effacé le
 // drapeau etat.transitionSerie.
 //
+// Direction : le NOMBRE est le héros (continuée), texte minimal.
 // Overlay au-dessus de tout, non bloquant : disparaît au tap ou
-// automatiquement après ~4 s. Animations et version statique
+// automatiquement après ~4 s. Animations + version statique
 // (prefers-reduced-motion) dans css/moment-serie.css. Les vibrations
 // sont un bonus (Android) ; l'animation se suffit à elle-même.
 // ============================================
@@ -16,8 +17,9 @@ var MomentSerie = (function () {
   var DUREE = 4200;   // ms avant disparition automatique
   var ISSUES = { continuee: true, gelee: true, rompue: true };
 
-  // Flamme en calques à dégradés : halo de base, corps, cœur.
-  // Les couleurs (stops) viennent des variables CSS selon l'état.
+  // Flamme en calques à dégradés : corps + cœur. Les couleurs (stops)
+  // viennent des variables CSS selon l'état. La lueur épouse la flamme
+  // via un drop-shadow (CSS), pas un calque d'orbe.
   var SVG_FLAMME =
     '<svg class="fl-svg" viewBox="0 0 100 140" aria-hidden="true">' +
       '<defs>' +
@@ -31,12 +33,7 @@ var MomentSerie = (function () {
           '<stop offset="0.5" stop-color="var(--fl-core-2)"/>' +
           '<stop offset="1" stop-color="var(--fl-core-2)" stop-opacity="0"/>' +
         '</radialGradient>' +
-        '<radialGradient id="ms-glow" cx="0.5" cy="0.6" r="0.5">' +
-          '<stop offset="0" stop-color="var(--fl-glow)"/>' +
-          '<stop offset="1" stop-color="var(--fl-glow)" stop-opacity="0"/>' +
-        '</radialGradient>' +
       '</defs>' +
-      '<ellipse class="fl-glow-base" cx="50" cy="116" rx="34" ry="20" fill="url(#ms-glow)"/>' +
       '<path class="fl-layer fl-body" fill="url(#ms-body)" d="M50 8 ' +
         'C58 36 86 52 86 88 C86 117 70 134 50 134 C30 134 14 117 14 88 ' +
         'C14 60 32 52 39 33 C41 49 37 62 50 70 C62 62 59 41 50 8 Z"/>' +
@@ -45,11 +42,22 @@ var MomentSerie = (function () {
         'C30 86 41 80 45 66 C47 78 45 86 50 90 C56 86 54 74 50 60 Z"/>' +
     '</svg>';
 
-  var TEXTES = {
-    continuee: "La chaîne grandit.",
-    gelee: "Un jour a été gelé. La chaîne tient.",
-    rompue: "La chaîne s'est rompue. Elle se reforge dès aujourd'hui."
-  };
+  // Contenu texte, court et hiérarchisé (façon Duolingo, voix du Système).
+  function contenu(issue, streak) {
+    if (issue === "continuee") {
+      var n = (typeof streak === "number" && streak > 0) ? streak : 1;
+      return '<div class="moment-nombre">' + n +
+        '<span class="moment-unite">' + (n > 1 ? "jours de série" : "jour de série") + '</span></div>';
+    }
+    if (issue === "gelee") {
+      return '<div class="moment-texte-bloc">' +
+        '<div class="moment-titre">Série gelée</div>' +
+        '<div class="moment-sous">La chaîne tient.</div></div>';
+    }
+    return '<div class="moment-texte-bloc">' +
+      '<div class="moment-titre">Série rompue</div>' +
+      '<div class="moment-sous">Reforge-la aujourd\'hui.</div></div>';
+  }
 
   var VIBRATIONS = {
     continuee: { motif: [0, 80, 40, 80], delai: 550 }, // positive, au pic
@@ -73,7 +81,7 @@ var MomentSerie = (function () {
     }, v.delai);
   }
 
-  // Particules : braises (continuée), givre (gelée), cendres (rompue).
+  // Particules : braises (continuée), givre (gelée), cendres + fumée (rompue).
   function semerParticules(scene, issue) {
     var boite = scene.querySelector(".moment-particules");
     if (!boite) return;
@@ -115,7 +123,6 @@ var MomentSerie = (function () {
         a.style.setProperty("--delay", alea(1.4, 2.4).toFixed(2) + "s");
         boite.appendChild(a);
       }
-      // Volutes de fumée de l'extinction.
       var fumee = scene.querySelector(".moment-fumee");
       if (fumee) {
         for (var m = 0; m < 4; m++) {
@@ -152,13 +159,6 @@ var MomentSerie = (function () {
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-label", "Issue de ta série");
 
-    var nombre = "";
-    if (issue === "continuee") {
-      var n = (typeof streak === "number" && streak > 0) ? streak : 1;
-      nombre = '<div class="moment-nombre">' + n +
-        '<span class="moment-unite">' + (n > 1 ? "jours" : "jour") + '</span></div>';
-    }
-
     overlay.innerHTML =
       '<div class="moment-scene">' +
         '<div class="moment-glow"></div>' +
@@ -167,8 +167,7 @@ var MomentSerie = (function () {
         '<div class="moment-fumee"></div>' +
         '<div class="moment-particules"></div>' +
       '</div>' +
-      nombre +
-      '<p class="moment-texte">' + TEXTES[issue] + '</p>';
+      contenu(issue, streak);
 
     document.body.appendChild(overlay);
 

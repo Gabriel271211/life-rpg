@@ -1,12 +1,12 @@
 /* ============================================
    LIFE RPG — moment-serie.css
    Le grand moment plein écran (~4 s) joué UNE fois à la réouverture
-   d'un nouveau jour, selon l'issue de la série.
-   Flamme en CALQUES à dégradés (corps + cœur + halo) qui vacille de
-   façon organique ; lueur qui éclot ; braises / particules discrètes.
-     - continuée : orange, vivante, montée fluide + braises
-     - gelée     : bleue, le feu se fige sous une vague de givre
-     - rompue    : grise, vacille faiblement puis s'éteint en fumée
+   d'un nouveau jour, selon l'issue de la série. Direction : le NOMBRE
+   est le héros (façon Duolingo), texte minimal, la lueur épouse la
+   flamme (drop-shadow) plutôt qu'un orbe.
+     - continuée : orange, vivante, braises
+     - gelée     : bleue, figée sous le givre
+     - rompue    : grise, vacille puis s'éteint en fumée
    Couleurs de flamme DÉDIÉES (variables), indépendantes de l'aura.
    ============================================ */
 
@@ -18,65 +18,69 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 26px;
+  gap: 8px;
   padding: 24px;
   text-align: center;
   color: #f4efe8;
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
   overflow: hidden;
-  background: radial-gradient(130% 100% at 50% 40%, #1c1712 0%, #0c0d11 58%, #060709 100%);
+  background: radial-gradient(125% 95% at 50% 38%, #1b1611 0%, #0b0c10 56%, #060709 100%);
   animation: moment-in 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 .moment-serie.gelee {
-  background: radial-gradient(130% 100% at 50% 40%, #0f1c28 0%, #0a0f16 58%, #05070a 100%);
+  background: radial-gradient(125% 95% at 50% 38%, #0e1b27 0%, #090e15 56%, #05070a 100%);
 }
 .moment-serie.rompue {
-  background: radial-gradient(130% 100% at 50% 40%, #16171b 0%, #0a0b0e 58%, #050607 100%);
+  background: radial-gradient(125% 95% at 50% 38%, #141519 0%, #090a0d 56%, #050607 100%);
 }
 .moment-serie.sortie { animation: moment-out 0.5s ease forwards; }
 
-/* Couleurs de flamme par issue (stops SVG + halos). */
+/* Palettes de flamme par issue (stops SVG + lueur). */
 .moment-serie.continuee {
-  --fl-body-1: #ffc65a; --fl-body-2: #ff8a2b; --fl-body-3: #ff5a1f;
-  --fl-core-1: #fff6da; --fl-core-2: #ffd483;
-  --fl-glow: rgba(255, 140, 50, 0.55);
-  --fl-halo: rgba(255, 150, 60, 0.5);
+  --fl-body-1: #ffc95e; --fl-body-2: #ff8c2c; --fl-body-3: #f9591b;
+  --fl-core-1: #fff8e2; --fl-core-2: #ffd583;
+  --fl-halo: rgba(255, 142, 52, 0.5);
+  --fl-unite: #e7c393;
+  --fl-titre: #fff3df;
+  --fl-sous: #c8b49b;
 }
 .moment-serie.gelee {
-  --fl-body-1: #e4f4ff; --fl-body-2: #90d0ff; --fl-body-3: #4fa6ef;
-  --fl-core-1: #ffffff; --fl-core-2: #cfecff;
-  --fl-glow: rgba(120, 200, 255, 0.5);
-  --fl-halo: rgba(130, 205, 255, 0.45);
+  --fl-body-1: #e8f5ff; --fl-body-2: #93d2ff; --fl-body-3: #4ea6ef;
+  --fl-core-1: #ffffff; --fl-core-2: #d2edff;
+  --fl-halo: rgba(126, 202, 255, 0.45);
+  --fl-titre: #eaf6ff;
+  --fl-sous: #a9c9e0;
 }
 .moment-serie.rompue {
-  --fl-body-1: #c0c5cf; --fl-body-2: #868b96; --fl-body-3: #5c606a;
-  --fl-core-1: #e4e6ea; --fl-core-2: #a9afb9;
-  --fl-glow: rgba(130, 135, 148, 0.32);
-  --fl-halo: rgba(140, 145, 158, 0.28);
+  --fl-body-1: #c3c8d1; --fl-body-2: #878c97; --fl-body-3: #595d67;
+  --fl-core-1: #e6e8ec; --fl-core-2: #abb1bb;
+  --fl-halo: rgba(135, 140, 152, 0.3);
+  --fl-titre: #e4e6ea;
+  --fl-sous: #b3b8c1;
 }
 
-/* ----- Scène ----- */
+/* ----- Scène / flamme ----- */
 
 .moment-scene {
   position: relative;
-  width: 52vw;
-  max-width: 300px;
+  width: 42vw;
+  max-width: 232px;
   aspect-ratio: 3 / 4;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Halo qui éclot derrière la flamme. */
+/* Lueur discrète, verticale (épouse la flamme, pas un orbe). */
 .moment-glow {
   position: absolute;
-  inset: -18%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 56%, var(--fl-halo), transparent 62%);
-  filter: blur(6px);
+  inset: 0% 24%;
+  border-radius: 50% 50% 48% 48%;
+  background: radial-gradient(60% 68% at 50% 60%, var(--fl-halo), transparent 72%);
+  filter: blur(10px);
   opacity: 0;
-  animation: glow-bloom 1.3s ease-out 0.15s both, glow-pulse 3.4s ease-in-out 1.5s infinite;
+  animation: glow-bloom 1.2s ease-out 0.15s both, glow-pulse 3.6s ease-in-out 1.4s infinite;
 }
 .moment-serie.rompue .moment-glow { animation: glow-bloom 1s ease-out both, glow-fade 1.6s ease 1.4s forwards; }
 
@@ -85,17 +89,16 @@
   width: 100%;
   height: 100%;
   transform-origin: 50% 92%;
+  filter: drop-shadow(0 4px 22px var(--fl-halo));
   animation: flamme-rise 1s cubic-bezier(0.16, 0.84, 0.32, 1) both;
 }
 .fl-svg { width: 100%; height: 100%; display: block; overflow: visible; }
 
-/* Calques de flamme : origine en bas, vacillement indépendant. */
 .fl-layer { transform-origin: 50% 100%; will-change: transform; }
-.fl-body { animation: flicker-a 2.3s ease-in-out 1s infinite; }
-.fl-core { animation: flicker-b 1.7s ease-in-out 1.05s infinite; transform-origin: 50% 96%; }
-.fl-glow-base { animation: base-breathe 2.6s ease-in-out 1s infinite; transform-origin: 50% 100%; }
+.fl-body { animation: flicker-a 2.4s ease-in-out 1s infinite; }
+.fl-core { animation: flicker-b 1.8s ease-in-out 1.05s infinite; transform-origin: 50% 96%; }
 
-/* Braises / particules (injectées en JS). */
+/* Particules (injectées en JS). */
 .moment-particules { position: absolute; inset: 0; pointer-events: none; }
 .particule {
   position: absolute;
@@ -108,53 +111,44 @@
   will-change: transform, opacity;
 }
 .p-ember {
-  background: radial-gradient(circle, #fff0c8 0%, #ff9a3c 55%, rgba(255,120,40,0) 100%);
+  background: radial-gradient(circle, #fff1cc 0%, #ff9a3c 55%, rgba(255,120,40,0) 100%);
   animation: ember var(--dur) ease-in var(--delay) infinite;
 }
 .p-frost {
   top: var(--y);
-  background: radial-gradient(circle, #ffffff 0%, #bfe6ff 55%, rgba(191,230,255,0) 100%);
+  background: radial-gradient(circle, #ffffff 0%, #c4e8ff 55%, rgba(196,232,255,0) 100%);
   animation: frost var(--dur) ease-in-out var(--delay) infinite;
 }
 .p-ash {
   top: 46%;
-  background: radial-gradient(circle, #b8bcc6 0%, #7c828e 60%, rgba(124,130,142,0) 100%);
+  background: radial-gradient(circle, #bbbfc9 0%, #7d8390 60%, rgba(125,131,144,0) 100%);
   animation: ash var(--dur) ease-out var(--delay) infinite;
 }
 
-/* Givre (gelée) : vague cristalline qui remonte + voile figé. */
+/* Givre (gelée) : vague qui remonte + gangue de glace figée. */
 .moment-givre { display: none; }
 .moment-serie.gelee .moment-givre {
-  display: block;
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+  display: block; position: absolute; inset: 0; pointer-events: none;
 }
 .moment-serie.gelee .moment-givre::before {
   content: "";
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  height: 42%;
-  top: 30%;
+  position: absolute; left: 10%; right: 10%; top: 30%; height: 40%;
   border-radius: 50%;
-  background: linear-gradient(180deg, transparent, rgba(224,244,255,0.55) 45%, rgba(255,255,255,0.85) 55%, transparent);
+  background: linear-gradient(180deg, transparent, rgba(226,244,255,0.5) 45%, rgba(255,255,255,0.85) 55%, transparent);
   filter: blur(3px);
   mix-blend-mode: screen;
   opacity: 0;
-  animation: freeze-wave 1.15s cubic-bezier(0.3, 0.7, 0.3, 1) 0.35s forwards;
+  animation: freeze-wave 1.1s cubic-bezier(0.3, 0.7, 0.3, 1) 0.35s forwards;
 }
 .moment-serie.gelee .moment-givre::after {
   content: "";
-  position: absolute;
-  inset: 6% 14%;
+  position: absolute; inset: 5% 15%;
   border-radius: 46% 46% 50% 50%;
-  box-shadow: inset 0 0 22px rgba(200, 236, 255, 0.5), inset 0 6px 14px rgba(255,255,255,0.35);
+  box-shadow: inset 0 0 20px rgba(202, 237, 255, 0.5), inset 0 6px 14px rgba(255,255,255,0.32);
   opacity: 0;
   animation: frost-set 1.1s ease 1s forwards, frost-shimmer 3.6s ease-in-out 2.1s infinite;
 }
-/* En gelée, le feu se fige : un seul balancement puis immobile. */
-.moment-serie.gelee .fl-body { animation: freeze-sway 1.4s cubic-bezier(0.3,0.6,0.2,1) 0.9s both; }
+.moment-serie.gelee .fl-body,
 .moment-serie.gelee .fl-core { animation: freeze-sway 1.4s cubic-bezier(0.3,0.6,0.2,1) 0.9s both; }
 
 /* Fumée (rompue) : volutes injectées en JS. */
@@ -166,12 +160,11 @@
   width: var(--size);
   height: var(--size);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(150,154,164,0.5) 0%, rgba(120,124,134,0.25) 55%, transparent 72%);
+  background: radial-gradient(circle, rgba(150,154,164,0.5) 0%, rgba(120,124,134,0.22) 55%, transparent 72%);
   filter: blur(4px);
   opacity: 0;
   animation: volute var(--dur) ease-out var(--delay) forwards;
 }
-/* En rompue, la flamme vacille faiblement puis s'éteint. */
 .moment-serie.rompue .fl-body { animation: weak-flicker 0.8s ease-in-out 1s 2 both; }
 .moment-serie.rompue .fl-core { animation: weak-flicker 0.65s ease-in-out 1s 2 both; }
 .moment-serie.rompue .moment-flamme {
@@ -179,39 +172,52 @@
              extinction 1.7s cubic-bezier(0.4, 0, 0.7, 0.3) 1.5s forwards;
 }
 
-/* ----- Textes ----- */
+/* ----- Typographie (le nombre est le héros) ----- */
+
+.moment-texte-bloc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
 
 .moment-nombre {
-  font-size: clamp(60px, 21vw, 140px);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.03em;
+  font-size: clamp(84px, 27vw, 172px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
   color: var(--fl-core-1);
-  text-shadow: 0 0 30px var(--fl-halo);
-  animation: nombre-in 0.75s cubic-bezier(0.2, 0.9, 0.3, 1) 0.45s both;
+  text-shadow: 0 0 38px var(--fl-halo);
+  animation: nombre-in 0.75s cubic-bezier(0.2, 0.9, 0.3, 1) 0.4s both;
 }
 .moment-nombre .moment-unite {
   display: block;
-  font-size: 0.22em;
-  font-weight: 600;
-  letter-spacing: 0.22em;
+  font-size: 0.155em;
+  font-weight: 700;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: #e9c79c;
-  margin-top: 10px;
+  color: var(--fl-unite);
+  margin-top: 16px;
   text-shadow: none;
+  padding-left: 0.3em; /* compense le letter-spacing pour rester centré */
 }
-.moment-serie.gelee .moment-unite { color: #bfe6ff; }
 
-.moment-texte {
-  font-size: clamp(15px, 4.2vw, 19px);
-  font-weight: 500;
-  line-height: 1.5;
-  max-width: 22ch;
-  color: #d9d3c9;
-  animation: texte-in 0.7s ease 0.7s both;
+.moment-titre {
+  font-size: clamp(30px, 8.5vw, 48px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  color: var(--fl-titre);
+  text-shadow: 0 0 30px var(--fl-halo);
+  animation: nombre-in 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) 0.4s both;
 }
-.moment-serie.gelee .moment-texte { color: #cfe8ff; }
-.moment-serie.rompue .moment-texte { color: #c8ccd5; }
+.moment-sous {
+  font-size: clamp(14px, 4.1vw, 17px);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--fl-sous);
+  animation: texte-in 0.7s ease 0.75s both;
+}
 
 /* ============================================
    Keyframes
@@ -221,65 +227,57 @@
 @keyframes moment-out { from { opacity: 1; } to { opacity: 0; } }
 
 @keyframes flamme-rise {
-  0%   { transform: translateY(40px) scale(0.24); opacity: 0; }
+  0%   { transform: translateY(38px) scale(0.24); opacity: 0; }
   45%  { opacity: 1; }
   72%  { transform: translateY(0) scale(1.05); }
   100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-/* Vacillement organique : deux rythmes légèrement désaccordés. */
 @keyframes flicker-a {
   0%, 100% { transform: scaleY(1) scaleX(1) skewX(0deg); }
-  22%      { transform: scaleY(1.05) scaleX(0.975) skewX(1.4deg); }
-  46%      { transform: scaleY(0.975) scaleX(1.02) skewX(-1.1deg); }
-  70%      { transform: scaleY(1.035) scaleX(0.99) skewX(0.7deg); }
+  22%      { transform: scaleY(1.045) scaleX(0.98) skewX(1.2deg); }
+  46%      { transform: scaleY(0.98) scaleX(1.015) skewX(-0.9deg); }
+  70%      { transform: scaleY(1.03) scaleX(0.992) skewX(0.6deg); }
 }
 @keyframes flicker-b {
   0%, 100% { transform: scaleY(1) skewX(0deg); }
-  30%      { transform: scaleY(1.06) skewX(-1.3deg); }
-  55%      { transform: scaleY(0.96) skewX(1.2deg); }
-  80%      { transform: scaleY(1.03) skewX(-0.6deg); }
-}
-@keyframes base-breathe {
-  0%, 100% { transform: scale(1); opacity: 0.85; }
-  50%      { transform: scale(1.06); opacity: 1; }
+  30%      { transform: scaleY(1.055) skewX(-1.1deg); }
+  55%      { transform: scaleY(0.965) skewX(1deg); }
+  80%      { transform: scaleY(1.025) skewX(-0.5deg); }
 }
 
 @keyframes glow-bloom {
-  0%   { opacity: 0; transform: scale(0.45); }
-  60%  { opacity: 0.95; }
-  100% { opacity: 0.7; transform: scale(1); }
+  0%   { opacity: 0; transform: scale(0.5); }
+  60%  { opacity: 0.85; }
+  100% { opacity: 0.6; transform: scale(1); }
 }
 @keyframes glow-pulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50%      { opacity: 0.9; transform: scale(1.07); }
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%      { opacity: 0.78; transform: scale(1.05); }
 }
 @keyframes glow-fade { to { opacity: 0; } }
 
 @keyframes nombre-in {
-  0%   { opacity: 0; transform: scale(0.55) translateY(10px); filter: blur(9px); }
+  0%   { opacity: 0; transform: scale(0.6) translateY(12px); filter: blur(8px); }
   60%  { opacity: 1; }
   100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
 }
 @keyframes texte-in {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Braises : montent, dérivent, s'éteignent. */
 @keyframes ember {
   0%   { opacity: 0; transform: translate(0, 0) scale(1); }
   12%  { opacity: 1; }
   100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.25); }
 }
-/* Grains de givre : dérive lente scintillante. */
 @keyframes frost {
   0%   { opacity: 0; transform: translate(0, 0); }
   20%  { opacity: 0.9; }
-  80%  { opacity: 0.7; }
+  80%  { opacity: 0.65; }
   100% { opacity: 0; transform: translate(var(--tx), var(--ty)); }
 }
-/* Cendres : retombent doucement. */
 @keyframes ash {
   0%   { opacity: 0; transform: translate(0, 0) scale(1); }
   20%  { opacity: 0.8; }
@@ -293,20 +291,20 @@
 }
 @keyframes freeze-sway {
   0%   { transform: scaleY(1) skewX(0deg); }
-  40%  { transform: scaleY(1.03) skewX(1.2deg); }
+  40%  { transform: scaleY(1.03) skewX(1.1deg); }
   100% { transform: scaleY(1) skewX(0deg); }
 }
-@keyframes frost-set { to { opacity: 0.85; } }
+@keyframes frost-set { to { opacity: 0.8; } }
 @keyframes frost-shimmer {
-  0%, 100% { opacity: 0.6; }
-  50%      { opacity: 0.95; }
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 0.9; }
 }
 
 @keyframes weak-flicker {
   0%, 100% { transform: scaleY(1) skewX(0deg); opacity: 1; }
   25%      { transform: scaleY(0.94) skewX(-2deg); opacity: 0.82; }
-  55%      { transform: scaleY(1.02) skewX(2.4deg); opacity: 0.95; }
-  80%      { transform: scaleY(0.9) skewX(-1.4deg); opacity: 0.7; }
+  55%      { transform: scaleY(1.02) skewX(2.2deg); opacity: 0.95; }
+  80%      { transform: scaleY(0.9) skewX(-1.3deg); opacity: 0.7; }
 }
 @keyframes extinction {
   0%   { transform: translateY(0) scaleY(1); opacity: 1; filter: none; }
@@ -315,7 +313,7 @@
 }
 @keyframes volute {
   0%   { opacity: 0; transform: translate(0, 0) scale(0.6); }
-  25%  { opacity: 0.55; }
+  25%  { opacity: 0.5; }
   100% { opacity: 0; transform: translate(var(--tx), -120px) scale(1.8); }
 }
 
@@ -324,9 +322,10 @@
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
   .moment-serie, .moment-serie * { animation: none !important; }
-  .moment-glow { opacity: 0.7 !important; }
-  .moment-flamme, .moment-nombre, .moment-texte { opacity: 1 !important; transform: none !important; filter: none !important; }
-  .moment-serie.rompue .moment-flamme { filter: grayscale(1) drop-shadow(0 0 12px rgba(130,135,148,0.35)) !important; opacity: 0.9 !important; }
-  .moment-serie.gelee .moment-givre::after { opacity: 0.85 !important; }
+  .moment-glow { opacity: 0.6 !important; }
+  .moment-flamme, .moment-nombre, .moment-titre, .moment-sous { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .moment-flamme { filter: drop-shadow(0 4px 22px var(--fl-halo)) !important; }
+  .moment-serie.rompue .moment-flamme { filter: grayscale(1) drop-shadow(0 0 12px rgba(135,140,152,0.3)) !important; opacity: 0.9 !important; }
+  .moment-serie.gelee .moment-givre::after { opacity: 0.8 !important; }
   .particule, .volute { display: none !important; }
 }
