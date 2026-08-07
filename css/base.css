@@ -25,12 +25,43 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* ----- Police d'affichage auto-hébergée : Space Grotesk (variable, axe
+   de graisse 300-700). Réservée aux titres et aux GRANDS chiffres/lettres
+   (jamais le corps) — accent typographique, pas un thème. Servie
+   localement (aucune dépendance externe, fonctionne hors-ligne) ; les deux
+   fichiers (latin, latin-ext) sont pré-cachés par le service worker. ----- */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../assets/fonts/space-grotesk-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../assets/fonts/space-grotesk-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   /* Darks teintés bleu nuit (et non gris neutres) : l'app "tire" vers le
      bleu dès le premier rendu, indépendamment du rang. */
   --fond: #080b14;                 /* bleu-noir profond */
   --surface: #141a2b;              /* carte, bleu nuit */
   --bordure: rgba(150, 175, 220, 0.12);
+
+  /* Élévation : ombres discrètes pour que chaque bloc "existe" et se
+     détache du fond (surtout à luminosité moyenne/basse). Couche AJOUTÉE
+     par-dessus la palette, sans toucher aux couleurs ci-dessus. */
+  --surface-haute: #1b2338;   /* panneaux/overlays, un cran au-dessus de --surface */
+  --bordure-forte: rgba(150, 175, 220, 0.20);
+  --ombre-carte: 0 1px 2px rgba(0, 0, 0, 0.5), 0 6px 20px rgba(0, 0, 0, 0.30);
+  --highlight-haut: inset 0 1px 0 rgba(255, 255, 255, 0.05);  /* lumière du dessus */
 
   /* LA couleur de l'app : bleu VIF, CONSTANT, non lié au rang. Tout le
      chrome du quotidien passe par --marque* (boutons, lueurs, barres,
@@ -57,6 +88,11 @@
   --texte-second: #7c869c;         /* gris-bleu froid */
 
   --nav-hauteur: 64px;
+
+  /* Police d'affichage (titres + grands chiffres/lettres). Saira reste
+     le repli si Space Grotesk n'est pas encore chargée (aucun reflow, la
+     graisse est proche). Jamais appliquée au corps. */
+  --police-titre: "Space Grotesk", "Saira", sans-serif;
 
   /* Grandes lettres/chiffres du QUOTIDIEN (décompte repos, "Quête
      accomplie", niveau, noms de cartes en révélation) → BLEU constant. */
@@ -154,6 +190,12 @@ svg {
   display: block;
 }
 
+/* ----- Titres d'écran : police d'affichage (Space Grotesk). Le corps
+   reste en Saira. ----- */
+h1 {
+  font-family: var(--police-titre);
+}
+
 /* ----- Conteneur d'écran (mobile-first) ----- */
 .ecran {
   max-width: 430px;
@@ -219,6 +261,7 @@ svg {
   background: var(--surface);
   border: 1px solid var(--bordure);
   border-radius: 999px;
+  box-shadow: var(--ombre-carte), var(--highlight-haut);
 }
 
 .puce svg {

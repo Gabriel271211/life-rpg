@@ -349,6 +349,7 @@
 }
 
 .rev-lettre {
+  font-family: var(--police-titre);
   font-size: clamp(9rem, 50vw, 12rem);
   font-weight: 900;
   line-height: 0.95;

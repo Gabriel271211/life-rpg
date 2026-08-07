@@ -21,7 +21,7 @@
 // version ne sert donc plus qu'au snapshot HORS-LIGNE : l'incrémenter
 // purge l'ancien cache (activate supprime tout cache != CACHE) et
 // rafraîchit le pré-cache atomique servi quand il n'y a pas de réseau.
-var CACHE = "life-rpg-v23";
+var CACHE = "life-rpg-v24";
 
 var FICHIERS = [
   "./",
@@ -79,7 +79,9 @@ var FICHIERS = [
   "assets/icone-512.png",
   "assets/apple-touch-icon.png",
   "assets/fonts/saira-latin.woff2",
-  "assets/fonts/saira-latin-ext.woff2"
+  "assets/fonts/saira-latin-ext.woff2",
+  "assets/fonts/space-grotesk-latin.woff2",
+  "assets/fonts/space-grotesk-latin-ext.woff2"
 ];
 
 self.addEventListener("install", function (event) {

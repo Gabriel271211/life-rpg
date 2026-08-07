@@ -252,6 +252,7 @@
 
 .qa-titre {
   max-width: 320px;
+  font-family: var(--police-titre);
   font-size: clamp(2rem, 10vw, 2.7rem);
   font-weight: 900;
   line-height: 1.1;

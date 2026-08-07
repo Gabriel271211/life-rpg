@@ -91,6 +91,7 @@
 }
 
 .bandeau-valeur {
+  font-family: var(--police-titre);
   font-size: 1.15rem;
   font-weight: 900;
   line-height: 1;

@@ -73,6 +73,7 @@
   font-size: clamp(10rem, 54vw, 13rem);
   font-weight: 900;
   line-height: 0.95;
+  font-family: var(--police-titre);
   background: var(--degrade-rang);
   -webkit-background-clip: text;
   background-clip: text;

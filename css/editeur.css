@@ -42,7 +42,7 @@
   padding: 22px 22px calc(env(safe-area-inset-bottom) + 22px);
   background:
     radial-gradient(ellipse 120% 45% at 50% -8%, var(--marque-doux), transparent 65%),
-    rgba(10, 10, 15, 0.98);
+    var(--surface-haute);
   animation: session-entree 0.25s ease;
 }
 

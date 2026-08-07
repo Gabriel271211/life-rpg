@@ -20,6 +20,7 @@
   background: var(--surface);
   border: 1px solid var(--bordure);
   border-radius: 18px;
+  box-shadow: var(--ombre-carte), var(--highlight-haut);
 }
 
 .carte-rarete {
@@ -41,6 +42,7 @@
 
 .carte-nom {
   margin-top: 13px;
+  font-family: var(--police-titre);
   font-size: 0.94rem;
   font-weight: 800;
   line-height: 1.2;
@@ -70,7 +72,7 @@
 .carte.rare {
   border-color: rgba(var(--marque-rgb), 0.38);
   background: linear-gradient(180deg, rgba(var(--marque-rgb), 0.05), transparent 55%), var(--surface);
-  box-shadow: 0 0 14px rgba(var(--marque-rgb), 0.1);
+  box-shadow: var(--ombre-carte), var(--highlight-haut), 0 0 14px rgba(var(--marque-rgb), 0.1);
 }
 
 .carte.rare .carte-ornement {
@@ -86,6 +88,8 @@
   border-color: rgba(var(--marque-rgb), 0.6);
   background: linear-gradient(180deg, rgba(var(--marque-rgb), 0.09), transparent 60%), var(--surface);
   box-shadow:
+    var(--ombre-carte),
+    var(--highlight-haut),
     0 0 22px rgba(var(--marque-rgb), 0.18),
     inset 0 0 26px rgba(var(--marque-rgb), 0.05);
 }
@@ -114,6 +118,8 @@
   border-color: rgba(201, 168, 106, 0.55);
   background: linear-gradient(180deg, rgba(201, 168, 106, 0.09), transparent 60%), var(--surface);
   box-shadow:
+    var(--ombre-carte),
+    var(--highlight-haut),
     0 0 24px var(--or-lueur),
     inset 0 0 30px rgba(201, 168, 106, 0.06);
 }
@@ -181,12 +187,14 @@
    ou légendaires, qui restent à un palier. */
 .carte.debloquee.niveau-2 {
   border-color: rgba(var(--marque-rgb), 0.5);
-  box-shadow: 0 0 18px rgba(var(--marque-rgb), 0.16);
+  box-shadow: var(--ombre-carte), var(--highlight-haut), 0 0 18px rgba(var(--marque-rgb), 0.16);
 }
 
 .carte.debloquee.niveau-3 {
   border-color: rgba(var(--marque-rgb), 0.78);
   box-shadow:
+    var(--ombre-carte),
+    var(--highlight-haut),
     0 0 26px rgba(var(--marque-rgb), 0.28),
     inset 0 0 22px rgba(var(--marque-rgb), 0.06);
 }

@@ -13,7 +13,7 @@
   padding: 22px 22px calc(env(safe-area-inset-bottom) + 22px);
   background:
     radial-gradient(ellipse 120% 45% at 50% -8%, rgba(var(--marque-rgb), 0.07), transparent 65%),
-    rgba(10, 10, 15, 0.98);
+    var(--surface-haute);
   animation: session-entree 0.25s ease;
 }
 
@@ -122,6 +122,7 @@
 
 /* ----- Compte à rebours d'entrée : 3, 2, 1 ----- */
 .decompte-chiffre {
+  font-family: var(--police-titre);
   font-size: clamp(8rem, 46vw, 11rem);
   font-weight: 900;
   line-height: 1;
