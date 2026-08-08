@@ -11,6 +11,44 @@
 
   var etat = Etat.charger();
 
+  // Déblocage progressif (chantier 2) : `debloque` est la carte des
+  // fonctionnalités ouvertes (même référence que etat.debloque, mutée
+  // en place par Deblocage.evaluer). L'accueil masque les sections non
+  // ouvertes et les fait apparaître à chaud dès qu'elles se débloquent.
+  var debloque = etat.debloque;
+
+  var sectionHebdo = document.querySelector(".hebdo");
+  var sectionSecondaires = document.querySelector(".secondaires");
+  var lienQuetePrincipale = document.querySelector(".qp-lien");
+
+  function afficherSi(el, ouvert) {
+    if (el) el.style.display = ouvert ? "" : "none";
+  }
+
+  // Masque/affiche les sections de l'accueil selon `debloque`, et
+  // répercute sur la nav. Le chat fait exception (toujours visible,
+  // verrouillé => teaser) ; les écrans Perso/Collection/Quête sont
+  // gardés par garde.js.
+  function appliquerMasquage() {
+    afficherSi(sectionHebdo, debloque.hebdo);
+    afficherSi(sectionSecondaires, debloque.secondaires);
+    afficherSi(lienQuetePrincipale, debloque.quetePrincipale);
+    if (window.Nav) Nav.appliquer(debloque);
+  }
+
+  // Ré-évalue les déclencheurs après un changement d'état. Ce qui
+  // s'ouvre est persisté et l'UI se met à jour aussitôt. La révélation
+  // ANIMÉE est le chantier 3 : ici on ne fait que poser les drapeaux
+  // (Deblocage.evaluer a déjà écrit revelationEnAttente).
+  function evaluerDeblocages() {
+    if (!window.Deblocage) return;
+    var nouveaux = Deblocage.evaluer(etat);
+    if (nouveaux.length) {
+      Etat.sauvegarder(etat);
+      appliquerMasquage();
+    }
+  }
+
   var puceStreak = document.getElementById("puce-streak");
   var puceNiveau = document.getElementById("puce-niveau");
   var listeQuetes = document.getElementById("quetes");
@@ -266,6 +304,7 @@
     majQuetePrincipale();
     rendreHebdo();
     majJourAccompli();
+    evaluerDeblocages();
   }
 
   function devaliderParTap(quete) {
@@ -384,7 +423,15 @@
 
   // --- Chat du Système : une action appliquée re-rend l'accueil ---
 
+  // Le bouton du Système reste VISIBLE avant le rang D, mais verrouillé :
+  // au tap, un teaser au lieu d'ouvrir le chat. Débloqué (niv 10),
+  // il ouvre normalement.
   document.getElementById("ouvrir-chat").addEventListener("click", function () {
+    if (!debloque.chat) {
+      Juice.bandeau("Le Système observe", "Il ne parle pas encore.");
+      Juice.vibrer(20);
+      return;
+    }
     Chat.ouvrir(etat, function () {
       rendreQuetes();
       majQuetePrincipale();
@@ -465,6 +512,7 @@
 
     rendreHebdo();
     majPuces();
+    evaluerDeblocages();
   }
 
   // L'hebdo se vit comme une quête du jour : si elle définit une
@@ -501,6 +549,7 @@
       Etat.sauvegarder(etat);
       rendreHebdo();
       majPuces();
+      evaluerDeblocages();
 
       if (res && res.accomplie) {
         afficherBandeaux(niveauAvant, evoCartes);
@@ -713,6 +762,7 @@
       Etat.sauvegarder(etat);
       rendreSecondaires();
       majPuces();
+      evaluerDeblocages();
       Juice.vibrer(carteObjectif ? 70 : 40);
       afficherBandeaux(niveauAvant, evoCartes);
       if (carteObjectif) Revelation.montrer([carteObjectif]);
@@ -916,5 +966,10 @@
   if (!estJourRepos()) proposerHebdoSiBesoin();
   majModeRepos();
   afficherMessageGelSiBesoin();
+  // Déblocage progressif : on reflète l'état actuel, puis on évalue les
+  // déclencheurs liés au JOUR (quête principale au 3ᵉ jour, gel à la
+  // 1ʳᵉ semaine tenue) qui ne dépendent d'aucune action immédiate.
+  appliquerMasquage();
+  evaluerDeblocages();
 
 })();

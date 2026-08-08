@@ -21,7 +21,7 @@
 // version ne sert donc plus qu'au snapshot HORS-LIGNE : l'incrémenter
 // purge l'ancien cache (activate supprime tout cache != CACHE) et
 // rafraîchit le pré-cache atomique servi quand il n'y a pas de réseau.
-var CACHE = "life-rpg-v26";
+var CACHE = "life-rpg-v27";
 
 var FICHIERS = [
   "./",
@@ -52,6 +52,7 @@ var FICHIERS = [
   "js/garde.js",
   "js/ia.js",
   "js/jour.js",
+  "js/deblocage.js",
   "js/commun.js",
   "js/cartes.js",
   "js/etat.js",

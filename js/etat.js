@@ -94,6 +94,17 @@ var Etat = (function () {
     chat: [],
     chatArchives: [],
     historique: {},
+    // Déblocage progressif (chantier 2). DEFAUT est un état de SECOURS
+    // (stockage indisponible) : il représente un joueur établi, donc
+    // tout est ouvert et rien n'est en attente de révélation. Un NOUVEAU
+    // joueur passe par Templates.etatNeuf, qui pose tout à false.
+    debloque: {
+      fichePerso: true, collection: true, hebdo: true,
+      quetePrincipale: true, secondaires: true, gel: true, chat: true
+    },
+    revelationsVues: ["fichePerso", "collection", "hebdo", "quetePrincipale", "secondaires", "gel", "chat"],
+    revelationEnAttente: null,
+    dateDebut: null, // posé à aujourd'hui par la migration au 1ᵉʳ chargement
     onboardingFait: true
   };
 
@@ -436,6 +447,30 @@ var Etat = (function () {
         modifie = true;
       }
     });
+    // Chantier 2 : déblocage progressif. Un état SANS `debloque` a été
+    // sauvegardé avant ce chantier : c'est un joueur EXISTANT, tout lui
+    // est déjà ouvert et AUCUNE révélation ne se joue rétroactivement.
+    // Un état neuf (Templates.etatNeuf) porte déjà son `debloque` (tout
+    // à false) : on n'y touche pas.
+    if (!etat.debloque || typeof etat.debloque !== "object" || Array.isArray(etat.debloque)) {
+      etat.debloque = {
+        fichePerso: true, collection: true, hebdo: true,
+        quetePrincipale: true, secondaires: true, gel: true, chat: true
+      };
+      etat.revelationsVues = Object.keys(etat.debloque); // toutes déjà vues
+      etat.revelationEnAttente = null;
+      modifie = true;
+    }
+    // Filets si `debloque` existe mais que ses compagnons manquent.
+    if (!Array.isArray(etat.revelationsVues)) { etat.revelationsVues = []; modifie = true; }
+    if (!("revelationEnAttente" in etat)) { etat.revelationEnAttente = null; modifie = true; }
+    // Date de début de jeu (compte des jours de jeu). Absente (joueur
+    // existant ou état neuf) => aujourd'hui, calée sur dernierJour déjà
+    // synchronisé plus haut dans la migration.
+    if (typeof etat.dateDebut !== "string") {
+      etat.dateDebut = etat.dernierJour || Jour.dateDuJour();
+      modifie = true;
+    }
     return modifie;
   }
 

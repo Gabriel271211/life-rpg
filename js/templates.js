@@ -360,6 +360,17 @@ var Templates = (function () {
       },
       cartesDebloquees: [],
       historique: {},
+      // Déblocage progressif (chantier 2) : un NOUVEAU joueur démarre
+      // tout verrouillé. Les fonctionnalités s'ouvrent une par une sur
+      // la 1ʳᵉ semaine (voir deblocage.js). dateDebut est posée à
+      // aujourd'hui par la migration au 1ᵉʳ chargement, en même temps que
+      // dernierJour — les deux restent ainsi calées.
+      debloque: {
+        fichePerso: false, collection: false, hebdo: false,
+        quetePrincipale: false, secondaires: false, gel: false, chat: false
+      },
+      revelationsVues: [],
+      revelationEnAttente: null,
       // Marqueurs de migration : un état neuf n'a rien à rattraper.
       seanceParDefautAjoutee: true,
       onboardingFait: true
