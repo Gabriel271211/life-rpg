@@ -128,4 +128,7 @@
   document.getElementById("compte-total").textContent =
     Cartes.liste().length + objectifCount;
 
+  // Révélation de la collection (chantier 3).
+  if (window.Reveal) Reveal.demarrer(etat);
+
 })();

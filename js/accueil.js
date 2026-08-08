@@ -46,6 +46,9 @@
     if (nouveaux.length) {
       Etat.sauvegarder(etat);
       appliquerMasquage();
+      // Une feature vient de s'ouvrir : le moment de révélation (chantier
+      // 3) se joue tout de suite, sur la même page.
+      if (window.Reveal) Reveal.demarrer(etat);
     }
   }
 
@@ -971,5 +974,8 @@
   // 1ʳᵉ semaine tenue) qui ne dépendent d'aucune action immédiate.
   appliquerMasquage();
   evaluerDeblocages();
+  // Révélation déjà en attente d'une session précédente (ex. quête
+  // principale au 3ᵉ jour, ou chat à reprendre) : on la joue au chargement.
+  if (window.Reveal) Reveal.demarrer(etat);
 
 })();

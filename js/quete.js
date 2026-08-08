@@ -345,4 +345,7 @@
 
   rendre();
 
+  // Révélation de la quête principale (chantier 3).
+  if (window.Reveal) Reveal.demarrer(etat);
+
 })();
