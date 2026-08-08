@@ -431,7 +431,7 @@
   // il ouvre normalement.
   document.getElementById("ouvrir-chat").addEventListener("click", function () {
     if (!debloque.chat) {
-      Juice.bandeau("Le Système observe", "Il ne parle pas encore.");
+      Juice.bandeau("Le Système", "observe.");
       Juice.vibrer(20);
       return;
     }
