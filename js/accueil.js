@@ -431,7 +431,8 @@
   // il ouvre normalement.
   document.getElementById("ouvrir-chat").addEventListener("click", function () {
     if (!debloque.chat) {
-      Juice.bandeau("Le Système", "observe.");
+      // Teaser sobre : une seule ligne discrète, aucun mot en gros.
+      Juice.bandeau("Le Système observe", "");
       Juice.vibrer(20);
       return;
     }

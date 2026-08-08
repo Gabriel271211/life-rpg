@@ -30,11 +30,13 @@ var Juice = (function () {
   function bandeau(etiquette, valeur, classe) {
     var el = document.createElement("div");
     el.className = "bandeau-niveau" + (classe ? " " + classe : "");
+    // Le grand mot (valeur) n'est rendu que s'il existe : un bandeau
+    // sans valeur reste une simple ligne discrète, sans espace vide.
     el.innerHTML =
       '<span class="bandeau-etiquette"></span>' +
-      '<span class="bandeau-valeur"></span>';
+      (valeur ? '<span class="bandeau-valeur"></span>' : "");
     el.querySelector(".bandeau-etiquette").textContent = etiquette;
-    el.querySelector(".bandeau-valeur").textContent = valeur;
+    if (valeur) el.querySelector(".bandeau-valeur").textContent = valeur;
     document.body.appendChild(el);
     setTimeout(function () { el.remove(); }, 2600);
   }
