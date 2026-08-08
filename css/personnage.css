@@ -78,9 +78,12 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  /* Halo À LA COULEUR DU RANG (--accent), pas au bleu de l'app : c'est
+     la lettre qui porte l'identité de rang (or pour S, rouge pour A...),
+     son éclat doit suivre. Le reste de la page reste bleu (Option A). */
   filter:
-    drop-shadow(0 0 22px rgba(var(--marque-rgb), 0.35))
-    drop-shadow(0 0 70px rgba(var(--marque-rgb), 0.18));
+    drop-shadow(0 0 22px rgba(var(--accent-rgb), 0.45))
+    drop-shadow(0 0 70px rgba(var(--accent-rgb), 0.22));
 }
 
 /* "Nation" est un mot, pas une lettre : on l'écrit nettement plus petit

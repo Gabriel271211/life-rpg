@@ -99,8 +99,10 @@
   --degrade-lettre: linear-gradient(180deg, #eef3ff 0%, #a9c4ff 55%, var(--marque) 135%);
 
   /* Dégradé réservé à la LETTRE de rang (#rang-lettre) : suit la couleur
-     de rang courante (--accent-clair / --accent posés par aura.js). */
-  --degrade-rang: linear-gradient(180deg, #eef2f7 0%, var(--accent-clair) 55%, var(--accent) 135%);
+     de rang courante (--accent-clair / --accent posés par aura.js). Un
+     éclat blanc en haut, puis la couleur du rang PLEINE en bas (atteinte
+     à 100 %) pour qu'elle se voie franchement, pas seulement une pointe. */
+  --degrade-rang: linear-gradient(180deg, #eef2f7 0%, var(--accent-clair) 42%, var(--accent) 100%);
 
   /* L'or des cartes légendaires / du rang S. Défini ici (base.css est
      chargé partout) pour que var(--or) résolve sur toutes les pages,

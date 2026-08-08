@@ -151,7 +151,7 @@ var Aura = (function () {
     lettreEl.textContent = palier.lettre === "Nation" ? "Nation" : palier.lettre;
     if (palier.lettre === "Nation") lettreEl.classList.add("aura-lettre-nation");
     lettreEl.style.backgroundImage =
-      "linear-gradient(180deg, #eef2f7 0%, " + aura.clair + " 55%, " + aura.accent + " 135%)";
+      "linear-gradient(180deg, #eef2f7 0%, " + aura.clair + " 42%, " + aura.accent + " 100%)";
     lettreEl.style.filter =
       "drop-shadow(0 0 22px rgba(" + rgb + ", 0.35)) drop-shadow(0 0 70px rgba(" + rgb + ", 0.18))";
 
