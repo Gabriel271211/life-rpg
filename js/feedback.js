@@ -46,8 +46,10 @@ var Feedback = (function () {
     }
 
     // La montée de rang — le moment fort — passe par-dessus tout.
-    var rangAvant = Regles.rang(niveauAvant).actuel.lettre;
-    var rangApres = Regles.rang(niveauApres).actuel.lettre;
+    // On compare par `cle` : franchir une étoile de S (s1→s2...) ou
+    // atteindre Nation est une vraie montée, même si la lettre ne change pas.
+    var rangAvant = Regles.rang(niveauAvant).actuel.cle;
+    var rangApres = Regles.rang(niveauApres).actuel.cle;
     if (rangApres !== rangAvant) {
       Aura.monterRang(rangAvant, rangApres);
     }

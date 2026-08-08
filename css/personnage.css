@@ -83,6 +83,30 @@
     drop-shadow(0 0 70px rgba(var(--marque-rgb), 0.18));
 }
 
+/* "Nation" est un mot, pas une lettre : on l'écrit nettement plus petit
+   pour qu'il tienne sans déborder, tout en gardant l'éclat du rang. */
+.rang-lettre-nation {
+  font-size: clamp(3.4rem, 20vw, 5.6rem);
+  letter-spacing: -0.01em;
+}
+
+/* Étoiles du rang S, sous la lettre. Couleur de rang (--accent) : l'or
+   s'intensifie d'une étoile à l'autre, comme l'aura. */
+.rang-etoiles-fiche {
+  position: relative;
+  z-index: 1;
+  margin-top: 2px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1.9rem;
+  line-height: 1;
+  color: var(--accent);
+  filter:
+    drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.55))
+    drop-shadow(0 0 26px rgba(var(--accent-rgb), 0.28));
+}
+
 /* Progression vers le rang suivant */
 .rang-prochain {
   position: relative;

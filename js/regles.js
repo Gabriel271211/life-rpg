@@ -12,12 +12,17 @@ var Regles = (function () {
   // aura.js n'est pas présent sur la page — les valeurs doivent alors
   // rester identiques à Aura.PALIERS.
   var RANGS = (typeof Aura !== "undefined" && Aura.PALIERS) ? Aura.PALIERS : [
-    { lettre: "E", niveauRequis: 1 },
-    { lettre: "D", niveauRequis: 10 },
-    { lettre: "C", niveauRequis: 20 },
-    { lettre: "B", niveauRequis: 35 },
-    { lettre: "A", niveauRequis: 55 },
-    { lettre: "S", niveauRequis: 80 }
+    { lettre: "E",      niveauRequis: 1,   etoiles: 0, cle: "e" },
+    { lettre: "D",      niveauRequis: 10,  etoiles: 0, cle: "d" },
+    { lettre: "C",      niveauRequis: 20,  etoiles: 0, cle: "c" },
+    { lettre: "B",      niveauRequis: 30,  etoiles: 0, cle: "b" },
+    { lettre: "A",      niveauRequis: 40,  etoiles: 0, cle: "a" },
+    { lettre: "S",      niveauRequis: 50,  etoiles: 0, cle: "s" },
+    { lettre: "S",      niveauRequis: 60,  etoiles: 1, cle: "s1" },
+    { lettre: "S",      niveauRequis: 70,  etoiles: 2, cle: "s2" },
+    { lettre: "S",      niveauRequis: 80,  etoiles: 3, cle: "s3" },
+    { lettre: "S",      niveauRequis: 90,  etoiles: 4, cle: "s4" },
+    { lettre: "Nation", niveauRequis: 100, etoiles: 0, cle: "nation" }
   ];
 
   // Coup critique : chance qu'une quête validée rapporte le double d'XP.
@@ -29,13 +34,38 @@ var Regles = (function () {
   }
 
   // XP nécessaire pour passer du niveau N au niveau N+1.
+  //
+  // Courbe « en colline saturante » : ~67 XP au niveau 1, elle grimpe
+  // vite puis se stabilise autour de ~610 vers le niveau 100 (croissante
+  // et lisse, jamais explosive). Elle est calibrée sur le revenu réel
+  // d'un joueur régulier (~750 XP/semaine : quêtes du jour ~5 j + hebdo)
+  // pour que le CUMUL tombe sur les cibles de temps voulues :
+  //   niv 10 (rang D)  ≈    740 XP → ~1 semaine (fin de semaine 1)
+  //   niv 50 (rang S)  ≈ 13 250    → ~4 mois (≤ 6 mois)
+  //   niv 100 (Nation) ≈ 41 200    → ~1 an pour un joueur assidu
+  // Difficulté croissante : chaque tranche de 10 niveaux coûte plus que
+  // la précédente ; le grind d'étoiles 50→100 est le plus lent.
+  // (34*34 = 1156 : la constante qui règle où la colline s'infléchit.)
   function xpRequisNiveau(niveau) {
-    return niveau * 100;
+    return Math.round(66 + 605 * niveau * niveau / (niveau * niveau + 1156));
   }
 
   // XP nécessaire pour monter une stat du niveau N au niveau N+1.
+  // Version abaissée de la courbe de niveau (chaque stat ne reçoit qu'une
+  // part de l'XP total) : ~30 % du coût de niveau, même forme.
   function xpRequisStat(niveau) {
-    return niveau * 30;
+    return Math.round(0.3 * xpRequisNiveau(niveau));
+  }
+
+  // Étiquette lisible d'un palier de rang : "S", "S ★★", "Nation".
+  // Réutilise Aura.libelle quand aura.js est présent (source unique de
+  // l'affichage) ; repli inline identique sinon.
+  function libelleRang(palier) {
+    if (!palier) return "";
+    if (typeof Aura !== "undefined" && Aura.libelle) return Aura.libelle(palier);
+    if (palier.lettre === "Nation") return "Nation";
+    if (palier.etoiles > 0) return palier.lettre + " " + "★★★★".slice(0, palier.etoiles);
+    return palier.lettre;
   }
 
   // Rang actuel, rang suivant et progression (0 à 1) vers celui-ci.
@@ -259,6 +289,7 @@ var Regles = (function () {
     atteindreJalon: atteindreJalon,
     xpRequisNiveau: xpRequisNiveau,
     xpRequisStat: xpRequisStat,
+    libelleRang: libelleRang,
     rang: rang,
     gagnerXp: gagnerXp,
     retirerXp: retirerXp

@@ -298,7 +298,7 @@ var Chat = (function () {
       objectif: etat.objectifTexte || etat.quetePrincipale.titre,
       classe: etat.classe,
       niveau: etat.niveau,
-      rang: Regles.rang(etat.niveau).actuel.lettre,
+      rang: Regles.libelleRang(Regles.rang(etat.niveau).actuel),
       jalon: actif ? actif.jalon.nom : "",
       streak: etat.streak,
       quetes: etat.quetes.map(function (q) {

@@ -92,6 +92,26 @@
   color: transparent;
 }
 
+/* "Nation" : mot long, écrit plus petit que les lettres de rang. */
+.aura-lettre-nation {
+  font-size: clamp(3.4rem, 20vw, 5.4rem);
+  letter-spacing: -0.01em;
+}
+
+/* Étoiles du rang S dans la cérémonie : posées bas, sous le glyphe.
+   Couleur/ombre réglées inline par aura.js (suivent l'aura courante,
+   d'où le crossfade). */
+.aura-etoiles {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  font-size: clamp(1.6rem, 8vw, 2.4rem);
+  line-height: 1;
+}
+
 /* Étiquette "RANG C ATTEINT" */
 .aura-etiquette {
   font-size: 0.72rem;

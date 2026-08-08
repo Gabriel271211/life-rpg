@@ -123,7 +123,7 @@ var Cartes = (function () {
       cachee: true,
       description: "Au sommet du rang S, il ne reste que toi.",
       paliers: [
-        { objectif: "Atteins le rang S", atteint: function (e) { return e.niveau >= 80; } }
+        { objectif: "Atteins le rang S ★★★★", atteint: function (e) { return e.niveau >= 90; } }
       ]
     }
   ];

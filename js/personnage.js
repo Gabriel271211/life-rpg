@@ -23,14 +23,33 @@
   document.getElementById("perso-classe").textContent = etat.classe;
 
   // --- Rang + progression vers le rang suivant ---
+  // La lettre reste géante ; les étoiles de S se posent en dessous, dans
+  // la couleur de rang (--accent, qui s'intensifie palier après palier).
+  // "Nation" est un mot long : classe dédiée pour l'écrire plus petit.
   var infoRang = Regles.rang(etat.niveau);
-  document.getElementById("rang-lettre").textContent = infoRang.actuel.lettre;
+  var actuel = infoRang.actuel;
+  var lettreEl = document.getElementById("rang-lettre");
+  var ancienneEtoiles = document.querySelector(".rang-etoiles-fiche");
+  if (ancienneEtoiles) ancienneEtoiles.remove();
+
+  if (actuel.lettre === "Nation") {
+    lettreEl.textContent = "Nation";
+    lettreEl.classList.add("rang-lettre-nation");
+  } else {
+    lettreEl.textContent = actuel.lettre;
+    if (actuel.etoiles > 0) {
+      var etoilesEl = document.createElement("div");
+      etoilesEl.className = "rang-etoiles-fiche";
+      etoilesEl.textContent = "★★★★".slice(0, actuel.etoiles);
+      lettreEl.insertAdjacentElement("afterend", etoilesEl);
+    }
+  }
 
   var prochainTexte = document.getElementById("rang-prochain-texte");
   var prochainBarre = document.getElementById("rang-prochain-remplie");
   if (infoRang.suivant) {
     prochainTexte.textContent =
-      "Rang " + infoRang.suivant.lettre + " au niveau " + infoRang.suivant.niveauRequis;
+      "Rang " + Regles.libelleRang(infoRang.suivant) + " au niveau " + infoRang.suivant.niveauRequis;
     poserLargeur(prochainBarre, Math.round(infoRang.progression * 100));
   } else {
     prochainTexte.textContent = "Rang maximal atteint";

@@ -148,10 +148,43 @@
   --accent-clair: #e4b7be;
 }
 
+/* Rang S : or de base, puis intensifié à chaque étoile (s1..s4). Les
+   classes s1..s4 DOUBLENT Aura.AURAS (aura.js) — modifier les deux. */
 .rang-s {
   --accent: #c9a86a;
   --accent-rgb: 201, 168, 106;
   --accent-clair: #e7d8bc;
+}
+
+.rang-s1 {
+  --accent: #d4af5e;
+  --accent-rgb: 212, 175, 94;
+  --accent-clair: #efdcae;
+}
+
+.rang-s2 {
+  --accent: #e0b852;
+  --accent-rgb: 224, 184, 82;
+  --accent-clair: #f3e2a3;
+}
+
+.rang-s3 {
+  --accent: #edc246;
+  --accent-rgb: 237, 194, 70;
+  --accent-clair: #f7e896;
+}
+
+.rang-s4 {
+  --accent: #ffcf3a;
+  --accent-rgb: 255, 207, 58;
+  --accent-clair: #ffef9c;
+}
+
+/* Nation : platine irisé, couleur de prestige distincte de l'or. */
+.rang-nation {
+  --accent: #dfe7fb;
+  --accent-rgb: 223, 231, 251;
+  --accent-clair: #ffffff;
 }
 
 /* ----- Reset ----- */

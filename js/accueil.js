@@ -169,8 +169,8 @@
 
   // Rang redescendu (décochage) : l'aura suit, sans cérémonie.
   function majAuraSansCeremonie(niveauAvant) {
-    var rangApres = Regles.rang(etat.niveau).actuel.lettre;
-    if (rangApres !== Regles.rang(niveauAvant).actuel.lettre) {
+    var rangApres = Regles.rang(etat.niveau).actuel.cle;
+    if (rangApres !== Regles.rang(niveauAvant).actuel.cle) {
       Aura.appliquer(rangApres);
     }
   }

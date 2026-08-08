@@ -567,15 +567,32 @@ var LifeRpgDebug = {
       Session.reglerAcceleration(actif !== false);
     }
   },
-  // Joue la séquence de montée de rang sans grinder : du rang
-  // actuel vers le suivant (ou A -> S si le sommet est atteint).
+  // Joue la séquence de montée de rang sans grinder : du rang actuel
+  // vers le suivant (ou, au sommet, rejoue la dernière transition).
   simulerMonteeDeRang: function () {
     var etat = Etat.charger();
     var info = Regles.rang(etat.niveau);
-    var ancienne = info.actuel.lettre;
-    var nouvelle = info.suivant ? info.suivant.lettre : "S";
-    if (!info.suivant) ancienne = "A";
+    var paliers = Aura.PALIERS;
+    var idx = paliers.indexOf(info.actuel);
+    var ancienne, nouvelle;
+    if (info.suivant) {
+      ancienne = info.actuel.cle;
+      nouvelle = info.suivant.cle;
+    } else {
+      ancienne = paliers[Math.max(0, idx - 1)].cle;
+      nouvelle = info.actuel.cle;
+    }
     Aura.monterRang(ancienne, nouvelle);
+  },
+  // Pousse le niveau global à une valeur donnée (XP remis à 0 sur le
+  // palier) et recharge : pour vérifier l'affichage du rang, des étoiles
+  // de S et de "Nation" sans grinder. Ex : LifeRpgDebug.pousserNiveau(90).
+  pousserNiveau: function (niveau) {
+    var etat = Etat.charger();
+    etat.niveau = Math.max(1, Math.round(niveau) || 1);
+    etat.xp = 0;
+    Etat.sauvegarder(etat);
+    location.reload();
   },
   // Débloque toutes les cartes à leur niveau maximum, la première
   // brillante, pour vérifier le rendu des raretés, niveaux et reflets.
