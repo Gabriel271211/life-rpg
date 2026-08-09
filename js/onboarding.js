@@ -190,18 +190,9 @@
     });
 
     rendreQuetesProposees();
-
-    var hebdo = document.getElementById("prop-hebdo");
-    hebdo.innerHTML =
-      '<div class="onb-prop-quete">' +
-        '<div class="onb-prop-quete-infos">' +
-          '<p class="onb-prop-quete-nom"></p>' +
-          '<p class="onb-prop-quete-meta"></p>' +
-        "</div>" +
-      "</div>";
-    hebdo.querySelector(".onb-prop-quete-nom").textContent = proposition.hebdo.nom;
-    hebdo.querySelector(".onb-prop-quete-meta").textContent =
-      "+" + proposition.hebdo.xp + " XP · " + proposition.hebdo.objectif + " fois par semaine";
+    // La quête hebdomadaire n'est PAS montrée à l'onboarding : c'est un
+    // déblocage ultérieur (2ᵉ jour). L'aperçu se limite à l'objectif et
+    // aux quêtes du jour, cohérent avec le déblocage progressif.
   }
 
   function rendreQuetesProposees() {

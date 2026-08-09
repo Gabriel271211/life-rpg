@@ -69,24 +69,33 @@ var Editeur = (function () {
   // --- Liste des quêtes ---
 
   function vueListe() {
+    // La quête hebdomadaire ne s'édite que si elle est DÉBLOQUÉE : tant
+    // qu'elle ne l'est pas, sa section est absente de l'éditeur (comme de
+    // l'accueil). Un état sans `debloque` (joueur existant) a tout d'ouvert.
+    var voitHebdo = !ctx.etat.debloque || ctx.etat.debloque.hebdo;
+
     var corps = montrerVue(
       '<p class="etiquette">Quêtes quotidiennes</p>' +
       '<div class="editeur-liste"></div>' +
       '<p class="editeur-message" hidden></p>' +
       '<button class="session-bouton editeur-nouvelle" type="button">Nouvelle quête</button>' +
       '<button class="session-lien accent editeur-ia" type="button">Demander au Système</button>' +
-      '<p class="etiquette editeur-section">Quête hebdomadaire</p>' +
-      '<div class="editeur-liste"></div>' +
+      (voitHebdo
+        ? '<p class="etiquette editeur-section">Quête hebdomadaire</p>' +
+          '<div class="editeur-liste editeur-liste-hebdo"></div>'
+        : "") +
       '<p class="etiquette editeur-section">Tes jours d\'engagement</p>' +
       '<p class="editeur-jours-intro">Les jours où la boucle quotidienne est active. Le repos ne casse jamais ta série. Un changement s\'applique vers l\'avant.</p>' +
       '<div class="editeur-jours"></div>'
     );
 
-    var listes = corps.querySelectorAll(".editeur-liste");
+    corps.querySelector(".editeur-liste").innerHTML = "";
     ctx.etat.quetes.forEach(function (quete) {
-      listes[0].appendChild(ligneQuete(quete));
+      corps.querySelector(".editeur-liste").appendChild(ligneQuete(quete));
     });
-    listes[1].appendChild(ligneHebdo());
+    if (voitHebdo) {
+      corps.querySelector(".editeur-liste-hebdo").appendChild(ligneHebdo());
+    }
 
     monterJoursEngagement(corps.querySelector(".editeur-jours"));
 
