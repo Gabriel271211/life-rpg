@@ -629,6 +629,47 @@ var LifeRpgDebug = {
     Etat.sauvegarder(etat);
     location.reload();
   },
+  // Rejoue la cinématique de déblocage d'une feature depuis l'accueil.
+  // Ex : LifeRpgDebug.jouerCinematique("fichePerso"). Sans argument (ou
+  // id inconnu), liste les features disponibles.
+  jouerCinematique: function (id) {
+    var etat = Etat.charger();
+    if (!etat.debloque) return;
+    if (!id || !(id in etat.debloque)) {
+      console.log("Features : " + Object.keys(etat.debloque).join(", "));
+      return;
+    }
+    etat.debloque[id] = true;
+    if (id === "chat" && etat.niveau < 10) etat.niveau = 10; // le chat exige le rang D
+    if (Array.isArray(etat.revelationsVues)) {
+      etat.revelationsVues = etat.revelationsVues.filter(function (v) { return v !== id; });
+    }
+    etat.revelationEnAttente = id;
+    Etat.sauvegarder(etat);
+    location.href = "index.html"; // toutes les cinématiques démarrent ici
+  },
+  // Débloque TOUT (features + onglets) SANS jouer aucune cinématique :
+  // toutes les révélations sont marquées vues. Pour explorer l'app entière.
+  toutDebloquer: function () {
+    var etat = Etat.charger();
+    if (!etat.debloque) return;
+    Object.keys(etat.debloque).forEach(function (k) { etat.debloque[k] = true; });
+    etat.revelationsVues = Object.keys(etat.debloque);
+    etat.revelationEnAttente = null;
+    Etat.sauvegarder(etat);
+    location.reload();
+  },
+  // Re-verrouille tout (compte neuf) pour revivre le déblocage progressif :
+  // aucune feature ouverte, aucune révélation vue.
+  reverrouiller: function () {
+    var etat = Etat.charger();
+    if (!etat.debloque) return;
+    Object.keys(etat.debloque).forEach(function (k) { etat.debloque[k] = false; });
+    etat.revelationsVues = [];
+    etat.revelationEnAttente = null;
+    Etat.sauvegarder(etat);
+    location.href = "index.html";
+  },
   // Débloque toutes les cartes à leur niveau maximum, la première
   // brillante, pour vérifier le rendu des raretés, niveaux et reflets.
   debloquerToutesLesCartes: function () {
