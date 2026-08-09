@@ -19,11 +19,11 @@
   touch-action: none;
 }
 
-/* App inerte pendant la cinématique : scroll bloqué + aucun pointer sur
-   ce qui n'est pas le calque. La cinématique possède les entrées. */
-body.cine-actif {
-  overflow: hidden;
-}
+/* App inerte pendant la cinématique : aucun pointer sur ce qui n'est pas
+   le calque. Le scroll de l'UTILISATEUR est bloqué par la capture des
+   gestes (touchmove/wheel) dans le JS — PAS par overflow:hidden, sinon
+   scrollIntoView ne pourrait plus amener les cibles de la visite dans le
+   champ (bulles décalées / invisibles selon la hauteur d'écran). */
 body.cine-actif > *:not(.cine) {
   pointer-events: none;
 }

@@ -245,6 +245,8 @@ var Cinematique = (function () {
 
     var index = -1;
     var gen = 0;
+    var pret = true; // faux pendant qu'une étape se place : un tap ne peut
+                     // PAS sauter une étape avant que sa bulle soit posée.
 
     function points(k) {
       pointsEl.innerHTML = "";
@@ -264,7 +266,10 @@ var Cinematique = (function () {
         if (cine === null) return; // cinématique quittée entre-temps
         var el = document.querySelector(sel);
         if (el && el.getBoundingClientRect().height > 0) {
-          el.scrollIntoView({ block: "center", behavior: SANS_MOUV ? "auto" : "smooth" });
+          // Défilement INSTANTANÉ (pas "smooth") : la position finale est
+          // disponible dès la frame suivante, donc la mesure est fiable.
+          // Le glissement visuel du spot vient de sa transition CSS.
+          el.scrollIntoView({ block: "center", behavior: "auto" });
           requestAnimationFrame(function () {
             requestAnimationFrame(function () { cb(el); });
           });
@@ -299,6 +304,8 @@ var Cinematique = (function () {
     }
 
     function etapeSuivante() {
+      if (!pret) return; // placement en cours : le tap est ignoré (pas de saut)
+      pret = false;
       index += 1;
       if (index >= etapes.length) { next(); return; }
       var monGen = ++gen;
@@ -306,8 +313,9 @@ var Cinematique = (function () {
       suiteEl.textContent = index === etapes.length - 1 ? "À toi." : "suivant";
       attendre(etapes[index].sel, function (el) {
         if (monGen !== gen || cine === null) return; // placement périmé
-        if (!el) { etapeSuivante(); return; }        // introuvable -> on saute
+        if (!el) { pret = true; etapeSuivante(); return; } // introuvable -> on saute
         placer(el, etapes[index]);
+        pret = true; // étape posée : on peut avancer au prochain tap
       });
     }
 
