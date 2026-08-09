@@ -46,9 +46,9 @@
     if (nouveaux.length) {
       Etat.sauvegarder(etat);
       appliquerMasquage();
-      // Une feature vient de s'ouvrir : le moment de révélation (chantier
-      // 3) se joue tout de suite, sur la même page.
-      if (window.Reveal) Reveal.demarrer(etat);
+      // Une feature vient de s'ouvrir : la cinématique prend la main
+      // (module autonome). Le rendu, lui, ne déclenche rien.
+      if (window.Cinematique) Cinematique.demarrer(etat);
     }
   }
 
@@ -205,7 +205,17 @@
   // Feedback (même langage que l'écran Quête). evoCartes est le retour de
   // Cartes.verifier : { nouvelles, montees, brillantes }.
   function afficherBandeaux(niveauAvant, evoCartes) {
-    Feedback.evolution(niveauAvant, etat.niveau, evoCartes);
+    // Tant que la Collection n'est pas débloquée, AUCUNE révélation de
+    // carte ne se joue : Cartes.verifier a bien enregistré la carte en
+    // état, mais l'overlay attend. Au moment où la Collection s'ouvre
+    // (journée complète), c'est SA cinématique qui porte le moment — on
+    // ne double pas avec un overlay de carte. La 1ʳᵉ carte se découvre
+    // alors dans la Collection.
+    var evo = evoCartes;
+    if (!debloque.collection || etat.revelationEnAttente === "collection") {
+      evo = { nouvelles: [], montees: evoCartes.montees, brillantes: evoCartes.brillantes };
+    }
+    Feedback.evolution(niveauAvant, etat.niveau, evo);
   }
 
   // Rang redescendu (décochage) : l'aura suit, sans cérémonie.
@@ -976,7 +986,7 @@
   appliquerMasquage();
   evaluerDeblocages();
   // Révélation déjà en attente d'une session précédente (ex. quête
-  // principale au 3ᵉ jour, ou chat à reprendre) : on la joue au chargement.
-  if (window.Reveal) Reveal.demarrer(etat);
+  // principale au 3ᵉ jour, ou chat à reprendre) : la cinématique la joue.
+  if (window.Cinematique) Cinematique.demarrer(etat);
 
 })();

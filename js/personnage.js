@@ -132,8 +132,8 @@
   document.getElementById("bilan-critiques").textContent = etat.compteurs.critiques;
   document.getElementById("bilan-record").textContent = etat.compteurs.meilleurStreak;
 
-  // Révélation de la fiche (chantier 3) : intro plein écran + visite
-  // guidée, si on arrive ici avec cette feature en attente.
-  if (window.Reveal) Reveal.demarrer(etat);
+  // Cinématique de la fiche : intro plein écran + visite guidée, si on
+  // arrive ici avec cette feature en attente. Module autonome.
+  if (window.Cinematique) Cinematique.demarrer(etat);
 
 })();

@@ -1,17 +1,37 @@
 /* ============================================
-   LIFE RPG — reveal.css
-   Moments de déblocage (chantier 3). Motif signature
-   « cercles concentriques » + intro plein écran (frappe)
-   + visite guidée en spotlight. Langage visuel repris
-   de revelation.css / aura.css : overlay sombre, accent
-   --marque constant (jamais de couleur en dur).
+   LIFE RPG — cinematique.css
+   Cinématique de déblocage : machine à états qui
+   possède un calque UNIQUE au-dessus de tout (.cine).
+   Pendant la cinématique, l'app dessous est inerte.
+   Langage visuel repris de revelation.css / aura.css :
+   overlay sombre, cercles, accent --marque constant
+   (jamais de couleur en dur).
    ============================================ */
 
-/* ----- Overlay commun (motif central + intro) ----- */
-.reveal-overlay {
+/* Le calque cinématique : au-dessus de la nav (z 10) et de tout le
+   reste. Plein écran -> il capte TOUT le tap ; l'app dessous ne reçoit
+   plus rien. */
+.cine {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: 200;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
+/* App inerte pendant la cinématique : scroll bloqué + aucun pointer sur
+   ce qui n'est pas le calque. La cinématique possède les entrées. */
+body.cine-actif {
+  overflow: hidden;
+}
+body.cine-actif > *:not(.cine) {
+  pointer-events: none;
+}
+
+/* ----- Écran de phase (motif central / intro) ----- */
+.cine-ecran {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,16 +43,16 @@
   background:
     radial-gradient(ellipse 120% 45% at 50% -8%, rgba(var(--marque-rgb), 0.10), transparent 65%),
     rgba(10, 10, 15, 0.97);
-  animation: reveal-fondu 0.3s ease;
+  animation: cine-fondu 0.3s ease;
 }
 
-@keyframes reveal-fondu {
+@keyframes cine-fondu {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 /* ----- Motif signature : cercles concentriques ----- */
-.reveal-scene {
+.cine-scene {
   position: relative;
   width: min(70vw, 300px);
   aspect-ratio: 1;
@@ -41,13 +61,13 @@
   justify-content: center;
 }
 
-.reveal-cercles {
+.cine-cercles {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
-.reveal-cercles span {
+.cine-cercles span {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -57,20 +77,19 @@
   border: 1px solid rgba(var(--marque-rgb), 0.5);
   border-radius: 50%;
   opacity: 0;
-  animation: reveal-onde 2.6s ease-out infinite;
+  animation: cine-onde 2.6s ease-out infinite;
 }
 
-.reveal-cercles span:nth-child(2) { animation-delay: 0.55s; }
-.reveal-cercles span:nth-child(3) { animation-delay: 1.1s; }
+.cine-cercles span:nth-child(2) { animation-delay: 0.55s; }
+.cine-cercles span:nth-child(3) { animation-delay: 1.1s; }
 
-/* L'énergie « objet obtenu » : l'onde naît au centre et se dilate. */
-@keyframes reveal-onde {
+@keyframes cine-onde {
   0% { transform: scale(0.4); opacity: 0; }
   15% { opacity: 0.9; }
   100% { transform: scale(2.9); opacity: 0; }
 }
 
-.reveal-icone {
+.cine-icone {
   position: relative;
   z-index: 1;
   width: 76px;
@@ -79,20 +98,17 @@
   filter:
     drop-shadow(0 0 16px rgba(var(--marque-rgb), 0.5))
     drop-shadow(0 0 44px rgba(var(--marque-rgb), 0.28));
-  animation: reveal-pose 0.8s ease-out;
+  animation: cine-pose 0.8s ease-out;
 }
 
-.reveal-icone svg {
-  width: 100%;
-  height: 100%;
-}
+.cine-icone svg { width: 100%; height: 100%; }
 
-@keyframes reveal-pose {
+@keyframes cine-pose {
   from { transform: scale(0.7); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
-.reveal-phrase {
+.cine-phrase {
   position: relative;
   z-index: 1;
   max-width: 22ch;
@@ -101,16 +117,15 @@
   font-weight: 500;
   line-height: 1.4;
   color: var(--texte);
-  animation: reveal-montee 0.7s ease 0.25s backwards;
+  animation: cine-montee 0.7s ease 0.25s backwards;
 }
 
-@keyframes reveal-montee {
+@keyframes cine-montee {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
 
-/* Indice clignotant « touche pour continuer » (repris de revelation.css) */
-.reveal-indice {
+.cine-indice {
   position: relative;
   z-index: 1;
   font-size: 0.62rem;
@@ -118,16 +133,16 @@
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--texte-second);
-  animation: reveal-clignote 2.4s ease-in-out infinite;
+  animation: cine-clignote 2.4s ease-in-out infinite;
 }
 
-@keyframes reveal-clignote {
+@keyframes cine-clignote {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
 
 /* ----- Intro plein écran (frappe lettre par lettre) ----- */
-.reveal-intro-texte {
+.cine-intro-texte {
   max-width: 18ch;
   font-family: var(--police-titre);
   font-size: clamp(1.7rem, 8vw, 2.6rem);
@@ -136,59 +151,64 @@
   color: var(--texte);
 }
 
-/* Curseur de frappe */
-.reveal-intro-texte .reveal-curseur {
+.cine-curseur {
   display: inline-block;
   width: 0.06em;
   margin-left: 0.04em;
   background: var(--marque);
-  animation: reveal-curseur 0.9s steps(1) infinite;
+  animation: cine-curseur 0.9s steps(1) infinite;
 }
 
-@keyframes reveal-curseur {
+@keyframes cine-curseur {
   0%, 50% { opacity: 1; }
   50.01%, 100% { opacity: 0; }
 }
 
-/* ----- Transition vers la nav : le bouton d'onglet s'active ----- */
-/* Voile sombre qui isole la nav ; le bouton visé passe AU-DESSUS et
-   reste tapable pour entrer. */
-.reveal-nav-focus {
-  position: fixed;
+/* ----- Arrivée dans la nav : le nouveau bouton s'active ----- */
+.cine-voile {
+  position: absolute;
   inset: 0;
-  z-index: 58;
   background: rgba(10, 10, 15, 0.72);
-  animation: reveal-fondu 0.3s ease;
+  animation: cine-fondu 0.3s ease;
 }
 
-.nav-bas .nav-lien.reveal-cible {
-  position: relative;
-  z-index: 61;
+/* Halo + cercles posés sur la position du vrai onglet (dessous). */
+.cine-cible-nav {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  outline: 1px solid rgba(var(--marque-rgb), 0.5);
+  box-shadow: 0 0 0 9999px rgba(10, 10, 15, 0.72);
+  color: var(--marque-clair);
+  pointer-events: none;
 }
 
-/* Cercles du motif signature, rejoués sur le bouton de nav. */
-.nav-lien.reveal-cible::before {
+.cine-cible-nav::before {
   content: "";
   position: absolute;
-  top: 14px;
-  left: 50%;
   width: 40px;
   height: 40px;
-  margin-left: -20px;
   border: 1px solid rgba(var(--marque-rgb), 0.7);
   border-radius: 50%;
-  pointer-events: none;
-  animation: reveal-onde 2s ease-out infinite;
+  animation: cine-onde 2s ease-out infinite;
 }
 
-.nav-lien.reveal-cible {
-  color: var(--marque-clair);
-}
+.cine-cible-nav svg { width: 22px; height: 22px; }
 
-/* Étiquette flottante « Entre » au-dessus de la nav. */
-.reveal-nav-etiquette {
+/* Zone tapable (transparente) posée sur l'onglet : possédée par la
+   cinématique, donc toujours cliquable. */
+.cine-entrer {
   position: fixed;
-  z-index: 61;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cine-etiquette {
+  position: fixed;
   transform: translateX(-50%);
   padding: 9px 16px;
   border-radius: 999px;
@@ -200,20 +220,15 @@
   letter-spacing: 0.04em;
   color: var(--texte);
   white-space: nowrap;
-  animation: reveal-montee 0.5s ease 0.15s backwards;
+  pointer-events: none;
+  animation: cine-montee 0.5s ease 0.15s backwards;
 }
 
 /* ----- Visite guidée : spotlight + bulle ----- */
-.reveal-tour {
-  position: fixed;
-  inset: 0;
-  z-index: 62;
-  cursor: pointer;
-}
+/* Toute la surface capte le tap (avancer). */
+.cine-tour { position: absolute; inset: 0; cursor: pointer; }
 
-/* Le « trou » lumineux : transparent, entouré d'une ombre géante qui
-   assombrit tout le reste. L'élément visé (dessous) reste éclairé. */
-.reveal-spot {
+.cine-spot {
   position: fixed;
   border-radius: 12px;
   box-shadow: 0 0 0 9999px rgba(8, 11, 20, 0.78);
@@ -223,7 +238,7 @@
   transition: top 0.35s ease, left 0.35s ease, width 0.35s ease, height 0.35s ease;
 }
 
-.reveal-bulle {
+.cine-bulle {
   position: fixed;
   max-width: min(78vw, 300px);
   padding: 15px 17px 13px;
@@ -231,16 +246,17 @@
   background: var(--surface-haute);
   border: 1px solid var(--bordure-forte);
   box-shadow: var(--ombre-carte);
+  pointer-events: none;
   transition: top 0.35s ease, left 0.35s ease;
 }
 
-.reveal-bulle-texte {
+.cine-bulle-texte {
   font-size: 0.96rem;
   line-height: 1.45;
   color: var(--texte);
 }
 
-.reveal-bulle-bas {
+.cine-bulle-bas {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -248,24 +264,18 @@
   margin-top: 12px;
 }
 
-/* Points de progression */
-.reveal-bulle-points {
-  display: flex;
-  gap: 6px;
-}
+.cine-bulle-points { display: flex; gap: 6px; }
 
-.reveal-bulle-points i {
+.cine-bulle-points i {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: rgba(var(--marque-rgb), 0.28);
 }
 
-.reveal-bulle-points i.actif {
-  background: var(--marque);
-}
+.cine-bulle-points i.actif { background: var(--marque); }
 
-.reveal-bulle-suite {
+.cine-bulle-suite {
   font-size: 0.64rem;
   font-weight: 300;
   letter-spacing: 0.16em;
@@ -274,24 +284,22 @@
 }
 
 /* ----- Accessibilité : sans mouvement ----- */
-/* Icône nette sans pulsation, textes d'un coup, pas d'assombrissement
-   animé — mais le déblocage reste entièrement fonctionnel. */
 @media (prefers-reduced-motion: reduce) {
-  .reveal-overlay,
-  .reveal-nav-focus,
-  .reveal-icone,
-  .reveal-phrase,
-  .reveal-nav-etiquette { animation: none; }
+  .cine-ecran,
+  .cine-voile,
+  .cine-icone,
+  .cine-phrase,
+  .cine-etiquette { animation: none; }
 
-  .reveal-cercles span,
-  .nav-lien.reveal-cible::before {
+  .cine-cercles span,
+  .cine-cible-nav::before {
     animation: none;
     opacity: 0.5;
     transform: scale(1.6);
   }
 
-  .reveal-indice { animation: none; opacity: 0.7; }
-  .reveal-intro-texte .reveal-curseur { animation: none; opacity: 1; }
-  .reveal-spot,
-  .reveal-bulle { transition: none; }
+  .cine-indice { animation: none; opacity: 0.7; }
+  .cine-curseur { animation: none; opacity: 1; }
+  .cine-spot,
+  .cine-bulle { transition: none; }
 }

@@ -345,7 +345,7 @@
 
   rendre();
 
-  // Révélation de la quête principale (chantier 3).
-  if (window.Reveal) Reveal.demarrer(etat);
+  // Cinématique de la quête principale (module autonome).
+  if (window.Cinematique) Cinematique.demarrer(etat);
 
 })();
