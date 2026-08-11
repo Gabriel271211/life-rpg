@@ -132,6 +132,24 @@
   document.getElementById("bilan-critiques").textContent = etat.compteurs.critiques;
   document.getElementById("bilan-record").textContent = etat.compteurs.meilleurStreak;
 
+  // --- Réglage : effets sonores (défaut activé, coupable en un tap) ---
+  var sonInter = document.getElementById("son-interrupteur");
+  if (sonInter) {
+    var refletSon = function () {
+      var on = window.Son ? Son.actif() : true;
+      sonInter.classList.toggle("actif", on);
+      sonInter.setAttribute("aria-checked", String(on));
+    };
+    refletSon();
+    sonInter.addEventListener("click", function () {
+      if (window.Son) {
+        var on = Son.basculer();
+        if (on) Son.jouer("quete"); // petit confirm à la réactivation
+      }
+      refletSon();
+    });
+  }
+
   // Cinématique de la fiche : intro plein écran + visite guidée, si on
   // arrive ici avec cette feature en attente. Module autonome.
   if (window.Cinematique) Cinematique.demarrer(etat);

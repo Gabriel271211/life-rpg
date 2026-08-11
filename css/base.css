@@ -384,6 +384,54 @@ h1 {
   font-weight: 600;
 }
 
+/* ----- Réglage : ligne libellé + interrupteur (composant partagé) ----- */
+.reglage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.reglage-nom {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--texte);
+}
+
+/* Interrupteur : piste + pastille qui glisse. Éteint = neutre,
+   allumé = teinté par la marque. */
+.interrupteur {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.interrupteur.actif {
+  background: var(--marque);
+}
+
+.interrupteur-pastille {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: 3px;
+  border-radius: 50%;
+  background: #fff;
+  transform: translateX(0);
+  transition: transform 0.2s ease;
+}
+
+.interrupteur.actif .interrupteur-pastille {
+  transform: translateX(20px);
+}
+
 /* ----- Accessibilité : réglage système "réduire les animations" ----- */
 @media (prefers-reduced-motion: reduce) {
   *,

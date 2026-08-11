@@ -199,6 +199,10 @@ var Aura = (function () {
 
     document.body.appendChild(overlay);
 
+    // Son épique de montée de rang : la nappe enfle dès l'ouverture de
+    // la cérémonie (~1,8 s), pour accompagner le fondu d'aura.
+    if (window.Son) Son.jouer("rang");
+
     // La couleur glisse vers la nouvelle aura après que le
     // glyphe s'est posé dans l'ancienne.
     setTimeout(function () {

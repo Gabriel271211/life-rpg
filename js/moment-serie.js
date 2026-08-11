@@ -65,6 +65,15 @@ var MomentSerie = (function () {
     rompue: { motif: [0, 140], delai: 1000 }            // brève et mate, à la rupture
   };
 
+  // Son par issue, joué au MÊME instant que la vibration (au pic de
+  // l'animation) : continuée chaleureuse montante, gelée cristalline,
+  // rompue mate descendante.
+  var SONS = {
+    continuee: "flamme-continuee",
+    gelee: "flamme-gelee",
+    rompue: "flamme-rompue"
+  };
+
   function reduit() {
     return window.matchMedia &&
            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -78,6 +87,7 @@ var MomentSerie = (function () {
     setTimeout(function () {
       if (window.Juice && Juice.vibrer) Juice.vibrer(v.motif);
       else if (navigator.vibrate) navigator.vibrate(v.motif);
+      if (window.Son && SONS[issue]) Son.jouer(SONS[issue]);
     }, v.delai);
   }
 

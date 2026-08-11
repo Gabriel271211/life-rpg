@@ -184,6 +184,13 @@
   color: var(--texte-second);
 }
 
+/* La ligne de réglage + l'interrupteur son sont un composant partagé
+   (voir .reglage / .interrupteur dans base.css). Ici, juste l'espace
+   au-dessus de la ligne dans la liste de l'éditeur. */
+.editeur-reglage {
+  margin-top: 8px;
+}
+
 /* ----- Attente IA (dans l'éditeur) ----- */
 .editeur-attente {
   display: flex;

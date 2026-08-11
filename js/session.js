@@ -414,6 +414,10 @@ var Session = (function () {
 
     var res = ctx.surValider();
 
+    // Son de validation, plus brillant si coup critique (même moment
+    // que la vibration déclenchée dans le callback de validation).
+    if (window.Son) Son.jouer(res && res.critique ? "critique" : "quete");
+
     ctx.overlay.querySelector(".session-fermer").hidden = true;
     ctx.overlay.querySelector(".session-passer").hidden = true;
     masquerConfirmation();

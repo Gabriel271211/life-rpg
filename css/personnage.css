@@ -314,9 +314,20 @@
   justify-content: center;
 }
 
+/* ----- Réglages : ligne de préférences (interrupteur son) ----- */
+.reglages {
+  margin-top: 52px;
+  padding-top: 22px;
+  border-top: 1px solid var(--bordure);
+}
+
+.reglages .reglage {
+  margin-top: 16px;
+}
+
 /* ----- Sauvegarde : export / import discret ----- */
 .sauvegarde {
-  margin-top: 52px;
+  margin-top: 40px;
   padding-top: 22px;
   border-top: 1px solid var(--bordure);
   text-align: center;

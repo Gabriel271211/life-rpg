@@ -517,11 +517,13 @@
         res.critique
       );
       Juice.vibrer(evoCartes.nouvelles.length > 0 ? 70 : 40);
+      if (window.Son) Son.jouer(res.critique ? "critique" : "quete");
       afficherBandeaux(niveauAvant, evoCartes);
     } else {
       Etat.sauvegarder(etat);
       Juice.xpFlottant(hebdoBouton, "+1", false);
       Juice.vibrer(30);
+      if (window.Son) Son.jouer("quete", { volume: 0.5 }); // +1 discret
     }
 
     rendreHebdo();
@@ -778,6 +780,9 @@
       majPuces();
       evaluerDeblocages();
       Juice.vibrer(carteObjectif ? 70 : 40);
+      // La carte-objectif a son propre chime via Revelation ; sinon,
+      // simple confirm de validation.
+      if (window.Son && !carteObjectif) Son.jouer("quete");
       afficherBandeaux(niveauAvant, evoCartes);
       if (carteObjectif) Revelation.montrer([carteObjectif]);
     } else {
@@ -957,6 +962,7 @@
     gelMessage.hidden = false;
     etat.gelEnAttente = false;
     Etat.sauvegarder(etat);
+    if (window.Son) Son.jouer("gel"); // ping de verre / bouclier
   }
 
   // --- Grand moment plein écran selon l'issue de la série (une seule fois) ---

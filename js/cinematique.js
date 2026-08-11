@@ -118,6 +118,11 @@ var Cinematique = (function () {
 
   // Cercles concentriques + icône + phrase. Tap -> phase suivante.
   function phaseCercles(next) {
+    // LA fanfare de déblocage : le son le plus marquant du jeu, joué une
+    // seule fois à l'ouverture du moment (les écrans de destination
+    // reprennent à phaseIntro, sans la rejouer). Vibration nette aussi.
+    if (window.Son) Son.jouer("deblocage");
+    if (window.Juice) Juice.vibrer([0, 40, 40, 90]);
     ecran(
       '<div class="cine-ecran cine-motif">' +
         '<div class="cine-scene">' +

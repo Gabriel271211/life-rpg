@@ -145,6 +145,7 @@
     var evoCartes = Cartes.verifier(etat);
     Etat.sauvegarder(etat);
     Juice.vibrer([80, 60, 120]);
+    if (window.Son) Son.jouer("jalon");
     rendre();
 
     // Feedback d'évolution (niveau, cartes élevées, cartes brillantes,
@@ -186,6 +187,7 @@
 
     document.body.appendChild(overlay);
     Juice.vibrer([100, 60, 100, 60, 160]);
+    if (window.Son) Son.jouer("jalon");
   }
 
   // ----- La suite : le Système forge la quête d'après -----

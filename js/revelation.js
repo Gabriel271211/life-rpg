@@ -60,6 +60,7 @@ var Revelation = (function () {
       var el = overlay.querySelector(".revelation-carte");
       if (el) el.classList.add("retournee");
       Juice.vibrer(40);
+      if (window.Son) Son.jouer("carte");
     }, 380);
   }
 

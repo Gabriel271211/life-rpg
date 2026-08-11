@@ -86,7 +86,13 @@ var Editeur = (function () {
         : "") +
       '<p class="etiquette editeur-section">Tes jours d\'engagement</p>' +
       '<p class="editeur-jours-intro">Les jours où la boucle quotidienne est active. Le repos ne casse jamais ta série. Un changement s\'applique vers l\'avant.</p>' +
-      '<div class="editeur-jours"></div>'
+      '<div class="editeur-jours"></div>' +
+      '<p class="etiquette editeur-section">Réglages</p>' +
+      '<div class="reglage editeur-reglage">' +
+        '<span class="reglage-nom">Effets sonores</span>' +
+        '<button class="interrupteur" type="button" role="switch" ' +
+          'aria-label="Effets sonores"><span class="interrupteur-pastille"></span></button>' +
+      '</div>'
     );
 
     corps.querySelector(".editeur-liste").innerHTML = "";
@@ -103,6 +109,25 @@ var Editeur = (function () {
       vueFormulaire(null);
     });
     corps.querySelector(".editeur-ia").addEventListener("click", vueDemanderSysteme);
+
+    // Interrupteur son : reflète la préférence (défaut activé) et la
+    // bascule d'un tap. Un court "confirm" joue à la réactivation.
+    var inter = corps.querySelector(".interrupteur");
+    if (inter) {
+      var refletSon = function () {
+        var on = window.Son ? Son.actif() : true;
+        inter.classList.toggle("actif", on);
+        inter.setAttribute("aria-checked", String(on));
+      };
+      refletSon();
+      inter.addEventListener("click", function () {
+        if (window.Son) {
+          var on = Son.basculer();
+          if (on) Son.jouer("quete");
+        }
+        refletSon();
+      });
+    }
   }
 
   // --- Jours d'engagement : même UI que l'onboarding, appliquée en
