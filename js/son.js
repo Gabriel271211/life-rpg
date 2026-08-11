@@ -193,15 +193,15 @@ var Son = (function () {
   var RECETTES = {
     // Validation de quête : confirm doux, feutré, grave-médium (~120 ms).
     quete: function (t, v) {
-      voix("sine", 392, t, 0.12, { gain: 0.26 * v, filtre: "lowpass", filtreFreq: 1900, relache: 0.09 });
-      voix("triangle", 588, t + 0.006, 0.10, { gain: 0.12 * v, filtre: "lowpass", filtreFreq: 2400, relache: 0.08 });
+      voix("sine", 392, t, 0.12, { gain: 0.5 * v, filtre: "lowpass", filtreFreq: 1900, relache: 0.09 });
+      voix("triangle", 588, t + 0.006, 0.10, { gain: 0.24 * v, filtre: "lowpass", filtreFreq: 2400, relache: 0.08 });
     },
 
     // Coup critique : ping brillant, deux notes montantes + scintillement (~250 ms).
     critique: function (t, v) {
-      voix("triangle", 659, t, 0.12, { gain: 0.22 * v, filtre: "highpass", filtreFreq: 320 });
-      voix("triangle", 988, t + 0.085, 0.17, { gain: 0.22 * v, reverb: true });
-      voix("sine", 1976, t + 0.085, 0.12, { gain: 0.06 * v, reverb: true }); // pointe scintillante
+      voix("triangle", 659, t, 0.12, { gain: 0.4 * v, filtre: "highpass", filtreFreq: 320 });
+      voix("triangle", 988, t + 0.085, 0.17, { gain: 0.4 * v, reverb: true });
+      voix("sine", 1976, t + 0.085, 0.12, { gain: 0.11 * v, reverb: true }); // pointe scintillante
     },
 
     // Découverte de carte : carillon de révélation cristallin (~600 ms).
