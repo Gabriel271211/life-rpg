@@ -18,13 +18,24 @@
   <link rel="stylesheet" href="css/aura.css">
   <link rel="stylesheet" href="css/personnage.css">
   <link rel="stylesheet" href="css/juice.css">
+  <link rel="stylesheet" href="css/session.css">
+  <link rel="stylesheet" href="css/editeur.css">
+  <link rel="stylesheet" href="css/objectif.css">
+  <link rel="stylesheet" href="css/jours-engagement.css">
+  <link rel="stylesheet" href="css/parametres.css">
+  <link rel="stylesheet" href="css/rail.css">
   <link rel="stylesheet" href="css/cinematique.css">
 </head>
 <body data-page="personnage">
 
   <main class="ecran">
 
-    <header class="perso-entete">
+    <header class="perso-entete menu-hote">
+      <button class="menu-bouton menu-bouton-coin" id="ouvrir-parametres" type="button" aria-label="Paramètres">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
       <p class="etiquette">Personnage</p>
       <h1 class="perso-nom" id="perso-nom"></h1>
       <p class="perso-classe" id="perso-classe"></p>
@@ -126,40 +137,6 @@
       </div>
     </div>
 
-    <section class="reglages" aria-label="Réglages">
-      <p class="etiquette">Réglages</p>
-      <div class="reglage">
-        <span class="reglage-nom">Effets sonores</span>
-        <button class="interrupteur" id="son-interrupteur" type="button" role="switch"
-          aria-label="Effets sonores"><span class="interrupteur-pastille"></span></button>
-      </div>
-    </section>
-
-    <section class="sauvegarde" aria-label="Sauvegarde">
-      <p class="etiquette">Sauvegarde</p>
-      <div class="sauvegarde-boutons" id="sauvegarde-actions">
-        <button class="sauvegarde-bouton" id="sauvegarde-exporter" type="button">Exporter</button>
-        <button class="sauvegarde-bouton" id="sauvegarde-importer" type="button">Importer</button>
-        <button class="sauvegarde-bouton" id="sauvegarde-quitter" type="button">Quitter</button>
-      </div>
-      <input type="file" id="sauvegarde-fichier" accept=".json,application/json" hidden>
-      <div class="sauvegarde-confirmation" id="sauvegarde-confirmation" hidden>
-        <p class="sauvegarde-question">Remplacer ta progression actuelle ?</p>
-        <div class="sauvegarde-boutons">
-          <button class="sauvegarde-texte sauvegarde-texte-accent" id="sauvegarde-confirmer" type="button">Remplacer</button>
-          <button class="sauvegarde-texte" id="sauvegarde-abandonner" type="button">Annuler</button>
-        </div>
-      </div>
-      <div class="sauvegarde-confirmation" id="quitter-confirmation" hidden>
-        <p class="sauvegarde-question">Abandonner ce personnage ? Sa progression sera effacée pour toujours.</p>
-        <div class="sauvegarde-boutons">
-          <button class="sauvegarde-texte sauvegarde-texte-accent" id="quitter-confirmer" type="button">Abandonner</button>
-          <button class="sauvegarde-texte" id="quitter-annuler" type="button">Annuler</button>
-        </div>
-      </div>
-      <p class="sauvegarde-message" id="sauvegarde-message" hidden></p>
-    </section>
-
   </main>
 
   <nav class="nav-bas" aria-label="Navigation principale">
@@ -201,11 +178,17 @@
   <script src="js/commun.js"></script>
   <script src="js/cartes.js"></script>
   <script src="js/etat.js"></script>
+  <script src="js/templates.js"></script>
   <script src="js/juice.js"></script>
   <script src="js/son.js"></script>
+  <script src="js/objectif.js"></script>
+  <script src="js/ia.js"></script>
+  <script src="js/jours-engagement.js"></script>
+  <script src="js/editeur-principale.js"></script>
+  <script src="js/parametres.js"></script>
+  <script src="js/rail.js"></script>
   <script src="js/cinematique.js"></script>
   <script src="js/personnage.js"></script>
-  <script src="js/sauvegarde.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/pwa.js"></script>
   <script src="js/notifications.js"></script>

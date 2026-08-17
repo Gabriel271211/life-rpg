@@ -19,13 +19,24 @@
   <link rel="stylesheet" href="css/cartes.css">
   <link rel="stylesheet" href="css/collection.css">
   <link rel="stylesheet" href="css/juice.css">
+  <link rel="stylesheet" href="css/session.css">
+  <link rel="stylesheet" href="css/editeur.css">
+  <link rel="stylesheet" href="css/objectif.css">
+  <link rel="stylesheet" href="css/jours-engagement.css">
+  <link rel="stylesheet" href="css/parametres.css">
+  <link rel="stylesheet" href="css/rail.css">
   <link rel="stylesheet" href="css/cinematique.css">
 </head>
 <body data-page="collection">
 
   <main class="ecran">
 
-    <header class="collection-entete">
+    <header class="collection-entete menu-hote">
+      <button class="menu-bouton menu-bouton-coin" id="ouvrir-parametres" type="button" aria-label="Paramètres">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
       <p class="etiquette">Collection</p>
       <h1 class="collection-compte">
         <span id="compte-debloquees">0</span><span class="collection-sep"> / </span><span id="compte-total">8</span>
@@ -76,8 +87,15 @@
   <script src="js/commun.js"></script>
   <script src="js/cartes.js"></script>
   <script src="js/etat.js"></script>
+  <script src="js/templates.js"></script>
   <script src="js/juice.js"></script>
   <script src="js/son.js"></script>
+  <script src="js/objectif.js"></script>
+  <script src="js/ia.js"></script>
+  <script src="js/jours-engagement.js"></script>
+  <script src="js/editeur-principale.js"></script>
+  <script src="js/parametres.js"></script>
+  <script src="js/rail.js"></script>
   <script src="js/cinematique.js"></script>
   <script src="js/collection.js"></script>
   <script src="js/nav.js"></script>

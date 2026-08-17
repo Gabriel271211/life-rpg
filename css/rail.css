@@ -1,0 +1,113 @@
+/* ============================================
+   LIFE RPG — rail.css
+   Menu : un rail vertical d'icônes qui glisse depuis
+   le bord DROIT, façon tiroir, le reste de l'écran
+   assombri par un voile. Ouvert par le hamburger.
+   La navigation entre pages reste la NAV BASSE ; le
+   rail ne porte que deux boutons réels (Profil,
+   Paramètres) et les entrées « À venir ».
+   Barre bleue (--marque). Aucune couleur en dur.
+   ============================================ */
+
+/* ----- Couche plein écran (voile + rail) ----- */
+.rail-couche {
+  position: fixed;
+  inset: 0;
+  z-index: 60; /* au-dessus de la nav basse et du contenu */
+}
+
+/* ----- Voile qui assombrit la page ----- */
+.rail-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 6, 12, 0.62);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rail-couche.ouvert .rail-scrim {
+  opacity: 1;
+}
+
+/* ----- Le rail : barre bleue pleine hauteur, ancrée à droite ----- */
+.rail {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 68px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding:
+    calc(env(safe-area-inset-top) + 20px) 0
+    calc(env(safe-area-inset-bottom) + 20px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 40%),
+    var(--marque);
+  box-shadow: -10px 0 34px rgba(0, 0, 0, 0.38);
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: pan-y; /* laisse le swipe horizontal au rail (fermeture) */
+}
+
+.rail-couche.ouvert .rail {
+  transform: none;
+}
+
+/* Séparateur discret entre les boutons réels et les entrées « à venir » */
+.rail-sep {
+  width: 26px;
+  height: 1px;
+  margin: 8px 0;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ----- Une icône ----- */
+.rail-item {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.rail-item svg {
+  width: 23px;
+  height: 23px;
+}
+
+.rail-item:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Entrées futures : présentes mais visiblement en attente */
+.rail-item.avenir {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.rail-item.avenir:hover {
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ----- Accessibilité : bascule instantanée si animations réduites ----- */
+@media (prefers-reduced-motion: reduce) {
+  .rail-scrim,
+  .rail {
+    transition: none;
+  }
+}

@@ -281,6 +281,57 @@
     demarrer();
   }
 
-  // Exposition minimale (tests / réglages éventuels).
-  window.Notifications = { synchroniser: synchroniser, abonner: abonner };
+  // ----- Pilotage depuis les Paramètres -----
+  // L'écran Paramètres offre un interrupteur explicite. On expose de quoi
+  // refléter l'état réel et le basculer, sans dupliquer les clés/logique.
+
+  function estSupporte() {
+    // Sur iOS hors app installée, le push n'existe pas dans Safari.
+    return supporte && !(estIOS && !installe);
+  }
+
+  function permissionActuelle() {
+    return supporte ? Notification.permission : "unsupported";
+  }
+
+  // Actif = navigateur capable, permission accordée, et pas refusé in-app.
+  function estActif() {
+    return estSupporte() && Notification.permission === "granted" && choix() !== "refuse";
+  }
+
+  // Activer : demande la permission si besoin (le tap sur l'interrupteur est
+  // le geste requis), puis abonne. Résout avec l'état actif final (bool).
+  function activer() {
+    if (!estSupporte()) return Promise.resolve(false);
+    if (Notification.permission === "granted") {
+      try { localStorage.setItem(CLE_CHOIX, "active"); } catch (e) {}
+      return abonner().then(function () { return estActif(); });
+    }
+    if (Notification.permission === "denied") return Promise.resolve(false);
+    return Notification.requestPermission().then(function (p) {
+      if (p === "granted") {
+        try { localStorage.setItem(CLE_CHOIX, "active"); } catch (e) {}
+        return abonner().then(function () { return estActif(); });
+      }
+      try { localStorage.setItem(CLE_CHOIX, "refuse"); } catch (e) {}
+      return false;
+    }).catch(function () { return false; });
+  }
+
+  // Désactiver : on ne peut pas révoquer la permission navigateur, mais on
+  // cesse d'abonner/resynchroniser et on mémorise le refus.
+  function desactiver() {
+    try { localStorage.setItem(CLE_CHOIX, "refuse"); } catch (e) {}
+  }
+
+  // Exposition (tests + écran Paramètres).
+  window.Notifications = {
+    synchroniser: synchroniser,
+    abonner: abonner,
+    estSupporte: estSupporte,
+    permissionActuelle: permissionActuelle,
+    estActif: estActif,
+    activer: activer,
+    desactiver: desactiver
+  };
 })();

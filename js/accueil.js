@@ -454,6 +454,20 @@
     });
   });
 
+  // --- Menu : le hamburger ouvre le rail (Profil, Paramètres, À venir). Les
+  // deux boutons réels ouvrent leur panneau ; à sa fermeture, on re-rend
+  // l'accueil (le nom, les jours d'engagement ou l'objectif ont pu changer). ---
+  document.getElementById("ouvrir-parametres").addEventListener("click", function () {
+    Rail.ouvrir(etat, function () {
+      rendreQuetes();
+      rendreHebdo();
+      majPuces();
+      majQuetePrincipale();
+      majJourAccompli();
+      majModeRepos();
+    });
+  });
+
   // --- Quête principale : ligne de rappel vers quete.html ---
 
   var qpEtape = document.getElementById("qp-etape");

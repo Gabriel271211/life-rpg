@@ -128,6 +128,14 @@
   document.getElementById("compte-total").textContent =
     Cartes.liste().length + objectifCount;
 
+  // --- Menu : le hamburger ouvre le rail (Profil, Paramètres, À venir). ---
+  var boutonMenu = document.getElementById("ouvrir-parametres");
+  if (boutonMenu && window.Rail) {
+    boutonMenu.addEventListener("click", function () {
+      Rail.ouvrir(etat, function () {});
+    });
+  }
+
   // Cinématique de la collection (module autonome).
   if (window.Cinematique) Cinematique.demarrer(etat);
 

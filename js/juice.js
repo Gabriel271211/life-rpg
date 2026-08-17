@@ -7,6 +7,27 @@
 
 var Juice = (function () {
 
+  // Préférence vibrations (Android) : "1" = actif (défaut), "0" = coupé.
+  // Miroir exact du réglage muet (son.js) : localStorage, échec silencieux,
+  // défaut activé. Réglée depuis Paramètres ; TOUTES les vibrations passent
+  // par Juice.vibrer, donc couper ici les coupe partout.
+  var CLE_VIBRATION = "life-rpg-vibration";
+
+  function vibrationsActives() {
+    try { return localStorage.getItem(CLE_VIBRATION) !== "0"; }
+    catch (e) { return true; }
+  }
+
+  function definirVibrations(v) {
+    try { localStorage.setItem(CLE_VIBRATION, v ? "1" : "0"); } catch (e) {}
+  }
+
+  function basculerVibrations() {
+    var v = !vibrationsActives();
+    definirVibrations(v);
+    return v;
+  }
+
   // "+25 XP" qui apparaît au niveau de l'élément d'origine,
   // monte en fondu, puis disparaît du DOM.
   function xpFlottant(origine, texte, critique) {
@@ -21,6 +42,7 @@ var Juice = (function () {
   }
 
   function vibrer(duree) {
+    if (!vibrationsActives()) return; // réglage coupé : aucune vibration
     if (navigator.vibrate) navigator.vibrate(duree);
   }
 
@@ -58,6 +80,9 @@ var Juice = (function () {
     vibrer: vibrer,
     bandeau: bandeau,
     bandeauNiveau: bandeauNiveau,
-    pulser: pulser
+    pulser: pulser,
+    vibrationsActives: vibrationsActives,
+    definirVibrations: definirVibrations,
+    basculerVibrations: basculerVibrations
   };
 })();

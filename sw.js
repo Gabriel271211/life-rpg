@@ -21,7 +21,7 @@
 // version ne sert donc plus qu'au snapshot HORS-LIGNE : l'incrémenter
 // purge l'ancien cache (activate supprime tout cache != CACHE) et
 // rafraîchit le pré-cache atomique servi quand il n'y a pas de réseau.
-var CACHE = "life-rpg-v35";
+var CACHE = "life-rpg-v40";
 
 var FICHIERS = [
   "./",
@@ -45,6 +45,8 @@ var FICHIERS = [
   "css/onboarding.css",
   "css/jours-engagement.css",
   "css/chat.css",
+  "css/parametres.css",
+  "css/rail.css",
   "css/juice.css",
   "css/moment-serie.css",
   "css/cinematique.css",
@@ -69,13 +71,14 @@ var FICHIERS = [
   "js/jours-engagement.js",
   "js/onboarding.js",
   "js/chat.js",
+  "js/parametres.js",
+  "js/rail.js",
   "js/feedback.js",
   "js/cinematique.js",
   "js/accueil.js",
   "js/personnage.js",
   "js/collection.js",
   "js/quete.js",
-  "js/sauvegarde.js",
   "js/nav.js",
   "js/pwa.js",
   "js/notifications.js",

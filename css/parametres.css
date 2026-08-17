@@ -1,0 +1,395 @@
+/* ============================================
+   LIFE RPG — parametres.css
+   Panneaux du menu : tiroirs qui glissent depuis la
+   droite (voile + fond nuit), ouverts par les boutons
+   Profil / Paramètres du rail. Contient aussi le style
+   du bouton hamburger. Réutilise les composants partagés
+   (.reglage / .interrupteur de base.css ; .session-bouton /
+   .session-lien / .session-fermer de session.css).
+   ============================================ */
+
+/* ----- Bouton hamburger ----- */
+/* Cercle sobre, aligné sur le gabarit du bouton Système / fermeture. */
+.menu-bouton {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--bordure);
+  border-radius: 50%;
+  color: var(--texte-second);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+
+.menu-bouton:hover {
+  border-color: var(--bordure-forte);
+  color: var(--texte);
+}
+
+.menu-bouton svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Variante « coin » : posée en haut à droite des en-têtes simples
+   (personnage, collection, quête) dont l'en-tête est du texte centré.
+   L'hôte reçoit .menu-hote (position: relative). */
+.menu-hote {
+  position: relative;
+}
+
+.menu-bouton-coin {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+/* ----- Tiroir : voile + panneau qui glisse depuis la droite ----- */
+.param-couche {
+  position: fixed;
+  inset: 0;
+  z-index: 60; /* au-dessus de la nav basse et du contenu */
+}
+
+.param-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 6, 12, 0.62);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.param-couche.ouvert .param-scrim {
+  opacity: 1;
+}
+
+/* Le panneau : bleu nuit sobre, ancré à droite, pleine hauteur, scrollable */
+.parametres {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(400px, 92vw);
+  display: flex;
+  flex-direction: column;
+  padding:
+    calc(env(safe-area-inset-top) + 22px) 22px
+    calc(env(safe-area-inset-bottom) + 22px);
+  background:
+    radial-gradient(ellipse 120% 40% at 100% -6%, var(--marque-doux), transparent 60%),
+    var(--surface-haute);
+  border-left: 1px solid var(--bordure-forte);
+  box-shadow: -12px 0 38px rgba(0, 0, 0, 0.42);
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: pan-y; /* le swipe horizontal (fermeture) nous revient */
+}
+
+.param-couche.ouvert .parametres {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .param-scrim,
+  .parametres {
+    transition: none;
+  }
+}
+
+.param-entete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.param-titre {
+  margin-top: 6px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.param-corps {
+  flex: 1;
+  margin-top: 26px;
+  overflow-y: auto;
+  padding-bottom: 12px;
+}
+
+.param-corps.fondu {
+  animation: session-fondu 0.25s ease;
+}
+
+/* ----- Sections ----- */
+.param-section {
+  margin-top: 30px;
+}
+
+.param-section:first-child {
+  margin-top: 4px;
+}
+
+.param-section-titre {
+  margin-bottom: 12px;
+}
+
+/* ----- Lignes cliquables (profil, aide) ----- */
+.param-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.param-ligne {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 13px;
+  font-family: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s ease;
+}
+
+.param-ligne:hover {
+  border-color: var(--bordure-forte);
+}
+
+/* Icône de tête (rangée icône + libellé) */
+.param-ligne-icone {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--marque);
+}
+
+.param-ligne-icone svg {
+  width: 22px;
+  height: 22px;
+}
+
+.param-ligne-infos {
+  flex: 1;
+  min-width: 0;
+}
+
+.param-ligne-nom {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.param-ligne-valeur {
+  margin-top: 3px;
+  font-size: 0.74rem;
+  font-weight: 300;
+  line-height: 1.35;
+  color: var(--texte-second);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.param-ligne-droite {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.param-chevron {
+  width: 15px;
+  height: 15px;
+  color: var(--texte-second);
+}
+
+/* ----- Réglages (interrupteurs) ----- */
+.param-reglages {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 4px 2px;
+}
+
+/* Groupe gauche d'un réglage : icône + libellé (l'interrupteur reste à droite) */
+.param-reglage-gauche {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Sous-texte d'un réglage (état de permission des notifications) */
+.param-reglage-bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.param-reglage-note {
+  font-size: 0.72rem;
+  font-weight: 300;
+  line-height: 1.4;
+  color: var(--texte-second);
+}
+
+/* ----- Données : boutons pleine largeur ----- */
+.param-donnees {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.param-donnees .session-bouton {
+  width: 100%;
+}
+
+/* Action destructrice (recommencer) : discrète, jamais mise en avant. */
+.param-danger {
+  align-self: center;
+  margin-top: 4px;
+}
+
+/* Confirmation inline (import / recommencer) — jamais de popup native. */
+.param-confirmation {
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 13px;
+}
+
+.param-question {
+  font-size: 0.86rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--texte);
+}
+
+.param-confirmation-boutons {
+  margin-top: 14px;
+  display: flex;
+  gap: 22px;
+}
+
+.param-message {
+  margin-top: 4px;
+  font-size: 0.74rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--texte-second);
+}
+
+/* ----- Sous-vue : édition du nom ----- */
+.param-champ {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.param-entree {
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--texte);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.param-entree:focus {
+  outline: none;
+  border-color: var(--marque);
+  box-shadow: 0 0 0 1px var(--marque-doux);
+}
+
+.param-sous-boutons {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ----- Sous-vues d'aide (texte long) ----- */
+.param-retour {
+  margin-bottom: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--marque);
+}
+
+.param-retour svg {
+  width: 15px;
+  height: 15px;
+}
+
+.param-doc-titre {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.param-doc h3 {
+  margin-top: 22px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--marque);
+}
+
+.param-doc p {
+  margin-top: 8px;
+  font-size: 0.88rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--texte);
+}
+
+.param-doc p.param-doc-sobre {
+  color: var(--texte-second);
+}
+
+/* Intro d'une sous-vue (jours d'engagement) */
+.param-sous-intro {
+  margin: 4px 0 18px;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--texte-second);
+}
+
+/* Pied de page : version de l'app, discret */
+.param-pied {
+  margin-top: 34px;
+  text-align: center;
+  font-size: 0.66rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--texte-second);
+}
