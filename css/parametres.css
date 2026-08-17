@@ -171,6 +171,21 @@
   border-color: var(--bordure-forte);
 }
 
+/* Rangée statique (porte un interrupteur) : pas de survol ni de curseur main */
+.param-ligne--statique {
+  cursor: default;
+}
+
+.param-ligne--statique:hover {
+  border-color: var(--bordure);
+}
+
+/* Rangée d'action destructrice (recommencer) : discrète, jamais mise en avant */
+.param-ligne--danger .param-ligne-icone,
+.param-ligne--danger .param-ligne-nom {
+  color: var(--texte-second);
+}
+
 /* Icône de tête (rangée icône + libellé) */
 .param-ligne-icone {
   flex-shrink: 0;
@@ -222,26 +237,12 @@
   color: var(--texte-second);
 }
 
-/* ----- Réglages (interrupteurs) ----- */
-.param-reglages {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 4px 2px;
-}
-
-/* Groupe gauche d'un réglage : icône + libellé (l'interrupteur reste à droite) */
-.param-reglage-gauche {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* Sous-texte d'un réglage (état de permission des notifications) */
+/* ----- Réglages (interrupteurs) : la note d'état des notifications se
+   glisse juste sous la rangée Notifications (même liste .param-liste). ----- */
 .param-reglage-bloc {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .param-reglage-note {
@@ -249,23 +250,6 @@
   font-weight: 300;
   line-height: 1.4;
   color: var(--texte-second);
-}
-
-/* ----- Données : boutons pleine largeur ----- */
-.param-donnees {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.param-donnees .session-bouton {
-  width: 100%;
-}
-
-/* Action destructrice (recommencer) : discrète, jamais mise en avant. */
-.param-danger {
-  align-self: center;
-  margin-top: 4px;
 }
 
 /* Confirmation inline (import / recommencer) — jamais de popup native. */

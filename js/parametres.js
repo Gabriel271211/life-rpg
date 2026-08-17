@@ -19,7 +19,7 @@
 
 var Parametres = (function () {
 
-  var VERSION = "v39";
+  var VERSION = "v41";
   var NOM_MAX = 20; // borne identique à l'onboarding
 
   var ctx = null; // { etat, surFermer, overlay, couche, vue }
@@ -59,7 +59,10 @@ var Parametres = (function () {
     aide: svgIcone('<circle cx="12" cy="12" r="8.5"/>' +
       '<path d="M9.6 9.6a2.4 2.4 0 1 1 3.3 2.2c-.8.4-1.4 1-1.4 1.9v.3"/><path d="M11.9 17h.02"/>'),
     confidentialite: svgIcone('<path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/>'),
-    credits: svgIcone('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><path d="M11.95 8h.02"/>')
+    credits: svgIcone('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><path d="M11.95 8h.02"/>'),
+    exporter: svgIcone('<path d="M12 4v10M8 10.5l4 4 4-4"/><path d="M5 19.5h14"/>'),
+    importer: svgIcone('<path d="M12 14.5V4.5M8 8l4-4 4 4"/><path d="M5 19.5h14"/>'),
+    recommencer: svgIcone('<path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5V9H15"/>')
   };
 
   function reduitAnimations() {
@@ -106,14 +109,14 @@ var Parametres = (function () {
     return ctx.vue === "profil" ? "Profil" : "Paramètres";
   }
 
-  // --- Panneau PROFIL : identité + gameplay ---
+  // --- Panneau PROFIL : identité + gameplay (une seule liste ; le titre
+  // du panneau « Profil » suffit, pas de titre de section redondant) ---
   function vueProfil() {
     var etat = ctx.etat;
     var objectif = etat.objectifTexte || (etat.quetePrincipale && etat.quetePrincipale.titre) || "—";
 
     var corps = montrerVue(
       '<section class="param-section">' +
-        '<p class="etiquette param-section-titre">Ton personnage</p>' +
         '<div class="param-liste">' +
           ligneHtml("nom", "Nom", echapper(etat.nom)) +
           ligneHtml("objectif", "Objectif", echapper(objectif)) +
@@ -126,28 +129,30 @@ var Parametres = (function () {
     return corps;
   }
 
-  // --- Panneau PARAMÈTRES : préférences, données, aide ---
+  // --- Panneau PARAMÈTRES : préférences, données, aide. Toutes les
+  // entrées partagent la même grammaire de rangée (.param-ligne) : seule
+  // la zone droite change (interrupteur, action, ou chevron). ---
   function vueReglages() {
     var corps = montrerVue(
-      // --- PRÉFÉRENCES ---
+      // --- PRÉFÉRENCES (rangées + interrupteur) ---
       '<section class="param-section">' +
         '<p class="etiquette param-section-titre">Préférences</p>' +
-        '<div class="param-reglages">' +
-          reglageHtml("son", "Effets sonores") +
-          reglageHtml("vibration", "Vibrations") +
+        '<div class="param-liste">' +
+          ligneSwitchHtml("son", "Effets sonores") +
+          ligneSwitchHtml("vibration", "Vibrations") +
           '<div class="param-reglage-bloc">' +
-            reglageHtml("notif", "Notifications") +
+            ligneSwitchHtml("notif", "Notifications") +
             '<p class="param-reglage-note" data-role="notif-note" hidden></p>' +
           "</div>" +
         "</div>" +
       "</section>" +
 
-      // --- DONNÉES ---
+      // --- DONNÉES (rangées d'action) ---
       '<section class="param-section">' +
         '<p class="etiquette param-section-titre">Données</p>' +
-        '<div class="param-donnees">' +
-          '<button class="session-bouton" type="button" data-role="exporter">Exporter la sauvegarde</button>' +
-          '<button class="session-bouton" type="button" data-role="importer">Importer une sauvegarde</button>' +
+        '<div class="param-liste">' +
+          ligneActionHtml("exporter", "Exporter la sauvegarde") +
+          ligneActionHtml("importer", "Importer une sauvegarde") +
           '<input type="file" accept=".json,application/json" data-role="fichier" hidden>' +
           '<div class="param-confirmation" data-role="import-confirm" hidden>' +
             '<p class="param-question">Remplacer ta progression actuelle par ce fichier ?</p>' +
@@ -156,7 +161,7 @@ var Parametres = (function () {
               '<button class="session-lien" type="button" data-role="import-non">Annuler</button>' +
             "</div>" +
           "</div>" +
-          '<button class="session-lien param-danger" type="button" data-role="recommencer">Recommencer l\'aventure</button>' +
+          ligneActionHtml("recommencer", "Recommencer l\'aventure", { danger: true }) +
           '<div class="param-confirmation" data-role="reset-confirm" hidden>' +
             '<p class="param-question">Abandonner ce personnage ? Sa progression sera effacée pour toujours.</p>' +
             '<div class="param-confirmation-boutons">' +
@@ -168,7 +173,7 @@ var Parametres = (function () {
         "</div>" +
       "</section>" +
 
-      // --- AIDE & À PROPOS ---
+      // --- AIDE & À PROPOS (rangées + chevron) ---
       '<section class="param-section">' +
         '<p class="etiquette param-section-titre">Aide &amp; à propos</p>' +
         '<div class="param-liste">' +
@@ -197,15 +202,31 @@ var Parametres = (function () {
     "</button>";
   }
 
-  function reglageHtml(cle, nom) {
-    return '<div class="reglage">' +
-      '<span class="param-reglage-gauche">' +
-        '<span class="param-ligne-icone">' + (ICONES[cle] || "") + "</span>" +
-        '<span class="reglage-nom">' + nom + "</span>" +
+  // Rangée à interrupteur (Son / Vibrations / Notifications). Un <div>
+  // (pas un <button>) car elle contient déjà un bouton — seul l'interrupteur
+  // est interactif. Même gabarit que les autres rangées.
+  function ligneSwitchHtml(cle, nom) {
+    return '<div class="param-ligne param-ligne--statique">' +
+      '<span class="param-ligne-icone">' + (ICONES[cle] || "") + "</span>" +
+      '<span class="param-ligne-infos"><span class="param-ligne-nom">' + nom + "</span></span>" +
+      '<span class="param-ligne-droite">' +
+        '<button class="interrupteur" type="button" role="switch" data-switch="' + cle + '" ' +
+          'aria-label="' + nom + '"><span class="interrupteur-pastille"></span></button>' +
       "</span>" +
-      '<button class="interrupteur" type="button" role="switch" data-switch="' + cle + '" ' +
-        'aria-label="' + nom + '"><span class="interrupteur-pastille"></span></button>' +
     "</div>";
+  }
+
+  // Rangée d'action (Exporter / Importer / Recommencer). Toute la rangée
+  // est cliquable ; pas de chevron (l'action s'effectue sur place). Le rôle
+  // pilote la logique dans brancherDonnees. `danger` : teinte discrète.
+  function ligneActionHtml(cle, nom, opts) {
+    opts = opts || {};
+    return '<button class="param-ligne' + (opts.danger ? " param-ligne--danger" : "") +
+      '" type="button" data-role="' + cle + '">' +
+      '<span class="param-ligne-icone">' + (ICONES[cle] || "") + "</span>" +
+      '<span class="param-ligne-infos"><span class="param-ligne-nom">' + nom + "</span></span>" +
+      '<span class="param-ligne-droite"></span>' +
+    "</button>";
   }
 
   // ----- Branchement des rangées cliquables (profil + aide) -----
