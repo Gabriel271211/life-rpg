@@ -19,7 +19,9 @@ var PROMPTS = require("./_prompts.js");
 var LIMITE = require("./_limite.js");
 
 var GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-var MODELE = "llama-3.3-70b-versatile";
+// llama-3.3-70b-versatile a été retiré de Groq (404 model_not_found).
+// gpt-oss-120b : modèle généraliste disponible, supporte le mode JSON.
+var MODELE = "openai/gpt-oss-120b";
 var TIMEOUT_AMONT = 20000;   // ms
 var MAX_CORPS = 10000;       // taille brute maximale du corps de requête
 
@@ -527,19 +529,12 @@ module.exports = async function (req, res) {
     });
   } catch (e) {
     clearTimeout(minuteur);
-    return repondre(res, 502, { erreur: "Le Système est silencieux", _diag: { phase: "fetch", message: String(e && e.message || e) } });
+    return repondre(res, 502, { erreur: "Le Système est silencieux" });
   }
   clearTimeout(minuteur);
 
   if (!reponse.ok) {
-    var _detail = "";
-    try { _detail = await reponse.text(); } catch (e) {}
-    var _modeles = null;
-    try {
-      var _mr = await fetch("https://api.groq.com/openai/v1/models", { headers: { "Authorization": "Bearer " + cle } });
-      if (_mr.ok) { var _mj = await _mr.json(); _modeles = (_mj.data || []).map(function (m) { return m.id; }); }
-    } catch (e) {}
-    return repondre(res, 502, { erreur: "Le Système est silencieux", _diag: { phase: "upstream", status: reponse.status, detail: _detail.slice(0, 300), modeles: _modeles } });
+    return repondre(res, 502, { erreur: "Le Système est silencieux" });
   }
 
   var contenu = null;
