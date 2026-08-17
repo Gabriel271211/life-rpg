@@ -534,7 +534,12 @@ module.exports = async function (req, res) {
   if (!reponse.ok) {
     var _detail = "";
     try { _detail = await reponse.text(); } catch (e) {}
-    return repondre(res, 502, { erreur: "Le Système est silencieux", _diag: { phase: "upstream", status: reponse.status, detail: _detail.slice(0, 400) } });
+    var _modeles = null;
+    try {
+      var _mr = await fetch("https://api.groq.com/openai/v1/models", { headers: { "Authorization": "Bearer " + cle } });
+      if (_mr.ok) { var _mj = await _mr.json(); _modeles = (_mj.data || []).map(function (m) { return m.id; }); }
+    } catch (e) {}
+    return repondre(res, 502, { erreur: "Le Système est silencieux", _diag: { phase: "upstream", status: reponse.status, detail: _detail.slice(0, 300), modeles: _modeles } });
   }
 
   var contenu = null;
