@@ -527,12 +527,14 @@ module.exports = async function (req, res) {
     });
   } catch (e) {
     clearTimeout(minuteur);
-    return repondre(res, 502, { erreur: "Le Système est silencieux" });
+    return repondre(res, 502, { erreur: "Le Système est silencieux", _diag: { phase: "fetch", message: String(e && e.message || e) } });
   }
   clearTimeout(minuteur);
 
   if (!reponse.ok) {
-    return repondre(res, 502, { erreur: "Le Système est silencieux" });
+    var _detail = "";
+    try { _detail = await reponse.text(); } catch (e) {}
+    return repondre(res, 502, { erreur: "Le Système est silencieux", _diag: { phase: "upstream", status: reponse.status, detail: _detail.slice(0, 400) } });
   }
 
   var contenu = null;
